@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "控制台";
+    Layout = "~/Views/Shared/_LayoutBridge.cshtml";
+    //此页面没有实际意义，为了代码可读性，所有内容都放置在母版页里，只有一个跳转iframe的功能
+}
+
+<script>
+    $(function () {
+        $("#bridgeFrame").attr("src", "../Platform/Index");
+    })
+</script>
+

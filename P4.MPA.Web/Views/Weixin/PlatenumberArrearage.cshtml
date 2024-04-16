@@ -1,0 +1,165 @@
+﻿@using P4.Web.Models.Weixin
+@model WeixinModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>在停订单</title>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- basic styles -->
+    <script src="../../assets/js/jquery-2.0.3.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/font-awesome.min.css" />
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="../../assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!-- page specific plugin styles -->
+    <!-- fonts -->
+    <!--<link rel="stylesheet" href="https://fonts.css.network/css?family=Open+Sans:400,300" />-->
+    <!-- ace styles -->
+    <link rel="stylesheet" href="~/assets/css/ace.min.css" />
+    <link rel="stylesheet" href="~/assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+
+    <script src="~/assets/global/plugins/jquery-sweetalert/sweetalert-dev.js"></script>
+    <link rel="stylesheet" href="~/assets/global/plugins/jquery-sweetalert/sweetalert.css" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+
+</head>
+<body>
+    <div class="main-content">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="center">
+                    <h1>
+                        <img src="~/assets/avatars/fx.png" width="32px" height="32px" />
+                        <span class="blue">交通诱导系统云平台</span>
+                    </h1>
+
+
+                    <div class="alert alert-info" id="timer">
+                        <i class="icon-hand-right"></i>
+                        正在计算剩余时间....
+                    </div>
+                </div>
+
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <div class="space-4"></div>
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;车牌号： @(Model.Wexinparkorder[0].carnumber)</label>
+
+                            <div class="space-4"></div>
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泊位号： @(Model.Wexinparkorder[0].berthnumber)</label>
+                            <div class="space-4"></div>
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;购买时长： <label class="col-sm-3 control-label no-padding-right" for="form-field-1" id="time">
+    @(Model.Wexinparkorder[0].time)</label><label class="col-sm-3 control-label no-padding-right" for="form-field-1">小时</label>
+    <div class="space-4"></div>
+    <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;停入时间： @(Model.Wexinparkorder[0].carintime)</label>
+    <div class="space-4"></div>
+    <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;支付金额：$</label> <label class="col-sm-3 control-label no-padding-right" id="money" for="form-field-1">@(Model.Wexinparkorder[0].money)</label>
+</div>
+                        <div class="center">
+                            <div class="control-group">
+                                <label class="control-label bolder blue">选择时长</label>
+                                <div class="radio">
+                                    <label>
+                                        <input name="stoptime" type="radio" checked="checked" value="1" class="ace" />
+                                        <span class="lbl"> 1小时</span>
+                                    </label>
+
+                                    <label>
+                                        <input name="stoptime" type="radio" class="ace" value="2" />
+                                        <span class="lbl"> 2小时</span>
+                                    </label>
+
+                                    <label>
+                                        <input name="stoptime" type="radio" class="ace" value="3" />
+                                        <span class="lbl"> 3小时</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="space-8"></div>
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="button" onclick="javascript:btnclick()">
+                                    <i class="icon-ok bigger-110"></i>
+                                    续费
+                                </button>
+                            </div>
+                            </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    var maxtime = 60 * 60 * @Model.Wexinparkorder[0].time - @Model.Wexinparkorder[0].Surplus; //一个小时，按秒计算，自己调整!
+        function btnclick() {
+            swal({
+                title: "系统提示",
+                text: "确定支付停车费20元？",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定,进入支付!",
+                closeOnConfirm: false
+            },
+               function () {
+                   clearInterval(timer);
+                   var stoptime = parseInt($("input[name='stoptime']:checked").val());
+                   maxtime = maxtime + stoptime * 60 * 60;
+
+                  
+                   var time = parseInt($("#time").text());
+                   $('#time').html(time + stoptime);
+
+                   var money = parseInt($("#money").text());
+                   $('#money').html(money + (stoptime * 10));
+                   timer = setInterval("CountDown()",1000);  
+                   $.ajax({
+                       type: "Post",
+                       url: "/Weixin/SavePlatenumberArrearage?ID=" + @Model.Wexinparkorder[0].ID + "&moeny="+ (stoptime * 10)+"&stoptime=" + stoptime,
+                       success: function (data) {
+                           swal({
+                               title: "系统提示",
+                               text: "续费成功",
+                               timer: 500,
+                               showConfirmButton: false
+                           });
+                       }, error: function () {
+                           swal("错误!", "支付失败！", "error");
+                       }
+                   });
+               }
+            );
+        }
+
+
+
+        function CountDown() {
+            if (maxtime >= 0) {
+                hours = Math.floor(maxtime / 3600);
+                minutes = Math.floor((maxtime - hours*3600) / 60);
+                seconds = Math.floor(maxtime % 60);
+                msg = "<i class='icon-hand-right'></i>剩余"+ hours +"小时" + minutes + "分" + seconds + "秒";
+                document.all["timer"].innerHTML = msg;
+                if (maxtime == 5 * 60)
+                    alert('注意，还有5分钟!');
+                --maxtime;
+            }
+            else {
+                clearInterval(timer);
+                document.all["timer"].innerHTML = "时间到，请购买时间!";
+            }
+        }
+        timer = setInterval("CountDown()",1000);  
+</script>

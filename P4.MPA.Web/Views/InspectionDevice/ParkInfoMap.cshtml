@@ -1,0 +1,269 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("ParkInfoMap");
+    ViewBag.ActiveMenu = "ParkInfoMap";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div id="l-map">
+</div>
+<div>
+    <div class="form-group">
+        <div class="col-sm-9" id="allmap" style="width:100%;height:100%;">
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+@*signalr-begin*@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="../signalr/hubs"></script>
+@*signalr-end*@
+<script type="text/javascript">
+    var XMap;
+    var YMap;
+    $.ajax({
+        type: "POST",
+        url: '../InspectionDevice/GetTenantX_Y',
+        success: function (data) {
+            XMap = data.X;
+            YMap = data.Y;
+        }, error: function () {
+
+        }
+    });
+    var map = new BMap.Map("allmap");
+    map.enableScrollWheelZoom();
+    map.enableInertialDragging();
+    map.enableContinuousZoom();
+
+
+    map.addControl(new BMap.NavigationControl());
+
+    var geolocation = new BMap.Geolocation();
+    geolocation.getCurrentPosition(function (r) {
+        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+            var size = new BMap.Size(10, 20);
+            map.addControl(new BMap.CityListControl({
+                anchor: BMAP_ANCHOR_TOP_RIGHT,
+                offset: size
+            }));
+
+            //map.centerAndZoom(r.point, 12);
+            map.centerAndZoom(new BMap.Point(XMap, YMap), 16);
+
+
+        }
+    }, { enableHighAccuracy: true });
+
+
+    function GetPercent(num, total) {
+        num = parseFloat(num);
+        total = parseFloat(total);
+        if (isNaN(num) || isNaN(total)) {
+            return "-";
+        }
+        return total <= 0 ? 0 : (Math.round(num / total * 10000) / 100.00);
+    }
+
+
+    $.ajax({
+        type: "POST",
+        url: '../InspectionDevice/GetAllParkInfoMap',
+        success: function (data) {
+            var X = "100.22367479";
+            var Y = "25.59689964";
+            //window.X = x;
+            //window.Y = y;
+
+            var geoc = new BMap.Geocoder();
+            var geolocation = new BMap.Geolocation();
+            var customLayer;
+            function addCustomLayer(keyword) {
+                if (customLayer) {
+                    map.removeTileLayer(customLayer);
+                }
+                customLayer = new BMap.CustomLayer({
+                    geotableId: 30960,
+                    q: '', //检索关键字
+                    tags: '', //空格分隔的多字符串
+                    filter: '' //过滤条件,参考http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
+                });
+                map.addTileLayer(customLayer);
+                customLayer.addEventListener('hotspotclick', callback);
+            }
+            var myIcongreen = new BMap.Icon("../assets/images/03.png", new BMap.Size(36, 36));  //绿色
+            var myIconyellow = new BMap.Icon("../assets/images/02.png", new BMap.Size(36, 36)); //黄色
+            var myIconred = new BMap.Icon("../assets/images/01.png", new BMap.Size(36, 36));    //红色
+            $.each(data, function (i, item) {
+                X = item.X;
+                Y = item.Y;
+                if (GetPercent(item.BerthOnTimeCount, item.BerthNotTimeCount) >= 80) {
+                    var mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIconred
+                    });
+                    map.addOverlay(mk);
+                    map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                    });
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                }
+                else if (GetPercent(item.BerthOnTimeCount, item.BerthNotTimeCount) >= 60)
+                {
+                    var mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIconyellow
+                    });
+                    map.addOverlay(mk);
+                    map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                    });
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                }
+                else {
+                    var mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIcongreen
+                    });
+                    map.addOverlay(mk);
+                    map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                    });
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                }
+            });
+        }, error: function () {
+
+        }
+    });
+
+
+
+
+    //百度地图自适应
+    $(document).ready(function () {
+        BaiDuMap();
+        $(".chosen-select").chosen();
+    });
+
+    $(window).resize(function () {
+        BaiDuMap();
+    });
+
+    function BaiDuMap() {
+        //alert('1223');
+        var winWidth = 0;  //1440
+        var winHeight = 0;   //417
+        //var bibi=
+        //获取窗口宽度
+        //if (window.innerWidth) {
+        //    winWidth = window.innerWidth;
+        a = window.innerWidth;
+        b = window.innerHeight;
+
+        //    a = document.body.clientHeight;
+        //    b = document.body.clientWidth;
+        //} else
+        if ((document.body) && (document.body.clientWidth)) {
+            //winWidth = document.body.clientWidth;
+        }
+        //alert('1223');
+        //获取窗口高度
+        //if (window.innerHeight) {
+        //    winHeight = window.innerHeight;
+        //} else
+        if ((document.body) && (document.body.clientHeight)) {
+            // winHeight = document.body.clientHeight;
+        }
+        //通过深入Document内部对body进行检测，获取窗口高度
+        if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth) {
+            winWidth = document.documentElement.clientWidth;
+            winHeight = document.documentElement.clientHeight;
+        }
+
+        var bibi = (parseInt(winHeight) * (650 / 805)).toString();
+        $("#allmap").css({ "height": parseInt(winHeight) * (650 / 805) });
+
+        //$("#allmap").attr("style","width:100%;height:"+bibi+"px");
+
+        //$("#div1).css({"height":parseInt(winHeight),"width":parseInt(winWidth)});
+    }
+
+    function showMessage(item) {
+        var opts = {
+            width: 260,     // 信息窗口宽度
+            height: 130,     // 信息窗口高度
+            title: "<span style='font-size:18px;font-weight:bold'>" + item.ParkName + "</span>", // 信息窗口标题
+            enableMessage: true,//设置允许信息窗发送短息
+            message: item.Address
+        }
+        var parkMessage = "泊位段总数：<span style=\"font-size:14px;\">" + item.BerthsecCount + " </span> <br/>" +
+                          "泊位总数：" + item.BerthCount + " <br/>在停泊位总数：" + item.BerthOnTimeCount + " <br/>未停泊位总数：" + item.BerthNotTimeCount + " <br/>泊位在停率：" + item.BerthOntimePercentage;
+        var infoWindow = new BMap.InfoWindow(parkMessage, opts);  // 创建信息窗口对象
+
+        return infoWindow;
+    }
+
+    $('#myButton').on('click', function () {
+        map.centerAndZoom($('#cityIdInput').val(), 11);
+    });
+</script>

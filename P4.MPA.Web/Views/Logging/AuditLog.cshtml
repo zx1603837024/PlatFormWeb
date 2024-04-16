@@ -1,0 +1,68 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("AuditLog");
+    ViewBag.ActiveMenu = "AuditLog";
+}
+
+
+<div class="alert alert-info">
+    <i class="icon-hand-right"></i>
+    审计日志记录系统操作耗时时长，耗时单位毫秒(1000毫秒=1秒)，大于5秒属于耗时请求
+    <button class="close" data-dismiss="alert">
+        <i class="icon-remove"></i>
+    </button>
+</div>
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+@section scriptsgrid
+{
+    jQuery(grid_selector).jqGrid({
+    url: '../Logging/GetAllAuditLog',
+    datatype: "json",
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: [ 'ID', '执行方法', '执行时间', '执行时长', '客户端IP', '浏览器信息'],
+    colModel: [
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true },
+    { name: 'MethodName', editable: false, search: true, index: 'MethodName', width: 300 },
+    { name: 'ExecutionTime', index: 'ExecutionTime', sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'ExecutionDuration', index: 'ExecutionDuration', editable: true, edittype:'textarea', formatter: TimeDanger },
+    { name: 'ClientIpAddress', editable: true, index: 'ClientIpAddress' },
+    { name: 'BrowserInfo', index: 'BrowserInfo', hidden: true }
+    ],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    multiselect: true,
+    pager: pager_selector,
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+
+}
+
+@section scriptsbuttonbyself{
+    function TimeDanger(cellvalue, options)
+    {
+    if(cellvalue > 5000)
+    return "<span class='badge badge-danger'>"+ cellvalue +"</span>";
+    else
+    return cellvalue;
+    }
+}

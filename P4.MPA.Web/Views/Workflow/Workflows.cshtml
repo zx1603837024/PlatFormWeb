@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = "工作流管理";
+    ViewBag.ActiveMenu = "WorkflowsManagement";
+}
+
+@section styles
+{
+    <link rel="stylesheet" type="text/css" href="~/assets/global/plugins/FlowDesign/js/flowdesign/flowdesign.css" />
+    <style>
+        .pagination ul {
+            display: inline-block;
+            *display: inline;
+            margin-bottom: 0;
+            margin-left: 0;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            *zoom: 1;
+            -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+}
+<div class="container mini-layout" id="flowdesign_canvas" style="background:#fff;">
+
+
+
+    <div class="row">
+        <p>
+            <a href="/demo/add.html" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 添加流程</a>
+        </p>
+
+        <table class="table table-hover">
+            <tr>
+                <th>ID</th>
+                <th>流程名称</th>
+                <th>表单</th>
+                <th>类型</th>
+                <th>适用部门</th>
+                <th>添加时间</th>
+                <th>操作</th>
+            </tr>
+            <tr>
+                <td>28</td>
+                <td><span title="23">1</span></td>
+                <td>桂丰大厦</td>
+                <td>固定流程</td>
+                <td>默认</td>
+                <td>2015/10/12 09:48</td>
+                <td>
+                    <a href="/run/add/flow_id/28.html" onclick="return confirm('你确定使用该流程发起一个工作流程吗？') ? true : false;" target="_blank" title="使用该流程发起工作"><span class="glyphicon glyphicon-eye-open"></span> 发起</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/run/index/flow_id/28.html" target="_blank"><span class="glyphicon glyphicon-eye-open"></span> 发起记录</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/flowdesign/index/flow_id/28.html" target="_blank"><span class="glyphicon glyphicon-new-window"></span> 设计流程</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/demo/edit/flow_id/28.html" target="_blank"><span class="glyphicon glyphicon-edit"></span> 编辑</a>
+                </td>
+            </tr>
+            <tr>
+                <td>27</td>
+                <td><span title="dfd">ffff</span></td>
+                <td>桂丰大厦</td>
+                <td>固定流程</td>
+                <td>默认</td>
+                <td>2015/10/12 08:38</td>
+                <td>
+                    <a href="/run/add/flow_id/27.html" onclick="return confirm('你确定使用该流程发起一个工作流程吗？') ? true : false;" target="_blank" title="使用该流程发起工作"><span class="glyphicon glyphicon-eye-open"></span> 发起</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/run/index/flow_id/27.html" target="_blank"><span class="glyphicon glyphicon-eye-open"></span> 发起记录</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/flowdesign/index/flow_id/27.html" target="_blank"><span class="glyphicon glyphicon-new-window"></span> 设计流程</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/demo/edit/flow_id/27.html" target="_blank"><span class="glyphicon glyphicon-edit"></span> 编辑</a>
+                </td>
+            </tr>
+            <tr>
+                <td>26</td>
+                <td><span title="12">1</span></td>
+                <td>员工登记</td>
+                <td>固定流程</td>
+                <td>默认</td>
+                <td>2015/10/11 03:53</td>
+                <td>
+                    <a href="/run/add/flow_id/26.html" onclick="return confirm('你确定使用该流程发起一个工作流程吗？') ? true : false;" target="_blank" title="使用该流程发起工作"><span class="glyphicon glyphicon-eye-open"></span> 发起</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/run/index/flow_id/26.html" target="_blank"><span class="glyphicon glyphicon-eye-open"></span> 发起记录</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/flowdesign/index/flow_id/26.html" target="_blank"><span class="glyphicon glyphicon-new-window"></span> 设计流程</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/demo/edit/flow_id/26.html" target="_blank"><span class="glyphicon glyphicon-edit"></span> 编辑</a>
+                </td>
+            </tr>
+            <tr>
+                <td>25</td>
+                <td><span title="">fasfdas</span></td>
+                <td>员工登记</td>
+                <td>固定流程</td>
+                <td>默认</td>
+                <td>2015/10/10 22:18</td>
+                <td>
+                    <a href="/run/add/flow_id/25.html" onclick="return confirm('你确定使用该流程发起一个工作流程吗？') ? true : false;" target="_blank" title="使用该流程发起工作"><span class="glyphicon glyphicon-eye-open"></span> 发起</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/run/index/flow_id/25.html" target="_blank"><span class="glyphicon glyphicon-eye-open"></span> 发起记录</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/flowdesign/index/flow_id/25.html" target="_blank"><span class="glyphicon glyphicon-new-window"></span> 设计流程</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/demo/edit/flow_id/25.html" target="_blank"><span class="glyphicon glyphicon-edit"></span> 编辑</a>
+                </td>
+            </tr>
+            <tr>
+                <td>24</td>
+                <td><span title="234324">234324</span></td>
+                <td>RRR</td>
+                <td>固定流程</td>
+                <td>默认</td>
+                <td>2015/10/10 19:30</td>
+                <td>
+                    <a href="/run/add/flow_id/24.html" onclick="return confirm('你确定使用该流程发起一个工作流程吗？') ? true : false;" target="_blank" title="使用该流程发起工作">
+                        <span class="glyphicon glyphicon-eye-open"></span> 发起
+                    </a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/run/index/flow_id/24.html" target="_blank">
+                        <span class="glyphicon glyphicon-eye-open"></span> 发起记录
+                    </a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="design()" target="_blank">
+                        <span class="glyphicon glyphicon-new-window"></span> 设计流程
+                    </a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="FlowDesign" target="_blank">
+                        <span class="glyphicon glyphicon-edit"></span> 编辑
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <div class="pagination pull-right"><ul>      <li class='active'><span>1</span></li><li><a href='/Demo/index/p/2.html'>2</a></li><li><a href='/Demo/index/p/3.html'>3</a></li><li><a href='/Demo/index/p/4.html'>4</a></li><li><a href='/Demo/index/p/5.html'>5</a></li><li><a href='/Demo/index/p/6.html'>6</a></li> <li><a href='/Demo/index/p/2.html'>下一页</a></li>   </ul></div>
+    </div><!--end row-->
+
+</div> <!-- /container -->
+
+<script type="text/javascript">
+
+    function design() {
+        $.ajax({
+            type: "Post",
+            url: '/Workflow/ResetPassword',
+           
+            success: function (data) {
+             
+            }, error: function () {
+
+            }
+        });
+    }
+</script>

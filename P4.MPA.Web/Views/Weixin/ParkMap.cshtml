@@ -1,0 +1,100 @@
+﻿@using P4.Web.Models.Weixin
+@model WeixinModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+    <title>地图展示</title>
+</head>
+<body>
+    <div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");
+	var point = new BMap.Point(116.331398,39.897445);
+	map.centerAndZoom(point, 12);
+	map.enableScrollWheelZoom();                 //启用滚轮放大缩小
+
+
+	var opts = {
+	    width: 330,             // 信息窗口宽度
+	    height: 120,            // 信息窗口高度
+	    title: "XX停车场(19/30)",      // 信息窗口标题
+	    enableMessage: true
+	}
+
+	
+	var geolocation = new BMap.Geolocation();
+
+	var myIcon = new BMap.Icon("../assets/images/ic_page_indicator_focused_green.png", new BMap.Size(9, 9));
+
+	var mapIcon = new BMap.Icon("../assets/images/ic_marker_nomal_green_clicked.png", new BMap.Size(36, 36));
+
+	function addMarker(point) {
+	    var marker = new BMap.Marker(point, { icon: mapIcon });
+	    map.addOverlay(marker);
+	    marker.addEventListener("click", function () {
+
+	        var content = "<table border='1'><tr><td bgcolor='#ea5a5a'>10001</td><td bgcolor='#4bb373'>10002</td><td bgcolor='#4bb373'>10003</td><td bgcolor='#ea5a5a'>10004</td><td bgcolor='#4bb373'>10005</td><td bgcolor='#4bb373'>10006</td></tr></table>" +
+        "<center><a href='bdapp://map/geocoder?location=" + point.lat + "," + point.lng + "'><img src='../assets/images/ic_map_navi.png' width='15px' height='15px' />&nbsp;到这里</a></center><table border='1'><tr><td bgcolor='#4bb373'>10007</td><td bgcolor='#ea5a5a'>10008</td><td bgcolor='#4bb373'>10009</td><td bgcolor='#4bb373'>10010</td><td bgcolor='#4bb373'>10011</td><td bgcolor='#ea5a5a'>10012</td></tr></table>";
+
+	        var infoWindow = new BMap.InfoWindow(content, opts);
+
+
+	        map.openInfoWindow(infoWindow, point); //开启信息窗口
+	    });
+	}
+
+	geolocation.getCurrentPosition(function (r) {
+	    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+	        var mk = new BMap.Marker(r.point, { icon: myIcon });
+	        map.addOverlay(mk);
+	        map.panTo(r.point);
+	        point = r.point;
+            var bounds = map.getBounds();
+	        var sw = bounds.getSouthWest();
+	        var ne = bounds.getNorthEast();
+	        var lngSpan = Math.abs(sw.lng - ne.lng);
+	        var latSpan = Math.abs(ne.lat - sw.lat);
+	        for (var i = 0; i < 25; i++) {
+	            var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
+	            addMarker(point);
+	        }
+	    }
+	    else {
+	        alert('failed' + this.getStatus());
+	    }
+	}, { enableHighAccuracy: true });
+
+	
+	// 随机向地图添加25个标注
+	
+
+	//关于状态码
+	//BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
+	//BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
+	//BMAP_STATUS_UNKNOWN_LOCATION	位置结果未知。对应数值“2”。
+	//BMAP_STATUS_UNKNOWN_ROUTE	导航结果未知。对应数值“3”。
+	//BMAP_STATUS_INVALID_KEY	非法密钥。对应数值“4”。
+	//BMAP_STATUS_INVALID_REQUEST	非法请求。对应数值“5”。
+	//BMAP_STATUS_PERMISSION_DENIED	没有权限。对应数值“6”。(自 1.1 新增)
+	//BMAP_STATUS_SERVICE_UNAVAILABLE	服务不可用。对应数值“7”。(自 1.1 新增)
+	//BMAP_STATUS_TIMEOUT	超时。对应数值“8”。(自 1.1 新增)
+</script>

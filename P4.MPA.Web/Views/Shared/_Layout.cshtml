@@ -1,0 +1,163 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - 互联网设备数据管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- basic styles -->
+    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css" />
+
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="../../assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!-- page specific plugin styles -->
+    <!-- fonts -->
+
+    <link rel="stylesheet" href="~/assets/css/jquery-ui-1.10.3.full.min.css" />
+
+    <link rel="stylesheet" href="~/assets/font/fontawesome-webfont.woff" />
+
+    <link rel="stylesheet" href="~/assets/css/datepicker.css" />
+    <link href="~/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+
+    <!--<link rel="stylesheet" href="https://fonts.css.network/css?family=Open+Sans:400,300" />-->
+    <!-- ace styles -->
+    @RenderSection("styles", required: false)
+
+    <link rel="stylesheet" href="../../assets/css/ace.min.css" />
+    <link rel="stylesheet" href="../../assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="../../assets/css/ace-skins.min.css" />
+
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="../../assets/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+    <style type="text/css">
+        .main-content {
+            margin-left: 0;
+        }
+    </style>
+
+    <script src="../../assets/js/ace-extra.min.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="../../assets/js/html5shiv.js"></script>
+    <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="../../assets/js/jquery-2.0.3.min.js"></script>
+
+    @*右下角提示栏-begin*@
+    <script src="~/assets/global/plugins/bootstrap-toastr/toastr.js" type="text/javascript"></script>
+    <script src="~/assets/global/plugins/bootstrap-toastr/p4.toastr.js" type="text/javascript"></script>
+    <link href="~/assets/global/plugins/bootstrap-toastr/toastr.css" rel="stylesheet" />
+    @*右下角提示栏-end*@
+
+    @*提示框-begin*@
+    <script src="~/assets/global/plugins/jquery-sweetalert/sweetalert-dev.js"></script>
+    <link rel="stylesheet" href="~/assets/global/plugins/jquery-sweetalert/sweetalert.css" />
+    @*提示框-end*@
+</head>
+<body>
+
+    <div class="main-container" id="main-container">
+        <div class="main-container-inner">
+            <div class="main-content">
+                <div class="breadcrumbs" id="breadcrumbs">
+                    <script type="text/javascript">
+                        try { ace.settings.check('breadcrumbs', 'fixed') } catch (e) { }
+                    </script>
+                    @Html.Action("Active", "Layout", new { activeMenu = ViewBag.ActiveMenu })
+                    <div class="nav-search" id="nav-search">
+                        <form class="form-search">
+                            <span class="input-icon">
+                                <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                                <i class="icon-search nav-search-icon"></i>
+                            </span>
+                        </form>
+                    </div><!-- 导航搜索栏 -->
+                </div>
+
+
+                <div class="page-content">
+                    @*<div class="page-header">
+                        <h1>
+                            @L(ViewBag.ActiveMenu)
+                            <small>
+                                <i class="icon-double-angle-right"></i>
+                                @L(ViewBag.ActiveMenu) 
+                            </small>
+                        </h1>
+                    </div>*@<!-- /.页面-头部功能说明 -->
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!-- PAGE CONTENT BEGINS -->
+                            @*<div class="alert alert-info">
+                                <i class="icon-hand-right"></i>
+
+                                单次提醒功能
+                                <button class="close" data-dismiss="alert">
+                                    <i class="icon-remove"></i>
+                                </button>
+                            </div>*@
+                            @RenderBody()
+                            <!-- PAGE CONTENT ENDS -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.page-content -->
+
+
+            </div><!-- /内容数据 -->
+        </div><!-- /.main-container-inner -->
+
+    </div><!-- /.main-container -->
+    <!-- basic scripts -->
+    <!--[if !IE]> -->
+
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='../../assets/js/jquery-2.0.3.min.js'>" + "<" + "script>");
+    </script>
+    @Html.Action("ProfileSetting", "Layout")
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+     window.jQuery || document.write("<script src='../../assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+    </script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='../../assets/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+    </script>
+
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" charset="gb2312"></script>
+    <script src="~/assets/js/typeahead-bs2.min.js"></script>
+
+    <!-- page specific plugin scripts -->
+    <!--[if lte IE 8]>
+      <script src="../../assets/js/excanvas.min.js"></script>
+    <![endif]-->
+    @RenderSection("scriptsindex", required: false)
+
+    <!-- ace scripts -->
+
+    <script src="../../assets/js/ace-elements.min.js"></script>
+    <script src="../../assets/js/ace.min.js"></script>
+
+
+    @Html.Action("Signalr", "Layout")
+
+    <!-- inline scripts related to this page(grid) -->
+    @RenderSection("scripts", required: false)
+
+
+    
+
+    <div style="display:none">
+    </div>
+</body>
+</html>

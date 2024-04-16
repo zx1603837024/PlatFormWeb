@@ -1,0 +1,561 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("EmployeeDailyReportBalance");
+    ViewBag.ActiveMenu = "EmployeeDailyReportBalance";
+}
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td width="80px"><label for="id-date-picker-1">查询日期：</label></td>
+            <td width="190px">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;&nbsp;</td>
+            <td width="190px">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td width="80px">收费员：</td>
+            <td width="200px">
+                <select style="width:150px" class="ls-wp-fullwidth-container chosen-select" id="employeeIdInput" name="employeeIdInput" data-placeholder="选择停车场名称...">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.EmployeeList)
+                    {
+                        <option value="@entity.Id">@(entity.TrueName + "(" + entity.UserName + ")")</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: center;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            <td colspan="2" style="text-align: center;">
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出
+                </button>
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            <td width="200px"></td>
+            @*<td>
+                    <div id="mySwitch" class="switch has-switch" data-on-label="图形" data-off-label="列表" style="float:right">
+                        <input checked="" type="checkbox">
+                    </div>
+                </td>*@
+        </tr>
+    </table>
+</div>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<!--平账 Modal -->
+<div class="modal fade" id="Field1Modal" tabindex="-1" role="dialog" aria-labelledby="Field1Label" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:800px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="Field1Label">平账功能</h4>
+            </div>
+            <div class="modal-body">
+                <div class="content_wrap">
+                    <form class="form-horizontal" role="form" id="feeFrom">
+                        <span style="font-size:16px;color:red;">说明：平账金额就是总输入(应收)和实收金额之间的差额。</span>
+                        <div class="panel panel-default" style="margin-top:10px;">
+                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                 href="#collapseOne">
+                                <h4 class="panel-title">
+                                    <a>  基本信息  </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse in">
+                                <div class="panel-body">
+
+                                    <table>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>收费员工号：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <span id="lblUserName" style="font-size:24px;"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>收费员：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <span id="lblChargeOperaName" style="font-size:24px;"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>泊位段：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <select class="ls-wp-fullwidth-container chosen-select1" id="BerthsecIdInput" name="BerthsecIdInput" data-placeholder="选择泊位段名称..."></select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>车牌号：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <span id="RelateNumber" style="font-size:24px;">无xxxxxx</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>总收入(应收)=(收入+补缴+开户/充值)：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <span id="lblSumIncomePlusBack" style="font-size:24px;"></span>(元)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>实收金额：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <input type="text" id="lblActualMoney" style="font-size:24px;" onkeyup="onlyNumber(this)">(元)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="col-md-6">
+                                                <span>平账金额：</span>
+                                            </td>
+                                            <td class="col-md-6">
+                                                <span id="lblAverageAccount" style="font-size:24px;color:red;"></span>(元)
+                                            </td>
+                                        </tr>
+                                    </table><p></p>
+                                    <span style="font-size:24px;color:red;">警告：平账操作有风险，由此产生的平账业务数据后果自己承担。</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="Field1Action()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scriptsgrid
+{
+    function PicFormatter(cellvalue, options, rowdata) {
+    return '<a href="../Business/ShowImage/'+ rowdata.Id  +'" target="_blank" id="colorbox"><img src="../Business/ShowImage/'+ rowdata.Id  +'" id="img' + rowdata.Id + '" style="width:50px;height:50px;" /></a>';
+    }
+
+    jQuery(grid_selector).jqGrid({
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: '../EmployeeCharges/JqGridData',
+    datatype: "json",
+    async: true, //同步执行
+    mtype: "post",
+    loadError: function(xhr,status,error){ alert(status + " loading data of " + $(this).attr("id") + " : " + error ); },
+    shrinkToFit:false,
+    autowidth: true,
+    height: 'auto',
+    colNames: ['收费员工号', '收费员', '实收总计', '现金收入', '账号收入', '欠费总和', '应收总和', '在线支付', '开户/充值','进场车辆','出场车辆', '现金补缴', '账号补缴', '在线补缴', '总收入(收入+补缴+开户/充值)', '实收率', '总实收率'],
+    colModel: [
+    { name: 'UserName', index: 'UserName', key: true,width:85 },
+    { name: 'ChargeOperaName', index: 'ChargeOperaName',width:95 },
+    { name: 'SumFactReceive', index: 'SumFactReceive',formatter: 'number',width:85 },
+    { name: 'XJSumFactReceive', index: 'XJSumFactReceive',formatter: 'number',width:85 },
+    { name: 'SKSumFactReceive', index: 'SKSumFactReceive' ,formatter: 'number',width:85 },
+    { name: 'SumArrearage', index: 'SumArrearage',formatter: 'number',width:85  },
+    { name: 'SumMoney', index: 'SumMoney' ,formatter: 'number', width:85 },
+    { name: 'WxSumFactReceive', index: 'WxSumFactReceive' ,formatter: 'number', width:85 },
+
+    { name: 'CardMoney', index: 'CardMoney' ,formatter: 'number', width:85 },
+
+    { name: 'CarInCount', index: 'CarInCount' ,formatter: 'data', width:90 },
+    { name: 'CarOutCount', index: 'CarOutCount' ,formatter: 'data', width:90},
+
+    { name: 'XJSumRepayment', index: 'XJSumRepayment',formatter: 'number',width:85 },
+    { name: 'SKSumRepayment', index: 'SKSumRepayment',formatter: 'number',width:85 },
+
+    { name: 'WXSumRepayment', index: 'WXSumRepayment',formatter: 'number',width:85 },
+
+    { name: 'SumIncomePlusBack', index: 'SumIncomePlusBack',formatter: 'number',key: false,width:195 },
+    { name: 'Yield', index: 'Yield',width:85 },
+    { name: 'AllYield', index: 'AllYield',width:85 }
+    ],aggregates : [{
+    member : 'Price',
+    aggregator : 'sum',
+    width:80,
+    formatter:'number',
+    align:'right',
+    summaryType: 'sum'
+    }],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    sortname: 'Id',
+    loadonce:false,
+    jsonReader: {
+    repeatitems: false
+    },
+    toppager: false,
+    multiselect: true,
+    //autowidth: false,
+    //shrinkToFit:false,
+    userDataOnFooter : true,//汇总
+    footerrow:true,//汇总
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                                + "' class='scroll'></table><div id='"
+                                + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: "../EmployeeCharges/EmployeeChargesDetail?operateDateEnd="+$('#operateDateEnd').val()+"&operateDateBegin=" + $('#operateDateBegin').val() + "&employeeIdInput=" + row_id,
+    datatype: "json",
+    colNames: [ '收费员', '日期',  '实收总计', '现金收入', '账号收入', '欠费总和', '应收总和', '在线支付', '开户/充值','进场车辆','出场车辆', '现金补缴', '账号补缴', '在线补缴', '总收入(现金收入+现金补缴+开户/充值)'],
+    colModel: [
+    { name: 'ChargeOperaName', index: 'ChargeOperaName',width:83 },
+    { name: 'Date', index: 'Date',width:85 },
+    { name: 'SumFactReceive', index: 'SumFactReceive',formatter: 'number',width:85 },
+    { name: 'XJSumFactReceive', index: 'XJSumFactReceive',formatter: 'number',width:85 },
+    { name: 'SKSumFactReceive', index: 'SKSumFactReceive' ,formatter: 'number',width:85 },
+    { name: 'SumArrearage', index: 'SumArrearage',formatter: 'number',width:85  },
+    { name: 'SumMoney', index: 'SumMoney' ,formatter: 'number', width:85 },
+    { name: 'WxSumFactReceive', index: 'WxSumFactReceive' ,formatter: 'number', width:85 },
+
+    { name: 'CardMoney', index: 'CardMoney' ,formatter: 'number', width:85 },
+    { name: 'CarInCount', index: 'CarInCount' ,formatter: 'data', width:90 },
+    { name: 'CarOutCount', index: 'CarOutCount' ,formatter: 'data', width:90},
+
+    { name: 'XJSumRepayment', index: 'XJSumRepayment',formatter: 'number',width:85 },
+    { name: 'SKSumRepayment', index: 'SKSumRepayment',formatter: 'number',width:85 },
+    { name: 'WXSumRepayment', index: 'WXSumRepayment',formatter: 'number',width:85 },
+    { name: 'SumIncomePlusBack', index: 'SumIncomePlusBack',formatter: 'number',width:195 }
+    ],
+    sortname: 'Id',
+    rowNum : 50,
+    sortorder: "asc",
+    height: 'auto'
+    });
+    },
+    pager: pager_selector,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    grouping:false,
+    groupingView : {
+    groupField : ['UserName'],
+    groupSummary : [true],
+    groupColumnShow : [false],
+    groupText : ['<b>{0}</b>'],
+    groupCollapse : false,
+    groupOrder: ['asc']
+    },
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    afterCompleteFunction();
+    }
+    @*gridComplete: function()
+        {
+            afterCompleteFunction();
+        }*@
+    });
+
+    function afterCompleteFunction()
+    {
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    var rowDatas = $(grid_selector).jqGrid("getRowData");
+    for(var i =0;  rowDatas.length > i ;i++)
+    {
+    var q=parseFloat(rowDatas[i].Receivable) + parseFloat(rowDatas[i].Prepaid);
+    if(parseFloat(rowDatas[i].Receivable) + parseFloat(rowDatas[i].Prepaid) == 0){
+
+    $("td[title$='"+rowDatas[i].Id+"']").find("td").addClass("SelectBG");
+    }
+    }
+    }
+    @*$( "#grid-table" ).closest(".ui-jqgrid-bdiv").css({ 'overflow-x' : 'hidden' });*@
+}
+
+@section scriptsbuttonbyself{
+    if(window.field1){
+    @*平账*@
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "平账",
+    caption: "平账",
+    position: "last",
+    onClickButton: function () {
+
+    var ids = jQuery(grid_selector).jqGrid('getGridParam', 'selarrrow');
+    if (ids.length > 1)
+    {
+    swal("", "一次只能选择一个收费员平账...", "info");
+    }
+    else if (ids.length != 0)
+    {
+    //直接获取页面上gridview选中的数据行的数据
+    var rowKey =jQuery(grid_selector).jqGrid('getGridParam', "selrow");
+    var rowData = jQuery(grid_selector).jqGrid("getRowData", rowKey);//根据上面的rowKey获得本行的所有数据
+    var time = rowData.ChargeOperaName; //获得制定列的值 （ReservationTime为colModel的name）
+
+    $("#lblUserName").html(rowData.UserName);//收费员工号
+    $("#lblChargeOperaName").html(rowData.ChargeOperaName);//收费员
+    $("#lblSumIncomePlusBack").html(rowData.SumIncomePlusBack);//总收入
+
+    $.ajax({
+    type: "Post",
+    url: "../AdvancedFeaturesManager/getBerthsecAllListByEmpId",
+    data: {
+    EmployeeId: rowData.UserName,
+    },
+    success: function (data) {
+    @*生成泊位段下拉框列表*@
+    var group = $("#BerthsecIdInput");
+    group.empty();
+    $.each(data, function(key, value) {
+    group.append("<option value='"+value.Id+"'>"+value.BerthsecName+"</option>");
+    });
+    $('.chosen-select1').chosen();
+    $('#BerthsecIdInput_chosen').css('width', '92%');
+    $("#Field1Modal").modal('show');
+    }
+    });
+    }
+    else
+    {
+    swal("", "请选择收费员...", "info");
+    }
+    }
+    });
+    }
+
+}
+
+<script type="text/javascript">
+    //限制金额输入框输入的是金额并且只保留两位小数点，多余小数位自动截取舍掉
+    function onlyNumber(obj) {
+
+        //得到第一个字符是否为负号    
+        var t = obj.value.charAt(0);
+        //先把非数字的都替换掉，除了数字和.  
+        obj.value = obj.value.replace(/[^\d\.]/g, '');
+        //前两位不能是0加数字      
+        obj.value = obj.value.replace(/^0\d[0-9]*/g, '');
+        //必须保证第一个为数字而不是.       
+        obj.value = obj.value.replace(/^\./g, '');
+        //保证只有出现一个.而没有多个.       
+        obj.value = obj.value.replace(/\.{2,}/g, '.');
+        //保证.只出现一次，而不能出现两次以上       
+        obj.value = obj.value.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+        //如果第一位是负号，则允许添加    
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3');
+        //替换掉 0.0、0.00
+        if (obj.value == "0" || obj.value == "0." || obj.value == "0.0" || obj.value == "0.00") {
+            obj.value = "";
+        }
+        ////必须保证实收金额<应收总额
+        //if ($("#lblActualMoney").text() > $("#lblSumIncomePlusBack").val()) {
+        //    obj.value = "";
+        //    swal("", "实收金额<应收总额！", "error");
+        //}
+        //计算平账金额
+        $("#lblAverageAccount").text(CalFlatAccountModel($("#lblSumIncomePlusBack").text(), $("#lblActualMoney").val()));
+
+        if (t == '-') { return; }
+
+
+    }
+
+    //自动计算平账金额
+    function CalFlatAccountModel(SumIncomePlusBack, ActualMoney) {
+        var AverageAccount = "";//平账金额
+        $("#lblAverageAccount").val(AverageAccount);//清空重新计算
+        if (!isNaN(SumIncomePlusBack) && !isNaN(ActualMoney) && ActualMoney != "") {
+            AverageAccount = ActualMoney - SumIncomePlusBack;
+
+            //四舍五入2位小数
+            AverageAccount = decimal(AverageAccount, 2);
+        }
+
+        return AverageAccount;
+    }
+    //对多位小数进行四舍五入
+    //num是要处理的数字  v为要保留的小数位数
+    function decimal(num, v) {
+        var vv = Math.pow(10, v);
+        return Math.round(num * vv) / vv;
+    }
+
+    //平账
+    function Field1Action() {
+        var AverageAccount = $("#lblAverageAccount").text();
+        if (AverageAccount.length == 0) {
+            swal("", "平账金额必须填写！", "error");
+        }
+        else if (AverageAccount == 0) {
+            swal("", "平账金额必须大于0(元)", "error");
+        }
+        else if (AverageAccount.length > 0) {
+            swal({
+                title: "平账后不可撤回，请确认平账金额 (" + AverageAccount + "元)?", type: "warning", showCancelButton: true,
+                cancelButtonText: "取消", confirmButtonColor: "#DD6B55", confirmButtonText: "确定", closeOnConfirm: true
+            }, function () {
+                $.ajax({
+                    type: "Post",
+                    url: "../AdvancedFeaturesManager/FlatAccount",
+                    data: {
+                        BerthsecId: $('#BerthsecIdInput').val(),//泊位段编号
+                        InOperaId: $("#lblUserName").html(),//收费员工号
+                        PayStatus: 1,//表示支付状态已支付
+                        AverageAccount: AverageAccount,//平账金额
+                        operateDateBegin: $('#operateDateBegin').val(),
+                        operateDateEnd: $('#operateDateEnd').val(),
+                        begindt: $('#operateDateBegin').val(),
+                        enddt: $('#operateDateEnd').val(),
+                    },
+                    success: function (data) {
+                        if (data.Success == false) {
+                            swal("", data.Error.Message, "error");
+                        } else {
+                            swal("", "平账成功！", "success");
+                            $("#grid-table").trigger("reloadGrid");
+                            $('#Field1Modal').modal('hide');
+                            $("#lblActualMoney").val("");//清空实收金额
+                            $("#lblAverageAccount").text("");//清空平账金额
+                            Saveoper = "";
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+        $('.chosen-select').chosen();
+        //$('#employeeIdInput_chosen').css('width', '150px');
+
+        //--------------------------------------------------------------------------------
+
+
+        $('#myButton').on('click', function () {
+
+            jQuery('#grid-table').jqGrid('setGridParam', {
+                //escape()---中文转码
+                // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+                url: '../EmployeeCharges/JqGridData',
+                datatype: 'json',
+                postData:
+                {
+                    'operateDateBegin': $('#operateDateBegin').val(),
+                    'operateDateEnd': $('#operateDateEnd').val(),
+                    'employeeIdInput': $('#employeeIdInput').val()
+                },
+                page: 1
+            }).trigger('reloadGrid');
+            //jQuery('#grid-table').jqGrid('setCaption', "操作权限").trigger('reloadGrid');
+        });
+
+        $('#exportButton').on('click', function () {
+            var count = $('#grid-table').jqGrid("getRowData").length;
+            //$('#grid-table').jqGrid('setGridWidth', $(".page-content").width());
+            if (count > 0) {
+                var operateDateBegin = $('#operateDateBegin').val();
+                var operateDateEnd = $('#operateDateEnd').val();
+                var employeeIdInput = $('#employeeIdInput').val();
+                window.location.href = "../StaticReport/ExportEmployeeReport?operateDateBegin=" + operateDateBegin + "&operateDateEnd=" + operateDateEnd + "&employeeIdInput=" + employeeIdInput;
+            }
+            else {
+                NotifyWarn('报表暂无数据！');
+            }
+        });
+
+
+        //--------------------------------------------------------------------------------
+    });
+</script>

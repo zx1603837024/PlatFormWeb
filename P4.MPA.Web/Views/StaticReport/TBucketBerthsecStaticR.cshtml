@@ -1,0 +1,378 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("TBucketBerthsecStaticR");
+    ViewBag.ActiveMenu = "TBucketBerthsecStaticR";
+}
+@model P4.Web.Models.BerthsecModel
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td><label for="id-date-picker-1">查询日期：</label></td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;&nbsp;</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+            <td>泊位段名称：</td>
+
+            <td width="300px">
+                <select class="ls-wp-fullwidth-container chosen-select" id="BerthsecIdInput" name="BerthsecIdInput" data-placeholder="选择泊位段名称...">
+                    @foreach (var entity in Model.BerthsecList)
+                    {
+                        <option value="@entity.Id">@entity.BerthsecName</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+
+
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出
+                </button>
+
+
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+@*<table id="grid-table"></table>
+    <div id="grid-pager"></div>*@
+<div id="jqgridDiv">
+
+    <table id="grid-table"></table>
+    <div id="grid-pager"></div>
+</div>
+<div id="echarDiv" style="height: 410px;">
+
+</div>
+
+
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript">
+    $('#myButton').on('click', function () {
+
+        GetAjaxChartData();//更改线性数据
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            url: '../StaticReport/TBucketBerthsecJqGridData',
+            datatype: 'json',
+            postData:
+            {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'BerthsecIdInput': $('#BerthsecIdInput').val()
+            },
+            page: 1
+        }).trigger('reloadGrid');
+        //jQuery('#grid-table').jqGrid('setCaption', "操作权限").trigger('reloadGrid');
+    });
+    $('#exportButton').on('click', function () {
+
+        var count = $('#grid-table').jqGrid("getRowData").length;
+        if (count > 0) {
+            var operateDateBegin = $('#operateDateBegin').val();
+            var BerthsecIdInput = $('#BerthsecIdInput').val();
+            window.location.href = "../StaticReport/ExportTBucketBertsecStaticR?operateDateBegin=" + operateDateBegin + "&BerthsecIdInput=" + BerthsecIdInput;
+        }
+        else {
+            NotifyWarn('报表暂无数据！');
+        }
+    });
+</script>
+
+
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/chart/line.js"></script>
+
+
+<script type="text/javascript">
+    //定义图表options
+    var options = {
+        title: {
+            text: "时间段泊位段报表曲线图",
+            subtext: "实收/未收/现金/账号/应收"
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            x: 'center',
+            //垂直安放位置，默认为全图顶端，可选为：'top' | 'bottom' | 'center' | {number}（y坐标，单位px）
+            y: 'top',
+            data: ["预付", "应收", "实收", "欠费", "现金", "账号"]
+
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                dataView: { show: true, readOnly: false },
+                magicType: { show: true, type: ['line', 'bar'] },
+                restore: { show: true },
+                saveAsImage: { show: true }
+            }
+
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                data: ['0', '0', '0']
+                //data: []
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} '
+                }
+
+                //splitArea: { show: true }
+            }
+        ],
+        series: [{
+            name: '预付',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '应收',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '实收',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '欠费',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '现金',
+            type: 'bar',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '账号',
+            type: 'bar',
+            data: [0, 0, 0]
+            //data: []
+        }]
+    };
+    var myChart;
+
+
+    // Step:4 require echarts and use it in the callback.
+    // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+    require.config({
+        paths: {
+            echarts: '~/assets/js/Echarts/dist'
+        }
+    });
+    require(
+        [
+            'echarts',
+            'echarts/chart/line' //按需加载图表关于线性图、折线图的部分
+        ],
+        //DrawEChart //异步加载的回调函数绘制图表
+        function (ec) {
+            myChart = ec.init(document.getElementById('echarDiv'));
+            //选择一个空图表
+            myChart.setOption(options);
+            GetAjaxChartData();
+        }
+    );
+
+    //var myChart;
+
+
+
+    ///点击按钮获取图表数据采用ajax方式
+    function GetAjaxChartData() {
+
+        //获得图表的options对象
+        //var options = window.myChart.getOption();
+        //图表显示提示信息
+        myChart.showLoading({
+            text: "图表数据正在努力加载..."
+        });
+        //通过Ajax获取数据
+        $.ajax({
+            type: "post",
+            async: false, //同步执行
+            url: '/StaticReport/TBucketBerthsecEcharData',
+            data: {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'BerthsecIdInput': $('#BerthsecIdInput').val(),
+                'rows': 20,
+                'page': 1
+            },
+            // data: { operatedatebegin: $('#operateDateBegin').datebox('getValue'), operatedateend: $('#operateDateEnd').datebox('getValue') },
+            //  url: "EmployeeMoneyLine.aspx?type=getData&operateDateBegin=2015/6/30",
+            dataType: "json", //返回数据形式为json
+            success: function (result) {
+                //if(result.series!=null)
+                //{
+                //    for(int i=0;i<result.series.length;i++)
+                //    {
+
+                //    }
+                //}
+                if (result) {
+                    //将返回的category和series对象赋值给options对象内的category和series
+                    //因为xAxis是一个数组 这里需要是xAxis[i]的形式
+
+                    options.xAxis[0].data = result.category;
+                    options.series = result.series;
+                    options.legend.data = result.legend;
+                    myChart.hideLoading();
+                    myChart.setOption(options, true);
+                }
+            },
+            error: function (errorMsg) {
+                console.log(errorMsg);
+                alert("不好意思，图表请求数据失败啦!");
+            }
+
+        });
+    }
+</script>
+
+
+@section scriptsgrid
+{
+    jQuery(grid_selector).jqGrid({
+    //direction: "rtl",
+    //data: grid_data,
+    //datatype: "local",
+    url: '../StaticReport/TBucketBerthsecJqGridData',
+    datatype: "json",
+    mtype: "post",
+    height: 400,
+    //height: 'auto',
+    colNames: ['泊位段','停车时间段','停车时长','预付','应收', '实收','现金收入','刷卡收入','欠费'],
+    colModel: [
+    { name: 'BerthsecName', index: 'BerthsecName' },
+    { name: 'Time', index: 'Time' },
+    { name: 'StopTime', index: 'StopTime' },
+    { name: 'Prepaid', index: 'Prepaid' },
+    { name: 'Receivable', index: 'Receivable' },
+    { name: 'FactReceive', index: 'FactReceive' },
+    { name: 'Cash', index: 'Cash' },
+    { name: 'ByCard', index: 'ByCard' },
+    { name: 'Arrearage', index: 'Arrearage' }
+    ],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    @*altRows: true,*@
+    sortname: 'Id',
+    sortorder: 'desc',
+    multiselect: true,
+    multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    },
+    loadComplete: function(){
+
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('报表暂无数据！');
+    },
+    caption: "@ViewBag.Title",
+    autowidth: true
+    });
+}
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('#echarDiv').css('display', 'block');
+        $('#jqgridDiv').css('display', 'block');
+
+        $('.date-picker').datepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        $('.chosen-select').chosen();
+        $('#employeeIdInput_chosen').css('width', '150px');
+    });
+</script>

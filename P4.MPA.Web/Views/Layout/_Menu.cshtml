@@ -1,0 +1,65 @@
+﻿@using Abp.Collections.Extensions
+@model P4.Web.Models.Layout.TopMenuViewModel
+<ul class="nav nav-list">
+    @{
+        foreach (var menu in Model.MainMenu.Items)
+        {
+            if (!menu.MenuType.Contains(Model.MenuType))
+            {
+                continue;
+            }
+            <li data-title="@L(menu.Name)" class="@((Model.ActiveMenuItemName == menu.Name ? "active" : "") + (Model.ActiveMenuItem.Discriminator.Contains(menu.Name) == true ? "active open" : ""))">
+                <a href="@menu.Url" class="@(menu.Items.IsNullOrEmpty() == false ? "dropdown-toggle" : "")">
+                    <i class="@menu.Icon"></i>
+                    <span class="menu-text"> @L(menu.Name) </span>
+                    @if (!menu.Items.IsNullOrEmpty())
+                    {
+                        @*<span class="badge badge-primary ">@menu.Items.Count</span>*@
+                    }
+                    <b class="@(menu.Items.IsNullOrEmpty() == false ? "arrow icon-angle-down" : "")"></b>
+                </a>
+
+                @if (!menu.Items.IsNullOrEmpty())
+                {
+                    <ul class="submenu">
+                        @foreach (var child in menu.Items)
+                        {
+                            if (!child.MenuType.Contains(Model.MenuType))
+                            {
+                                continue;
+                            }
+                            <li data-title="@L(child.Name)" class="@((Model.ActiveMenuItemName == child.Name ? "active" : "") + ((Model.ActiveMenuItem.Discriminator+",").Contains(child.Name+",") == true ? "active open" : ""))">
+                                <a href="@child.Url" class="@(child.Items.IsNullOrEmpty() == false ? "dropdown-toggle" : "")">
+                                   <i class="icon-double-angle-right"></i>
+                                    <i class="@child.Icon"></i>
+                                   @L(child.Name)
+                                    @*<span class="badge badge-primary ">@child.Items.Count</span>*@
+                                    <b class="@(child.Items.IsNullOrEmpty() == false ? "arrow icon-angle-down" : "")"></b>
+                                </a>
+
+                                @if (!child.Items.IsNullOrEmpty())
+                                {
+                                    <ul class="submenu">
+                                        @foreach (var child1 in child.Items)
+                                        {
+                                            if (!child1.MenuType.Contains(Model.MenuType))
+                                            {
+                                                continue;
+                                            }
+                                            <li data-title="@L(child1.Name)" class="@(Model.ActiveMenuItemName == child1.Name ? "active" : "")">
+                                                <a href="@child1.Url">
+                                                    <i class="icon-double-angle-right"></i>
+                                                    @L(child1.Name)
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    }
+</ul>

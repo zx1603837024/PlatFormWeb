@@ -1,0 +1,6 @@
+﻿@using Abp.Collections.Extensions
+@model P4.Web.Models.Layout.ProfileModel
+<script type="text/javascript">
+    $(document.body).addClass('@(Model.Skin)');
+    $("#skin-colorpicker").find("option[data-skin='@(Model.Skin)']").attr("selected", true);
+</script>

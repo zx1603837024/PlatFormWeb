@@ -1,0 +1,646 @@
+﻿@model P4.Web.Models.BusinessModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("BusinessDetails");
+    ViewBag.ActiveMenu = "BusinessDetails";
+}
+@section styles
+{
+    <link href="~/assets/css/bootstrapSwitch.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+    <style type="text/css">
+        .SelectBG {
+            background-color: #f00;
+        }
+    </style>
+
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/global/plugins/bootstrap-select/i18n/defaults-zh_CN.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<div class="row" style="margin:10px 0">
+    <table style="width:100%;" border="0">
+        <tr>
+            <td style="width:7%;" align="right">区域：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="RegionId" name="RegionId" onchange="RegionChange()" data-placeholder="选择区域名称..." style="width:150px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.regionList)
+                    {
+                        <option value="@entity.Id">@entity.RegionName</option>
+                    }
+                </select>
+            </td>
+            <td style="width:7%;" align="right">停车场：</td>
+            <td style="width:13%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="ParkId" name="ParkId" onchange="ParkChange()" data-placeholder="选择停车场名称..." style="width:150px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.parkList)
+                    {
+                        <option value="@entity.Id">@entity.ParkName</option>
+                    }
+                </select>
+            </td>
+            <td style="width:8%;" align="right">泊位段：</td>
+            <td style="width:13%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="BerthsecId" name="BerthsecId" data-placeholder="选择泊位段名称..." style="width:150px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.berthsecList)
+                    {
+                        <option value="@entity.Id">@entity.BerthsecName</option>
+                    }
+                </select>
+            </td>
+            <td style="width:6%;" align="right">泊位号：</td>
+            <td style="width:16%;">
+                <input id="BerthNumber" type="text" style="width:150px;" />
+            </td>
+            <td style="width:12%;" align="right">支付类型：</td>
+            <td style="width:13%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="PayStatus" name="PayStatus" data-placeholder="选择支付类型..." style="width:150px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.PayType)
+                    {
+                        <option value="@entity.ValueCode">@entity.ValueData</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: left;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:7%;" align="right">停车类型：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="StopType" name="StopType" data-placeholder="选择停车类型..." style="width:150px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.StopType)
+                    {
+                        <option value="@entity.ValueCode">@entity.ValueData</option>
+                    }
+                </select>
+            </td>
+            <td style="width:7%;" align="right">车牌号：</td>
+            <td style="width:14%;">
+                <input id="PlateNumber" type="text" style="width:150px;" />
+            </td>
+            <td style="width:8%;" align="right">收费时间：</td>
+            <td style="width:16%;">
+                <div class="row">
+                    <div class="col-xs-9 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd hh:ii" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;width:5%;">到&nbsp;</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-9 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd hh:ii" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="width:12%;" align="right">进场收费员：</td>
+            <td style="width:13%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="EmployeeId" name="EmployeeId" data-placeholder="选择收费员名称..." style="width:150px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.employeeList)
+                    {
+                        <option value="@entity.Id">@entity.TrueName</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: left;">
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出明细
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="grid-pager"></div>
+<table id="grid-table"></table>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content" style="width:800px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">恢复欠费功能</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="content_wrap">
+                        <form class="form-horizontal" role="form" id="feeFrom">
+                            <div class="panel panel-default" style="margin-top:10px;">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                     href="#collapseOne">
+                                    <h4 class="panel-title">
+                                        <a>  基本信息  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in">
+                                    <div class="panel-body">
+                                        @*<form id="basicSetting" action="#" method="post ">*@
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">车 牌 号：&nbsp;&nbsp;</span>
+                                                    <span id="AccountName" style="margin-left:25px">&nbsp;&nbsp;</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">实收金额：&nbsp;&nbsp;</span>
+                                                    <span id="AccountWallet" style="margin-left:25px">&nbsp;&nbsp;</span>(元)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">欠费金额：&nbsp;&nbsp;</span>
+                                                    <input type="text" id="TopMoney" style="width:100px">(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        @*</form>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-primary" onclick="getCheckedNodes()">查看权限信息</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="Save()">确定</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content" style="width:800px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel1">设置欠费</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="content_wrap">
+                        <form class="form-horizontal" role="form" id="feeFrom">
+                            <div class="panel panel-default" style="margin-top:10px;">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                     href="#collapseOne">
+                                    <h4 class="panel-title">
+                                        <a>  基本信息  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in">
+                                    <div class="panel-body">
+                                        @*<form id="basicSetting" action="#" method="post ">*@
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">车 牌 号：&nbsp;&nbsp;</span>
+                                                    <span id="AccountName1" style="margin-left:25px">&nbsp;&nbsp;</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">实收金额：&nbsp;&nbsp;</span>
+                                                    <span id="AccountWallet1" style="margin-left:25px">&nbsp;&nbsp;</span>(元)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">设置金额：&nbsp;&nbsp;</span>
+                                                    <input type="text" id="TopMoney1" style="width:100px">(元)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        @*</form>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-primary" onclick="getCheckedNodes()">查看权限信息</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="Save1()">确定</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="~/assets/js/jquery-2.0.3.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        if (window.MenuType == 'Park') {
+            window.MenuType = true;
+        } else {
+            window.MenuType = false;
+        }
+
+        if (!window.field1) {
+            $('#exportButton').hide();
+        }
+        var myDate = new Date();
+        myDate.toLocaleDateString();
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('.chosen-select').chosen();
+        //$('#employeeIdInput_chosen').css('width', '150px');
+    });
+
+    $('#myButton').on('click', function () {
+        debugger;
+        if (window.MenuType == 'Park') {
+            window.MenuType = true;
+        } else {
+            window.MenuType = false;
+        }
+
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            ajaxSelectOptions: { type: "GET", async: false },
+            ajaxGridOptions: { type: "POST", async: false },
+            url: '../Business/GetBusinessDatailsLListSql',
+            datatype: 'json',
+            postData:
+            {
+                'RegionId': $('#RegionId').val(),
+                'ParkId': $('#ParkId').val(),
+                'BerthsecId': $('#BerthsecId').val(),
+                'BerthNumber': $('#BerthNumber').val(),
+                'PlateNumber': $('#PlateNumber').val(),
+                'EmployeeId': $('#EmployeeId').val(),
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'StopType': $('#StopType').val(),
+                'PayStatus': $('#PayStatus').val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+
+    $('#exportButton').on('click', function () {
+        var RegionId = $('#RegionId').val();
+        var ParkId = $('#ParkId').val();
+        var BerthsecId = $('#BerthsecId').val();
+        var BerthNumber = $('#BerthNumber').val();
+        var PlateNumber = $('#PlateNumber').val();
+        var operateDateBegin = $('#operateDateBegin').val();
+        var operateDateEnd = $('#operateDateEnd').val();
+        var StopType = $('#StopType').val();
+        var PayStatus = $('#PayStatus').val();
+        window.location.href = "../StaticReport/ExportBusinessDetails?RegionId=" + RegionId + "&ParkId=" + ParkId
+            + "&BerthsecId=" + BerthsecId + "&BerthNumber=" + BerthNumber + "&PlateNumber=" + PlateNumber
+            + "&operateDateBegin=" + operateDateBegin + "&operateDateEnd=" + operateDateEnd + "&StopType=" + StopType + "&PayStatus=" + PayStatus;
+
+    });
+
+    function Save() {
+        $.ajax({
+            type: "Post",
+            url: "../Business/ResumeArrearage",
+            data: {
+                id: selectedId,
+                money: $("#TopMoney").val()
+            },
+            success: function (data) {
+                if (data.Success == false) {
+                    swal("", data.Error.Message, "error");
+                } else {
+                    $('#myModal').modal('hide');
+                    $("#TopMoney").val("");
+                    $("#grid-table").trigger("reloadGrid");
+                    Saveoper = "";
+                }
+            }
+        });
+    }
+
+    function Save1() {
+        $.ajax({
+            type: "Post",
+            url: "../Business/UpdateMoney",
+            data: {
+                id: selectedId,
+                money: $("#TopMoney1").val()
+            },
+            success: function (data) {
+                if (data.Success == false) {
+                    swal("", data.Error.Message, "error");
+                } else {
+                    $('#myModal1').modal('hide');
+                    $("#TopMoney1").val("");
+                    $("#grid-table").trigger("reloadGrid");
+                    Saveoper = "";
+                }
+            }
+        });
+    }
+
+</script>
+@section scriptsgrid
+{
+    function PicFormatter(cellvalue, options, rowdata) {
+    return '<a href="../Business/ShowImage/'+ rowdata.Id  +'" target="_blank" id="colorbox"><img src="../Business/ShowImage/'+ rowdata.Id  +'" id="img' + rowdata.Id + '" style="width:50px;height:50px;" /></a>';
+    }
+
+    jQuery(grid_selector).jqGrid({
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: '../Business/GetBusinessDatailsLListSql',
+    datatype: "json",
+    mtype: "post",
+    loadError: function(xhr,status,error){ alert(status + " loading data of " + $(this).attr("id") + " : " + error ); },
+    shrinkToFit:false,
+    autowidth: true,
+    height: 'auto',
+    colNames: ['操作', 'ID', '商户', '分公司名称', '区域', '停车场', '停车场类型', '泊位段', '泊位号', '车牌号', 'Ocr车牌号', '总应收', '预付款', '出场应收', '实收', '欠费金额', '入场时间', '离场时间','车辆类型', '停车时长',  '状态', '支付类型', '停车类型', '入场收费员', '入场设备', '出场收费员', '出场设备', '收费收费员', '收费设备','车检器入场时间','车检器出场时间','车检器停车时长','车检器应收', 'guid'],
+    colModel: [
+    {
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false ,search: false,
+    formatter: 'actions', hidden: window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", hidden: true },//editoptions:{ dataUrl: '../InspectionDevice/GetAllTenantName/'+(new Date()).getMilliseconds(), defaultValue: '1' }
+    { name: 'Tenant', editable: false, index: 'Tenant', hidden: window.TenantField, search: true, stype:'select', searchoptions: { dataUrl: '../InspectionDevice/GetAllTenantName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne'] } },
+    { name: 'CompanyName', editable: false, index: 'CompanyName',search: false, stype:'select', searchoptions: { dataUrl: '../Equipments/GetAllCompanyName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne'], defaultValue: '2' }},
+    { name: 'RegionName', index: 'RegionName', search: true, stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllRegionName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'ParkName', editable: false, index: 'ParkName', search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllParkName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'ParkType', index: 'ParkType'},
+    { name: 'BerthsecName', index: 'BerthsecName',search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetBerthsecListSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'BerthNumber', editable: false, width: 70, index: 'BerthNumber' },
+    { name: 'PlateNumber', editable: false,width: 80, index: 'PlateNumber', searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']} },
+    { name: 'OcrPlateNumber', editable: false,width: 80, index: 'PlateNumber', searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']} },
+    { name: 'Money', index: 'Money', width: 70,  formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" ,hidden: window.MenuType},
+    { name: 'Prepaid', index: 'Prepaid', width: 70,  formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>",hidden: window.MenuType},
+    { name: 'Receivable', index: 'Receivable',width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" ,hidden: window.MenuType},
+    { name: 'FactReceive', index: 'FactReceive',width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Arrearage', index: 'Arrearage',width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" ,hidden: window.MenuType},
+    { name: 'CarInTimeString', index: 'CarInTimeString', sorttype: "date", editable: false, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}},
+    { name: 'CarOutTimeString', index: 'CarOutTimeString', sorttype: "date", editable: false, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}},
+    { name: 'CarTypeName', index: 'CarTypeName'},
+    { name: 'StopTimes', index: 'StopTimes'},
+    { name: 'StatusName', index: 'StatusName', formatter:Status },
+    { name: 'PayStatusName', index: 'PayStatusName' },
+    { name: 'StopTypeName', index: 'StopTypeName' },
+    { name: 'InEmployeeName', index: 'InEmployeeName' },
+    { name: 'InDeviceCode', index: 'InDeviceCode' },
+    { name: 'OutEmployeeName', index: 'OutEmployeeName' },
+    { name: 'OutDeviceCode', index: 'OutDeviceCode' },
+    { name: 'ChargeEmployeeName', index: 'ChargeEmployeeName' },
+    { name: 'ChargeDeviceCode', index: 'ChargeDeviceCode' },
+    { name: 'SensorsInCarTimeString', index: 'SensorsInCarTime', sorttype: "date", editable: false },
+    { name: 'SensorsOutCarTimeString', index: 'SensorsOutCarTime', sorttype: "date", editable: false },
+    { name: 'SensorsStopTimes', index: 'SensorsStopTime',editable: false },
+    { name: 'SensorsReceivable', index: 'SensorsReceivable',editable: false },
+    { name: 'guid', index: 'guid',editable: false, key: true, hidden: true }
+    ],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    loadonce:false,
+    jsonReader: {
+    repeatitems: false
+    },
+    toppager: false,
+    multiselect: true,
+    editurl: '../Business/ProcessBusiness',
+    userDataOnFooter : true,//汇总
+    footerrow:true,//汇总
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                                + "' class='scroll'></table><div id='"
+                                + pager_id + "' class='scroll'></div>");
+
+
+
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: "../Business/GetBusinessDetailsPictureList/" + row_id,
+    datatype: "json",
+    colNames: ['ID', '图片', '上传时间', '照片类型'],
+    colModel: [
+    { name: "Id", index: "Id", key: true, hidden: true },
+    { name: "BusinessDetailPictureUrl", index: "BusinessDetailPictureUrl",formatter: PicFormatter, width:100  },
+    { name: 'CreateTime', index: 'CreationTime', sorttype: "date", editable: false, formatter: 'date', formatoptions: { srcformat: 'Y-m-d  H:i:s', newformat: 'Y-m-d H:i:s' }, width:180 },
+    { name: 'PicTypeName', index: 'PicTypeName' }
+    ],
+    sortname: 'Id',
+    rowNum : 50,
+    sortorder: "asc",
+    height: 'auto'
+    });
+    },
+    pager: pager_selector,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    grouping:false,
+    groupingView : {
+    groupField : ['BerthsecName'],
+    groupSummary : [true],
+    groupColumnShow : [false],
+    groupText : ['<b>{0}</b>'],
+    groupCollapse : false,
+    groupOrder: ['asc']
+    },
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    afterCompleteFunction();
+    }
+    @*gridComplete: function()
+        {
+            afterCompleteFunction();
+        }*@
+    });
+
+    function afterCompleteFunction()
+    {
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    var rowDatas = $(grid_selector).jqGrid("getRowData");
+    for(var i =0;  rowDatas.length > i ;i++)
+    {
+    var q=parseFloat(rowDatas[i].Receivable) + parseFloat(rowDatas[i].Prepaid);
+    if(parseFloat(rowDatas[i].Receivable) + parseFloat(rowDatas[i].Prepaid) == 0){
+    @*$("#"+rowDatas[i].Id).find("td").addClass("SelectBG");*@
+    $("td[title$='"+rowDatas[i].Id+"']").find("td").addClass("SelectBG");
+    }
+    }
+    }
+    @*$( "#grid-table" ).closest(".ui-jqgrid-bdiv").css({ 'overflow-x' : 'hidden' });*@
+}
+
+@section scriptsbuttonbyself{
+
+    if(window.field2 && window.MenuType !=true)
+    {
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "恢复欠费",
+    caption: "恢复欠费",
+    position: "last",
+    onClickButton: function () {
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length == 1)
+    {
+    Saveoper = "edit";
+    selectedId = ids[0];
+    $.ajax({
+    type: "Post",
+    url: "../Business/GetBusinessDetail",
+    data: {
+    Id: selectedId
+    },
+    success: function (data) {
+    $("#AccountName").html(data.PlateNumber);
+    $("#AccountCardNo").html(data.BerthNumber);
+    $("#AccountWallet").html(data.FactReceive);
+    }
+    });
+    $("#myModal").modal('show');
+    }
+    else
+    {
+    swal("", "请选择账户...", "info");
+    }
+    }
+    });
+    }
+
+
+    /*if(window.field3 && window.MenuType !=true)
+    {
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "设置欠费",
+    caption: "设置欠费",
+    position: "last",
+    onClickButton: function () {
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length == 1)
+    {
+    Saveoper = "edit";
+    selectedId = ids[0];
+    $.ajax({
+    type: "Post",
+    url: "../Business/GetBusinessDetail",
+    data: {
+    Id: selectedId
+    },
+    success: function (data) {
+    $("#AccountName1").html(data.PlateNumber);
+    $("#AccountCardNo1").html(data.BerthNumber);
+    $("#AccountWallet1").html(data.FactReceive);
+    }
+    });
+    $("#myModal1").modal('show');
+    }
+    else
+    {
+    swal("", "请选择账户...", "info");
+    }
+    }
+    });
+    }*/
+
+
+    function Status(cellvalue, options)
+    {
+    if(cellvalue == '正常收费')
+    return "<span class='badge badge-info'>正常收费</span>";
+    else if(cellvalue == '追缴')
+    return "<span class='badge badge-yellow'>追缴</span>";
+    else if(cellvalue == '逃逸')
+    return "<span class='badge badge-danger'>逃逸</span>";
+    else
+    return cellvalue;
+    }
+}
+

@@ -1,0 +1,373 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("InducibleMap");
+    ViewBag.ActiveMenu = "InducibleMap";
+}
+
+
+
+<div id="l-map"></div>
+<div style="width:100%;height:100%;">
+    <div class="form-group" style="width:100%;height:100%;">
+        <label class="col-sm-3 control-label no-padding-right"></label>
+        <div class="col-sm-9" id="allmap" style="width:100%;height:100%;">
+            @*height:650px;*@
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+<script src="../../assets/js/jquery-2.0.3.min.js"></script>   @*母版页中有调用jQuery库 ，这里又调用了一次 方便使用jQuery*@
+@*signalr-begin*@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="../signalr/hubs"></script>
+@*signalr-end*@
+<script type="text/javascript">
+
+    var XMap;
+    var YMap;
+    $.ajax({
+        type: "POST",
+        url: '../InspectionDevice/GetTenantX_Y',
+        success: function (data) {
+            XMap = data.X;
+            YMap = data.Y;
+        }, error: function () {
+
+        }
+    });
+
+    $(function () {
+        var chat = $.connection.chat;
+        $.connection.hub.start().done(function () {
+            chat.server.userlogin(window.UserName + ' Inducible' + window.TenantId);//注册名称
+        });
+        //接收车检器状态
+        chat.client.CarStatusMessage = function (ParkId, ParkName, Berth, ParkStatus) {
+
+            NotifySuccess(ParkId + '停车场,' + Berth + '泊位,车位状态' + ParkStatus, '诱导消息');
+            if (ParkStatus == 1) {
+                var num = $('.' + ParkId + "_num").html();
+
+                $('.' + ParkId + "_num").html(Number(num) - 1);
+            }
+            else if (ParkStatus == 0) {
+                var num = $('.' + ParkId + "_num").html();
+
+                $('.' + ParkId + "_num").html(Number(num) + 1);
+            }
+        }
+    });
+
+    var map = new BMap.Map("allmap");
+    map.enableScrollWheelZoom();
+    map.enableInertialDragging();
+    map.enableContinuousZoom();
+
+    map.addControl(new BMap.NavigationControl());
+
+    var geolocation = new BMap.Geolocation();
+
+    geolocation.getCurrentPosition(function (r) {
+        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+            //map.centerAndZoom(r.point, 12);
+            map.centerAndZoom(new BMap.Point(XMap, YMap), 16);
+            var size = new BMap.Size(10, 20);
+            map.addControl(new BMap.CityListControl({
+                anchor: BMAP_ANCHOR_TOP_RIGHT,
+                offset: size
+                // 切换城市之间事件
+                // onChangeBefore: function(){
+                //    alert('before');
+                // },
+                // 切换城市之后事件
+                // onChangeAfter:function(){
+                //   alert('after');
+                // }
+            }));
+        }
+    }, { enableHighAccuracy: true });
+
+    $.ajax({
+        type: "POST",
+        url: '../InducibleSystem/GetAllInducible/',
+        success: function (data) {
+            var InducibleList = data.inducibleList;
+            //var X = "112.754776";
+            //var Y = "37.693214";
+            var X;
+            var Y;
+            //window.X = x;
+            //window.Y = y;
+
+            var geoc = new BMap.Geocoder();
+            var geolocation = new BMap.Geolocation();
+            var customLayer;
+            function addCustomLayer(keyword) {
+                if (customLayer) {
+                    map.removeTileLayer(customLayer);
+                }
+                customLayer = new BMap.CustomLayer({
+                    geotableId: 30960,
+                    q: '', //检索关键字
+                    tags: '', //空格分隔的多字符串
+                    filter: '' //过滤条件,参考http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
+                });
+                map.addTileLayer(customLayer);
+                customLayer.addEventListener('hotspotclick', callback);
+            }
+
+            var bgreenIcon = new BMap.Icon("../assets/images/bgreenicon.gif", new BMap.Size(35, 60));//二级诱导 绿色
+            var byellowIcon = new BMap.Icon("../assets/images/byellowicon.gif", new BMap.Size(35, 60));//二级诱导 黄色
+            var bredIcon = new BMap.Icon("../assets/images/bredicon.gif", new BMap.Size(35, 60));//二级诱导 红色
+            var cgreenIcon = new BMap.Icon("../assets/images/cgreenicon.gif", new BMap.Size(35, 60));//三级诱导 绿色
+            var cyellowIcon = new BMap.Icon("../assets/images/cyellowicon.gif", new BMap.Size(35, 60));//三级诱导 黄色
+            var credIcon = new BMap.Icon("../assets/images/credicon.gif", new BMap.Size(35, 60));//三级诱导 红色
+
+            $.each(InducibleList, function (i, item) {
+                X = item.X;
+                Y = item.Y;
+                var myIcon = bgreenIcon;
+                var tempIcon;
+                //诱导颜色变换规则
+                //  颜色   对外服务车位总数 >= 100的停车场   对外服务车位总数<100的停车场
+                //  红色       空位数 <= 10%*场库容量                空位数 <= 10
+                //  黄色       空位数 <= 20%*场库容量                空位数 <= 20
+                //  绿色       空位数 >  20%*场库容量                空位数 >  20
+                //因为诱导只能展示一个停车场的颜色状态，显示最严重的，如果有停车场是红色，就显示红色，其次是黄色，再者是绿色
+                //中间颜色状态 tempIcon
+
+                $.each(item.parklist, function (p, park) {
+                    var bershNum = 0;
+                    var berthcount = 0;
+                    $.each(data.sensorParkList, function (s, sensor) {
+                        if (sensor.ParkId == park.ParkId) {
+                            bershNum = sensor.EmptyCount;
+                            return false;
+                        }
+                    });
+                    $.each(data.parkList, function (s, parkitem) {
+                        if (parkitem.Id == park.ParkId) {
+                            berthcount = parkitem.BerthCount;
+                            return false;
+                        }
+                    });
+
+                    if (berthcount >= 20) {
+                        if (bershNum <= 9)
+                        { tempIcon = bredIcon; }
+                        else if (bershNum <= 19)
+                        { tempIcon = byellowIcon; }
+                        else
+                        { tempIcon = bgreenIcon; }
+                    }
+                    else {
+                        if (bershNum <= 4)
+                        { tempIcon = bredIcon; }
+                        else if (bershNum <= 9)
+                        { tempIcon = byellowIcon; }
+                        else
+                        { tempIcon = bgreenIcon; }
+                    }
+                    item.parklist[p].bershNum = bershNum;
+                    item.parklist[p].BerthsecCount = berthcount;
+
+                    if (tempIcon.imageUrl == bredIcon.imageUrl || myIcon.imageUrl == bredIcon.imageUrl) {
+                        if (item.InducibleType == 2)
+                            myIcon = bredIcon;
+                        else myIcon = credIcon;
+                    }
+
+                    else if (tempIcon.imageUrl == byellowIcon.imageUrl || myIcon.imageUrl == byellowIcon.imageUrl) {
+                        if (item.InducibleType == 2)
+                            myIcon = byellowIcon;
+                        else myIcon = cyellowIcon;
+                    }
+                    else {
+                        if (item.InducibleType == 2)
+                            myIcon = bgreenIcon;
+                        else myIcon = cgreenIcon;
+                    }
+                });
+
+
+                if (X.length > 0 && Y.length > 0) {
+                    var mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIcon
+                    });
+
+                    var opts = {
+                        position: new BMap.Point(X, Y),    // 指定文本标注所在的地理位置
+                        offset: new BMap.Size(16, -30)    //设置文本偏移量
+                    }
+
+                    var label = new BMap.Label(item.InducibleName, opts);  // 创建文本标注对象
+                    label.setStyle({
+                        color: "black",
+                        fontSize: "15px",
+                        height: "20px",
+                        lineHeight: "20px",
+                        fontFamily: "微软雅黑"
+                    });
+                    map.addOverlay(label);
+                    map.addOverlay(mk);
+                    map.panTo(new BMap.Point(X, Y));
+
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+
+                            //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                        //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                    });
+
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                }
+                else {
+                    geolocation.getCurrentPosition(function (r) {
+                        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+
+                            var mk = new BMap.Marker(r.point, {
+                                enableDragging: false,
+                                raiseOnDrag: true,
+                                icon: myIcon
+                            });
+                            map.addOverlay(mk);
+                            map.panTo(r.point);
+                            mk.addEventListener('dragend', function (e) {
+                                var pt = e.point;
+                                geoc.getLocation(pt, function (rs) {
+                                    var addComp = rs.addressComponents;
+                                    //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                                    X = e.point.lng
+                                    Y = e.point.lat
+                                });
+                            });
+
+
+                            var pt = r.point;
+                            geoc.getLocation(pt, function (rs) {
+                                var addComp = rs.addressComponents;
+                                //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                                X = r.point.lng;
+                                Y = r.point.lat;
+                            });
+
+                            mk.addEventListener('click', function () {
+                                map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                            });
+                        }
+                        else {
+                            alert('failed' + this.getStatus());
+                        }
+                    }, { enableHighAccuracy: true });
+                }
+            });
+
+        }, error: function () {
+
+        }
+    });
+
+
+
+
+    //百度地图自适应
+    $(document).ready(function () {
+        BaiDuMap();
+    });
+
+    $(window).resize(function () {
+        BaiDuMap();
+    });
+
+    function BaiDuMap() {
+        //alert('1223');
+        var winWidth = 0;  //1440
+        var winHeight = 0;   //417
+        //var bibi=
+        //获取窗口宽度
+        //if (window.innerWidth) {
+        //    winWidth = window.innerWidth;
+        a = window.innerWidth;
+        b = window.innerHeight;
+
+        //    a = document.body.clientHeight;
+        //    b = document.body.clientWidth;
+        //} else
+        if ((document.body) && (document.body.clientWidth)) {
+            //winWidth = document.body.clientWidth;
+        }
+        //alert('1223');
+        //获取窗口高度
+        //if (window.innerHeight) {
+        //    winHeight = window.innerHeight;
+        //} else
+        if ((document.body) && (document.body.clientHeight)) {
+            // winHeight = document.body.clientHeight;
+        }
+        //通过深入Document内部对body进行检测，获取窗口高度
+        if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth) {
+            winWidth = document.documentElement.clientWidth;
+            winHeight = document.documentElement.clientHeight;
+        }
+
+        var bibi = (parseInt(winHeight) * (650 / 805)).toString();
+        $("#allmap").css({ "height": parseInt(winHeight) * (650 / 805) });
+
+        //$("#allmap").attr("style","width:100%;height:"+bibi+"px");
+
+        //$("#div1).css({"height":parseInt(winHeight),"width":parseInt(winWidth)});
+    }
+
+
+
+    function showMessage(item) {
+        var h = 65 + 56 * item.parklist.length;
+        if (item.parklist.length == 1)
+            h = 175;
+        var opts = {
+            width: 238,     // 信息窗口宽度
+            height: h,     // 信息窗口高度
+            title: "<span style='font-size:20px;font-weight:bold'>" + item.InducibleName + "</span>", // 信息窗口标题
+            enableMessage: true,//设置允许信息窗发送短息
+            message: item.Address
+        }
+        var parkMessage = "<table align='top' border='0'>";
+        $.each(item.parklist, function (i, item11) {
+            if (item.parklist.length == 1) {
+                parkMessage +=
+                   "<tr align='right'><td width='226px' height='145px' algin='' background='../assets/images/carcount1.png' /><span style='font-size:24px;font-weight:bold;color:white;'>" + item11.ParkName.substring(0, 4) + "</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</br></br></br><span style='font-size:33px;font-weight:bold;color:red;'>" + leftPad(item11.bershNum, '0', 3) + "</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>";
+            }
+            else {
+                parkMessage +=
+                    "<tr align='right'><td width='226px' height='56px' background='../assets/images/carcount.png' /><span style='font-size:24px;font-weight:bold;color:white;'>" + item11.ParkName.substring(0, 4) + "</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style = 'font-size:16px;font-weight:bold;color:red;'>" + leftPad(item11.bershNum, '0', 4) + "</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</br></td></tr>";
+            }
+        });
+        if (item.parklist.length != 1)
+            parkMessage += "<tr><td width='226px' height='35px' background='../assets/images/ad.png' />&nbsp;&nbsp;<span style='font-size:20px;font-weight:bold;color:white;'>"+ item.advert[0].AD +"</span></td></tr>";
+        parkMessage += "</table>";
+        var infoWindow = new BMap.InfoWindow(parkMessage, opts);  //创建信息窗口对象
+        return infoWindow;
+    }
+
+    function leftPad(str, c, len) {
+        return Array((len - str.toString().length) + 1).join(c) + str;
+    }
+
+</script>

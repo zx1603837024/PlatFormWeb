@@ -1,0 +1,906 @@
+﻿@{
+Layout = "~/Views/Shared/_LayoutPage.cshtml";
+ViewBag.Title = L("CouponManager");
+ViewBag.ActiveMenu = "CouponManager";
+}
+
+@section styles
+{
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+}
+
+@section scriptsindex{
+<script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="~/assets/js/chosen.jquery.min.js"></script>
+<script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+}
+
+<style type="text/css">
+    .lay_row {
+        padding: 0 20px;
+        height: 55px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .row_son {
+        width: 50%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .lay_tit {
+        float: left;
+    }
+
+    .lay_val {
+        float: left;
+        margin-left: 10px;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+
+<!-- 顶部筛选优惠券方案 -->
+<div class="row" style="margin:10px 0">
+    <table style="width:100%;" border="0">
+        <tr>
+            <td style="width:5%;" align="left">优惠券类型：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container postState-chosen-select CouponsType" name="CouponsType"
+                    style="width:150px;">
+                    <option value="">全部</option>
+                    <option value="1">月卡套餐</option>
+                    <option value="2">钱包充值</option>
+                    <option value="3">道路停车</option>
+                    <option value="4">停车场停车</option>
+                </select>
+            </td>
+            <td style="width:5%;" align="left">方案状态：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container postState-chosen-select Status" name="Status"
+                    style="width:150px;">
+                    <option value="">全部</option>
+                    <option value="1">启用</option>
+                    <option value="2">停用</option>
+                    <option value="3">过期</option>
+                    <option value="4">终止</option>
+                </select>
+            </td>
+            <td style="width:5%;" align="left">满减类型：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container postState-chosen-select Type" name="Type" style="width:150px;">
+                    <option value="">全部</option>
+                    <option value="1">无门槛减免</option>
+                    <option value="2">无门槛打折</option>
+                    <option value="3">条件减免</option>
+                    <option value="4">条件打折</option>
+                </select>
+            </td>
+            <td style="width:7%;" align="left">优惠券起止时间：</td>
+            <td style="width:12%;">
+                <div class="row">
+                    <div class="col-xs-9 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control" id="operateDateBegin" type="text"
+                                data-date-format="yyyy-mm-dd hh:ii" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: left;width:2%;">到</td>
+            <td style="width:12%;">
+                <div class="row">
+                    <div class="col-xs-9 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control" id="operateDateEnd" type="text"
+                                data-date-format="yyyy-mm-dd hh:ii" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td colspan="1" style="text-align: left;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary"
+                    autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- 主表 -->
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<!-- 设置优惠方案 -->
+<div id="lay_postinfo" class="lay_box" style="display:none;">
+    <div class="lay_row">
+        <div class="row_son">
+            <div class="lay_tit">优惠券类型：</div>
+            <select id="CouponsType" class="lay_val" style="width:130px">
+                <option value="1">月卡套餐</option>
+                <option value="2">钱包充值</option>
+                <option value="3">道路停车</option>
+                <option value="4">停车场停车</option>
+            </select>
+        </div>
+        <div class="row_son">
+            <div class="lay_tit">满减类型：</div>
+            <select id="Type" class="lay_val" style="width:130px">
+                <option value="1">无门槛减免</option>
+                <option value="2">无门槛打折</option>
+                <option value="3">条件减免</option>
+                <option value="4">条件打折</option>
+            </select>
+        </div>
+    </div>
+    <div class="lay_row changeMark">
+        <div class="row_son">
+            <div class="lay_tit">减免描述：&emsp;</div>
+            <input type="text" id="Mark" class="lay_val" style="width:130px">&emsp;
+            <div class="lay_lit">
+                <span class="MarkDesc"
+                    style="display: none; color: red; font-size: 12px;">无门槛减免请输入“无门槛减免XXX元”<br />无门槛打折请输入“无门槛打XXX折”<br />条件减免请输入“满XXX元减XXX元”<br />条件打折请输入“满XXX元打XXX折”</span>
+            </div>
+        </div>
+        <div class="row_son">
+            <div class="lay_tit">满减金额：</div>
+            <input type="text" id="TermMoney" class="lay_val" style="width:130px">
+        </div>
+    </div>
+    <div class="lay_row">
+        <div class="row_son">
+            <div class="lay_tit changeDiscount1" style="display: block;">优惠金额：&emsp;</div>
+            <div class="lay_tit changeDiscount2" style="display: none;">优惠折扣：&emsp;</div>
+            <input type="text" id="CouponsMoney" class="lay_val" style="width:130px">&emsp;
+            <div class="lay_lit">
+                <span class="CouponsMoneyDesc" style="display: none; color: red; font-size: 12px;">若打8折请输入“0.8”</span>
+            </div>
+        </div>
+        <div class="row_son">
+            <div class="lay_tit">发放上限：</div>
+            <input type="text" id="CouponNumber" class="lay_val" style="width:130px">&emsp;张&emsp;
+            <div class="lay_tit"><span class="CouponNumberDesc"
+                    style="display: none; color: red; font-size: 12px;">若不限张数请输入“无限”</span>
+            </div>
+
+        </div>
+    </div>
+    <div class="lay_row">
+        <div class="lay_tit" style="width: 250px;">优惠券起止时间：</div>
+        <div class="col-xs-9 col-sm-11">
+            <div class="input-group">
+                <input class="form-control" id="StartTime" type="text" data-date-format="yyyy-mm-dd hh:ii" />
+                <span class="input-group-addon">
+                    <i class="icon-calendar bigger-110"></i>
+                </span>
+            </div>
+        </div>
+        <div class="lay_tit">到</div>
+        <div class="col-xs-9 col-sm-11">
+            <div class="input-group">
+                <input class="form-control" id="EndTime" type="text" data-date-format="yyyy-mm-dd hh:ii" />
+                <span class="input-group-addon">
+                    <i class="icon-calendar bigger-110"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 优惠券分发---用户信息表 -->
+<div id="grantCoupons" style="display: none; padding: 10px 20px;">
+    <!-- 筛选查询用户 -->
+    <div class="row" style="margin:10px 0">
+        <table style="width:100%;" border="0">
+            <tr>
+                <td style="width:6%;" align="left">用户名：</td>
+                <td style="width:20%;">
+                    <input class="nickName" type="text" style="width: 150px;" />
+                </td>
+                <td style="width:6%;" align="left">手机号：</td>
+                <td style="width:20%;">
+                    <input class="tel" type="text" style="width: 150px;" />
+                </td>
+                <td style="width:6%;" align="left">车牌号：</td>
+                <td style="width:20%;">
+                    <input class="CarNumber" type="text" style="width: 150px;" />
+                </td>
+                <td colspan="1" style="text-align: left;">
+                    <button type="button" id="Btns" data-loading-text="Loading..." class="btn btn-sm btn-primary"
+                        autocomplete="off">
+                        搜索
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- 给用户分发优惠券 -->
+    <div style="font-weight: bolder;margin-bottom: 10px;">请勾选需要分发的用户</div>
+    <table id="grid-table1"></table>
+    <div id="grid-pager1"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // 监控select下拉框变化
+        $("#Type").change(function () {
+            // 当满减类型是无门槛减免或者无门槛打折时，禁用满减金额
+            console.log($('#Type').val());
+            if ($("#Type").val() == 1 || $("#Type").val() == 2) {
+                $('#TermMoney').attr("disabled", true);
+            } else {
+                $('#TermMoney').attr("disabled", false);
+            }
+            // 当满减类型是无门槛打折或者条件打折时，输入优惠折扣
+            if ($("#Type").val() == 2 || $("#Type").val() == 4) {
+                $('.changeDiscount1').css('display', 'none');
+                $('.changeDiscount2').css('display', 'block');
+            } else {
+                $('.changeDiscount1').css('display', 'block');
+                $('.changeDiscount2').css('display', 'none');
+            }
+        });
+
+        // 初始化优惠券起止时间
+        var myDate = new Date();
+        myDate.toLocaleDateString();
+        var StartTime = myDate.getFullYear() + "-" +
+            ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1)) : (myDate.getMonth() +
+                1)) + "-" +
+            (myDate.getDate() < 10 ? ("0" + myDate.getDate()) : myDate.getDate());
+        var EndTime = myDate.getFullYear() + "-" +
+            ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1)) : (myDate.getMonth() +
+                1)) + "-" +
+            (myDate.getDate() < 10 ? ("0" + (myDate.getDate() + 1)) : myDate.getDate() + 1);
+        // 设置优惠方案的时间选择器
+        $('#StartTime').val(StartTime + " 00:00");
+        $('#EndTime').val(EndTime + " 00:00");
+        $('#StartTime').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 1,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+        $('#EndTime').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            minView: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        // 筛选优惠方案的时间选择器
+        $('#operateDateBegin').val(StartTime + " 00:00");
+        $('#operateDateEnd').val(EndTime + " 00:00");
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 1,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            minView: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+    });
+
+    // 筛选优惠方案搜索
+    $('#myButton').on('click', function () {
+        var param = {
+            'CouponsType': $(".CouponsType").val(),
+            'Status': $(".Status").val(),
+            'Type': $(".Type").val(),
+            'StartTime': $('#operateDateBegin').val(),
+            'EndTime': $('#operateDateEnd').val(),
+            'filters': null
+        };
+        console.log(param);
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            ajaxSelectOptions: {
+                type: "GET",
+                async: false
+            },
+            ajaxGridOptions: {
+                type: "POST",
+                async: false
+            },
+            url: '../Coupons/getCouponsPlanList',
+            datatype: 'json',
+            postData: {
+                'CouponsType': $(".CouponsType").val(),
+                'Status': $(".Status").val(),
+                'Type': $(".Type").val(),
+                'StartTime': $('#operateDateBegin').val(),
+                'EndTime': $('#operateDateEnd').val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+
+    // 筛选优惠发放用户
+    $('#Btns').on('click', function () {
+        var param = {
+            'nickName': $(".nickName").val(),
+            'tel': $(".tel").val(),
+            'CarNumber': $(".CarNumber").val(),
+            'filters': null
+        };
+        console.log(param);
+        jQuery('#grid-table1').jqGrid('setGridParam', {
+            ajaxSelectOptions: {
+                type: "GET",
+                async: false
+            },
+            ajaxGridOptions: {
+                type: "POST",
+                async: false
+            },
+            url: '../VideoConfig/getTUser',
+            datatype: 'json',
+            postData: {
+                'nickName': $(".nickName").val(),
+                'tel': $(".tel").val(),
+                'CarNumber': $(".CarNumber").val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+</script>
+
+<script>
+    @section scriptsgrid {
+        // 主表
+        jQuery("#grid-table").jqGrid({
+            url: '../Coupons/getCouponsPlanList',
+            datatype: "json",
+            ajaxSelectOptions: {
+                type: "GET"
+            },
+            mtype: "post",
+            height: 'auto',
+            autowidth: true,
+            shrinkToFit: false,
+            colNames: ["方案编号", "方案状态", "优惠券类型", "减免描述", "满减类型", "满减金额", "优惠金额", "方案创建时间", "优惠券生效时间", "优惠券失效时间",
+                "发放上限(张)",
+                "发放数量(张)"
+            ],
+            colModel: [{
+                    name: 'PlanId',
+                    index: 'PlanId',
+                    width: 80,
+                    search: false,
+                    sorttype: "int",
+                    key: true,
+                },
+                {
+                    name: 'Status',
+                    index: 'Status',
+                    width: 100,
+                    formatter: Status,
+                    key: true,
+                    editable: true,
+                    edittype: "select",
+                    editoptions: {
+                        value: "1:启用;2:停用"
+                    },
+                    stype: 'select',
+                    searchoptions: {
+                        value: {
+                            1: '启用',
+                            2: '停用',
+                        },
+                        sopt: ['eq']
+                    }
+                },
+                {
+                    name: 'CouponsType',
+                    index: 'CouponsType',
+                    formatter: CouponsType,
+                    searchoptions: {
+                        value: {
+                            1: '月卡套餐',
+                            2: '钱包充值',
+                            3: '道路停车',
+                            4: '停车场停车',
+                        },
+                        sopt: ['eq']
+                    }
+                },
+                {
+                    name: 'Mark',
+                    index: 'Mark',
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'Type',
+                    index: 'Type',
+                    formatter: Type,
+                    searchoptions: {
+                        value: {
+                            1: '无门槛减免',
+                            2: '无门槛打折',
+                            3: '条件减免',
+                            4: '条件打折',
+                        },
+                        sopt: ['eq']
+                    }
+                },
+                {
+                    name: 'TermMoney',
+                    index: 'TermMoney',
+                    formatter: TermMoney,
+                    search: false
+                },
+                {
+                    name: 'CouponsMoney',
+                    index: 'CouponsMoney',
+                    search: false
+                },
+                {
+                    name: 'CreatTime',
+                    index: 'CreatTime',
+                    search: false
+                },
+                {
+                    name: 'StartTime',
+                    index: 'StartTime',
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'EndTime',
+                    index: 'EndTime',
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'CouponNumber',
+                    index: 'CouponNumber',
+                    formatter: CouponNumber,
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'GetNumber',
+                    index: 'GetNumber',
+                    search: false
+                }
+            ],
+            viewrecords: true,
+            rowNum: 10,
+            rowList: [10, 20, 30],
+            pager: "#grid-pager",
+            altRows: true,
+            sortname: 'PlanId',
+            sortorder: "asc",
+            toppager: false,
+            editurl: "../Coupons/CouponsEditDelete",
+            multiselect: false,
+            multiboxonly: true,
+            loadComplete: function () {
+                var table = this;
+                setTimeout(function () {
+                    styleCheckbox(table);
+                    updateActionIcons(table);
+                    updatePagerIcons(table);
+                    enableTooltips(table);
+                }, 0);
+            }
+        });
+
+        // 用户信息表
+        jQuery("#grid-table1").jqGrid({
+            url: '../VideoConfig/getTUser',
+            datatype: "json",
+            ajaxSelectOptions: {
+                type: "GET"
+            },
+            mtype: "post",
+            shrinkToFit: false,
+            colNames: ['用户名', 'uid', '手机号', '车牌一', '车牌二', '车牌三', '钱包', '创建时间'],
+            colModel: [{
+                    name: 'nickName',
+                    index: 'nickName',
+                    width: 120,
+                },
+                {
+                    name: 'uid',
+                    index: 'uid',
+                    width: 270,
+                },
+                {
+                    name: 'tel',
+                    index: 'tel',
+                    width: 120,
+                },
+                {
+                    name: 'CarNumber1',
+                    index: 'CarNumber1',
+                    width: 100,
+                },
+                {
+                    name: 'CarNumber2',
+                    index: 'CarNumber2',
+                    width: 100,
+                },
+                {
+                    name: 'CarNumber3',
+                    index: 'CarNumber3',
+                    width: 100,
+                },
+                {
+                    name: 'Wallet',
+                    index: 'Wallet',
+                    formatter: "number",
+                    width: 80,
+                },
+                {
+                    name: 'CreationTime',
+                    index: 'CreationTime',
+                    sorttype: "date",
+                    formatter: 'date',
+                    formatoptions: {
+                        srcformat: 'Y-m-d H:i:s',
+                        newformat: 'Y-m-d H:i:s'
+                    },
+                }
+            ],
+            viewrecords: true,
+            rowNum: 10,
+            rowList: [10, 20, 30],
+            pager: "#grid-pager1",
+            altRows: true,
+            sortname: 'PlanId',
+            sortorder: "asc",
+            toppager: false,
+            editurl: "../Coupons/CouponsEditDelete",
+            multiselect: true,
+            multiboxonly: true,
+            loadComplete: function () {
+                var table = this;
+                setTimeout(function () {
+                    styleCheckbox(table);
+                    updateActionIcons(table);
+                    updatePagerIcons(table);
+                    enableTooltips(table);
+                }, 0);
+            }
+        });
+    }
+
+    @section scriptsbuttonbyself {
+        // 设置优惠方案
+        jQuery("#grid-table").navButtonAdd("grid-pager", {
+            buttonicon: "icon-plus-sign purple",
+            title: "设置优惠方案",
+            caption: "设置优惠方案",
+            position: "top",
+            onClickButton: function () {
+                insertCouponsPlan();
+            }
+        });
+
+        // 优惠券分发
+        jQuery("#grid-table").navButtonAdd("grid-pager", {
+            buttonicon: "icon-plus-sign purple",
+            title: "优惠券分发",
+            caption: "优惠券分发",
+            position: "last",
+            onClickButton: function () {
+                grantCoupons();
+            }
+        });
+    }
+
+    // 设置优惠方案
+    function insertCouponsPlan() {
+        // 首次打开弹框时，当满减类型是无门槛减免或者无门槛打折时，禁用满减金额
+        if ($("#Type").val() == 1 || $("#Type").val() == 2) {
+            $('#TermMoney').attr("disabled", true);
+        } else {
+            $('#TermMoney').attr("disabled", false);
+        }
+        // 当满减类型是无门槛打折或者条件打折时，输入优惠折扣
+        if ($("#Type").val() == 2 || $("#Type").val() == 4) {
+            $('.changeDiscount1').css('display', 'none');
+            $('.changeDiscount2').css('display', 'block');
+        } else {
+            $('.changeDiscount1').css('display', 'block');
+            $('.changeDiscount2').css('display', 'none');
+        }
+        // 设置减免描述获取焦点和失去焦点的描述
+        $("#Mark").focus(function () {
+            // 输入框获取焦点
+            $('.MarkDesc').css('display', 'block');
+        }).blur(function () {
+            // 输入框失去焦点
+            $('.MarkDesc').css('display', 'none');
+        });
+        // 设置优惠折扣获取焦点和失去焦点的描述
+        $("#CouponsMoney").focus(function () {
+            // 输入框获取焦点
+            $('.CouponsMoneyDesc').css('display', 'block');
+        }).blur(function () {
+            // 输入框失去焦点
+            $('.CouponsMoneyDesc').css('display', 'none');
+        });
+        // 设置发放上限获取焦点和失去焦点的描述
+        $("#CouponNumber").focus(function () {
+            // 输入框获取焦点
+            $('.CouponNumberDesc').css('display', 'block');
+        }).blur(function () {
+            // 输入框失去焦点
+            $('.CouponNumberDesc').css('display', 'none');
+        });
+        layer.open({
+            type: 1,
+            title: ['设置优惠方案'],
+            area: ['950px', '380px'],
+            btn: ['提交', '取消'],
+            yes: function (index, layero) {
+                if (
+                    $("#CouponsType").val() &&
+                    $("#Mark").val() &&
+                    $("#Type").val() &&
+                    $("#CouponsMoney").val() &&
+                    $("#StartTime").val() &&
+                    $("#EndTime").val() &&
+                    $("#CouponNumber").val()
+                ) {
+                    $.ajax({
+                        type: "post",
+                        url: "../Coupons/insertCouponsPlan",
+                        data: {
+                            "CouponsType": $("#CouponsType").val(),
+                            "Mark": $("#Mark").val(),
+                            "Type": $("#Type").val(),
+                            "TermMoney": $("#TermMoney").val(),
+                            "CouponsMoney": $("#CouponsMoney").val(),
+                            "StartTime": $("#StartTime").val(),
+                            "EndTime": $("#EndTime").val(),
+                            "CouponNumber": $("#CouponNumber").val() == "无限" ? -1 : $(
+                                "#CouponNumber").val()
+                        },
+                        dataType: "json",
+                        success: function (res) {
+                            layer.closeAll();
+                            if (res.code == 200) {
+                                layer.alert('优惠券方案设置完成', {
+                                    icon: 1
+                                }, function () {
+                                    location.reload();
+                                });
+                            } else {
+                                layer.alert(res.msg, {
+                                    icon: 2
+                                }, function () {
+                                    layer.closeAll();
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    layer.alert('请输入信息', {
+                        icon: 2
+                    });
+                }
+            },
+            btn2: function (index, layero) {
+                layer.closeAll();
+            },
+            // 层销毁后触发的回调：无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。
+            end: function () {
+                // 当满减类型是无门槛减免或者无门槛打折时，禁用满减金额
+                if ($("#Type").val() == 1 || $("#Type").val() == 2) {
+                    $('#TermMoney').attr("disabled", true);
+                } else {
+                    $('#TermMoney').attr("disabled", false);
+                }
+                // 当满减类型是无门槛打折或者条件打折时，输入优惠折扣
+                if ($("#Type").val() == 2 || $("#Type").val() == 4) {
+                    $('.changeDiscount1').css('display', 'none');
+                    $('.changeDiscount2').css('display', 'block');
+                } else {
+                    $('.changeDiscount1').css('display', 'block');
+                    $('.changeDiscount2').css('display', 'none');
+                }
+            },
+            shadeClose: true,
+            content: $("#lay_postinfo")
+        });
+    }
+
+    // 优惠券分发
+    function grantCoupons() {
+        let PlanId = jQuery("#grid-table").jqGrid('getGridParam', 'selrow');
+        console.log(PlanId, 'PlanId');
+        if (!PlanId) {
+            swal({
+                title: "请选择优惠方案！",
+                timer: 1000,
+                type: "error",
+                showConfirmButton: false
+            });
+            return;
+        }
+        layer.open({
+            type: 1,
+            title: ['优惠券发放'],
+            area: ['1000px', '500px'],
+            btn: ['提交', '取消'],
+            yes: function (index, layero) {
+                let rowIds = jQuery("#grid-table1").jqGrid('getGridParam', 'selarrrow');
+                let selectRowData = [];
+                for (let k = 0; k < rowIds.length; k++) {
+                    let rowData = $("#grid-table1").jqGrid('getRowData', rowIds[k]);
+                    selectRowData.push(rowData);
+                }
+                console.log(selectRowData, 'selectRowData');
+                let uid = []
+                selectRowData.map((item, i) => {
+                    if (item.uid) {
+                        uid.push(item.uid)
+                    }
+                })
+                uid = uid.join(',')
+                console.log(uid, 'uid');
+                if (rowIds.length != 0) {
+                    $.ajax({
+                        type: "post",
+                        url: "../Coupons/GrantCoupons",
+                        data: {
+                            "uid": uid,
+                            "PlanId": PlanId
+                        },
+                        dataType: "json",
+                        success: function (res) {
+                            layer.closeAll();
+                            if (res.code == 200) {
+                                layer.alert('优惠券分发成功', {
+                                    icon: 1
+                                }, function () {
+                                    location.reload();
+                                });
+                            } else {
+                                layer.alert(res.msg, {
+                                    icon: 2
+                                }, function () {
+                                    layer.closeAll();
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    layer.alert('请勾选需要分发的用户', {
+                        icon: 2
+                    });
+                }
+            },
+            btn2: function (index, layero) {
+                layer.closeAll();
+            },
+            shadeClose: true,
+            content: $("#grantCoupons")
+        });
+    }
+
+    // 满减类型
+    function Type(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "无门槛减免";
+                break;
+            case 2:
+                return "无门槛打折";
+                break;
+            case 3:
+                return "条件减免";
+                break;
+            case 4:
+                return "条件打折";
+                break;
+            default:
+                return "";
+        }
+    }
+
+    // 满减金额
+    function TermMoney(cellvalue, options) {
+        switch (cellvalue) {
+            case null:
+                return "";
+                break;
+            default:
+                return cellvalue;
+        }
+    }
+
+    // 发放上限
+    function CouponNumber(cellvalue, options) {
+        switch (cellvalue) {
+            case -1:
+                return "无限";
+                break;
+            default:
+                return cellvalue;
+        }
+    }
+
+    // 优惠券类型
+    function CouponsType(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "月卡套餐";
+                break;
+            case 2:
+                return "钱包充值";
+                break;
+            case 3:
+                return "道路停车";
+                break;
+            case 4:
+                return "停车场停车";
+                break;
+            default:
+                return "";
+        }
+    }
+
+    // 方案状态
+    function Status(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "<span class='badge badge-success'>启用</span>";
+                break;
+            case 2:
+                return "<span class='badge badge-danger'>停用</span>";
+                break;
+            case 3:
+                return "<span class='badge badge-warning'>过期</span>";
+                break;
+            case 4:
+                return "<span class='badge badge-secondary'>终止</span>";
+                break;
+            default:
+                return "";
+        }
+    }
+</script>

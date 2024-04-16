@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("DictionaryTypeManagement");
+    ViewBag.ActiveMenu = "DictionaryTypeManagement";
+}
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../Dictionarys/GetAllDictionaryTypeList',
+    datatype: "json",
+    ajaxSelectOptions　: {type: "GET"} ,
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit: false,
+    colNames: ['操作','ID', '类型代码', '类型值', '是否激活', '是否默认', '备注'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false, search: false,
+    formatter: 'actions',hidden:window.rowedit, frozen : true, align: 'center',
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true},
+    { name: 'TypeCode', index: 'TypeCode', editable: true , align: 'center', required: true},
+    { name: 'TypeValue', index: 'TypeValue', editable: true, required: true  },
+    { name: 'IsActive', index: 'IsActive', editable: true, search: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:YesAndNo, cellAttr: addCellAttr,stype:'select',
+    searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'IsDefault', index: 'IsDefault',formatter:currencyFmatter, search: true, stype:'select',
+    searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'Remark', index: 'Remark', editable: true, edittype:'textarea' }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    editurl: "../Dictionarys/ProcessDictionaryType",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+
+    function addCellAttr(rowId, val, rawObject, cm, rdata) {
+    if(val == '是')
+    return "style='color:red'";
+    }
+
+    function currencyFmatter (cellvalue, options)
+    {
+    if(cellvalue==true)
+    return "<span class='badge badge-success'>是</span>";
+    else
+    return "<span class='badge badge-warning'>否</span>";
+    }
+}

@@ -1,0 +1,354 @@
+﻿@model P4.Web.Models.UtilizationModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("FeesDecision");
+    ViewBag.ActiveMenu = "FeesDecision";
+}
+
+@section styles
+{
+    <link href="~/assets/css/bootstrapSwitch.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+    <link rel="stylesheet" href="~/assets/css/jquery.gritter.css" />
+
+    <style type="text/css">
+        .SelectBG {
+            background-color: #f00;
+        }
+    </style>
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/global/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+
+    <script src="~/assets/js/jquery.gritter.min.js"></script>
+}
+
+<div class="row">
+    <table style="width:1000px;" border="0">
+        <tr>
+            <td style="width:6%;">停车场：</td>
+            <td style="width:15%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="ParkId" name="ParkId" data-placeholder="选择停车场名称..." style="width:200px;">
+                    @foreach (var entity in Model.parkList)
+                    {
+                        <option value="@entity.Id">@entity.ParkName</option>
+                    }
+                </select>
+            </td>
+
+            <td style="width:9%;">收费时间：</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;width:30px;">到&nbsp;</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+            <td style="text-align: left;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+
+    <div class="col-xs-2 col-sm-2 pricing-span-header">
+        <div class="widget-box transparent">
+            <div class="widget-header">
+                <h5 class="bigger lighter">分析结果</h5>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main no-padding">
+                    <ul class="list-unstyled list-striped pricing-table-header">
+                        <li>泊位总数</li>
+                        <li>总停车次数</li>
+                        <li>总停车时长(小时)</li>
+                        <li>免费停车次数</li>
+                        <li>免费停车时长(小时)</li>
+                        <li>总应收金额</li>
+                        <li>总实收金额</li>
+                        <li>总欠费金额</li>
+                        <li>总追缴金额</li>
+                        <li>泊位周转率</li>
+                        <li>泊位利用率</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-10 col-sm-10 pricing-span-body" id="berthseclist">
+        <div class="pricing-span">
+            <div class="widget-box pricing-box-small">
+                <div class="widget-header header-color-red3">
+                    <h5 class="bigger lighter">测试泊位段</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <ul class="list-unstyled list-striped pricing-table">
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 10 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 10 </li>
+                            <li> 30% </li>
+                            <li>
+                                <i class="icon-remove red"></i>
+                            </li>
+                        </ul>
+
+                        <div class="price">
+                            <span class="label label-lg label-inverse arrowed-in arrowed-in-right">
+                                一类费率
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="#" class="btn btn-block btn-sm btn-danger">
+                            <span>建议</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="pricing-span">
+            <div class="widget-box pricing-box-small">
+                <div class="widget-header header-color-grey">
+                    <h5 class="bigger lighter">停车场2</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <ul class="list-unstyled list-striped pricing-table">
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 10 </li>
+                            <li> 30% </li>
+                            <li>
+                                <i class="icon-remove red"></i>
+                            </li>
+                        </ul>
+
+                        <div class="price">
+                            <span class="label label-lg label-inverse arrowed-in arrowed-in-right">
+                                一类费率
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="#" class="btn btn-block btn-sm btn-danger">
+                            <span>建议</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-span">
+            <div class="widget-box pricing-box-small">
+                <div class="widget-header header-color-blue">
+                    <h5 class="bigger lighter">停车场3</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <ul class="list-unstyled list-striped pricing-table">
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 10 </li>
+                            <li> 30% </li>
+                            <li>
+                                <i class="icon-remove red"></i>
+                            </li>
+                        </ul>
+
+                        <div class="price">
+                            <span class="label label-lg label-inverse arrowed-in arrowed-in-right">
+                                一类费率
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="#" class="btn btn-block btn-sm btn-danger">
+                            <span>建议</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-span">
+            <div class="widget-box pricing-box-small">
+                <div class="widget-header header-color-green">
+                    <h5 class="bigger lighter">停车场4</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <ul class="list-unstyled list-striped pricing-table">
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 10 </li>
+                            <li> 30% </li>
+                            <li>
+                                <i class="icon-remove red"></i>
+                            </li>
+                        </ul>
+
+                        <div class="price">
+                            <span class="label label-lg label-inverse arrowed-in arrowed-in-right">
+                                一类费率
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="#" class="btn btn-block btn-sm btn-danger">
+                            <span>建议</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-span">
+            <div class="widget-box pricing-box-small">
+                <div class="widget-header header-color-orange">
+                    <h5 class="bigger lighter">停车场5</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main no-padding">
+                        <ul class="list-unstyled list-striped pricing-table">
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 100 </li>
+                            <li> 10 </li>
+                            <li> 30% </li>
+                            <li>
+                                <i class="icon-remove red"></i>
+                            </li>
+                        </ul>
+
+                        <div class="price">
+                            <span class="label label-lg label-inverse arrowed-in arrowed-in-right">
+                                二类费率
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="#" class="btn btn-block btn-sm btn-danger">
+                            <span>建议</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function ProcessMsg(BerthsecName, Utilization, Turnover, rate, remark) {
+        $.gritter.removeAll();
+        var str = "在" + $('#operateDateBegin').val() + "到" + $('#operateDateEnd').val() + "时间段内,(" + BerthsecName + ")泊位段周转次数：" + Turnover + "次，与泊位段利用率：" + Turnover + "%,收费费率：" + rate + ",建议意见：<a class='orange'>" + remark + "</a>";
+        $.gritter.add({
+            title: '系统分析结果(' + BerthsecName + ')',
+            text: str,
+            class_name: 'gritter-info gritter-center gritter-light'
+        });
+    }
+
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString();
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('.date-picker').datepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        $('.chosen-select').chosen();
+
+        
+      
+        function contentString(item) {
+            //red3, green, blue, grey, orange
+            var color = 'green';
+            var str = '<div class="pricing-span"><div class="widget-box pricing-box-small"><div class="widget-header header-color-' + color + '"><h5 class="bigger lighter">' + item.BerthsecName + '</h5></div><div class="widget-body"><div class="widget-main no-padding"><ul class="list-unstyled list-striped pricing-table">' +
+                '<li> ' + item.BerthCount + ' </li><li> ' + item.StopTime + ' </li><li> ' + item.StopTimes + ' </li><li> ' + item.NoStopTime + ' </li><li> ' + item.NoStopTimes + ' </li><li> ' + item.Money + ' </li><li> ' + item.FactReceive + ' </li><li> ' + item.Arrearage + ' </li><li> ' + item.Repayment + ' </li><li> ' + Math.round(item.Turnover * 100) / 100 + ' </li><li>' + Math.round(item.Utilization * 10000) / 100 + '%</li>' +
+                '</ul><div class="price"><span class="label label-lg label-inverse arrowed-in arrowed-in-right">' + item.RateName + '</span></div></div><div><a href="javascript:ProcessMsg(\'' + item.BerthsecName + '\', \'' + Math.round(item.Utilization * 10000) / 100 + '\', \'' + Math.round(item.Turnover * 100) / 100 + '\', \'' + item.RateName + '\', \'' + item.Remark + '\')" class="btn btn-block btn-sm btn-danger"><span>建议</span></a></div></div></div></div>';
+            return str;
+        }
+
+        $('#myButton').on('click', function () {
+            $.ajax({
+                type: "Post",
+                url: '../Decision/GetBerthsecInfoList',
+                datatype: 'json',
+                data: {
+                    'ParkId': $('#ParkId').val(),
+                    'BeginTime': $('#operateDateBegin').val(),
+                    'EndTime': $('#operateDateEnd').val()
+                },
+                success: function (data) {
+                    $("#berthseclist").empty();
+                    $.each(data, function (i, item) {
+                        $("#berthseclist").append(contentString(item));
+                    });
+                }, error: function () {
+                    swal('异常', "获取数据失败！", 'error');
+                }
+            });
+        });
+    });
+</script>
+
+

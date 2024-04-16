@@ -1,0 +1,247 @@
+﻿@using P4.Web.Models
+@model ParkChargesModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("OwnReport");
+    ViewBag.ActiveMenu = "OwnReport";
+}
+@section styles
+{
+    <link href="~/assets/css/bootstrapSwitch.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="row" style="margin:10px 0">
+    <table border="0">
+        <tr>
+            <td width="80px"><label for="id-date-picker-1">查询日期：</label></td>
+            <td width="190px">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;&nbsp;</td>
+            <td width="190px">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td width="100px">泊位段名称：</td>
+
+            <td width="200px">
+                <select class="ls-wp-fullwidth-container chosen-select" id="berthsecIdInput" name="berthsecIdInput">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.BerthsecList)
+                    {
+                        <option value="@entity.Id">@entity.BerthsecName</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: center;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出报表
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="jqgridDiv" style="width:100%">
+    <table id="grid-table"></table>
+    <div id="grid-pager"></div>
+</div>
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript">
+    $('#mySwitch').on('switch-change', function (e, data) {
+        var $el = $(data.el), value = data.value;
+        if (value == true) {
+            $('#jqgridDiv').css('display', 'none');
+        }
+        else {
+            $('#jqgridDiv').css('display', 'block');
+        }
+    });
+    $('#myButton').on('click', function () {
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            url: '../OwnReport/BerthescOwnJqGridData',
+            datatype: 'json',
+            postData:
+            {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'berthsecIdInput': $('#berthsecIdInput').val()
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+
+    $('#exportButton').on('click', function () {
+        var count = $('#grid-table').jqGrid("getRowData").length;
+        if (count > 0) {
+            var operateDateBegin = $('#operateDateBegin').val();
+            var operateDateEnd = $('#operateDateEnd').val();
+            var BerthsecName = $('#berthsecIdInput').val();
+            window.location.href = "../StaticReport/ExportOwnReport?operateDateBegin=" + operateDateBegin + "&operateDateEnd=" + operateDateEnd + "&berthsecIdInput=" + BerthsecName;
+        }
+        else {
+            NotifyWarn('报表暂无数据！');
+        }
+    });
+</script>
+
+
+@section scriptsgrid
+    {
+    jQuery(grid_selector).jqGrid({
+    url: '../OwnReport/BerthescOwnJqGridData',
+    async: true, //同步执行
+    datatype: "json",
+    mtype: "post",
+    height: 400,
+    autowidth: true,
+    colNames: ['泊位段Id', '泊位段', '欠费总额', '已追缴', '跨月追缴', '删除历史欠费'],
+    colModel: [
+    {name :'ParkId',index:'ParkId',key: true,width:85},
+    { name: 'ParkName', index: 'ParkName', width: 100 },
+    { name: 'SumOwn', index: 'SumOwn', width: 100,formatter: 'number' },
+    { name: 'SumRecovered', index: 'SumRecovered', width: 100,formatter: 'number' },
+    { name: 'SpanSumRecovered', index: 'SpanSumRecovered', width: 100,formatter: 'number' },
+    { name: 'DelSumRecovered', index: 'DelSumRecovered', width: 100,formatter: 'number' }
+    ], aggregates : [{
+    member : 'Price',
+    aggregator : 'sum',
+    width:80,
+    formatter:'number',
+    align:'right',
+    summaryType: 'sum'
+    }],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    sortname: 'SumOwn',
+    sortorder: 'desc',
+    altRows: true,//汇总
+    caption:"Summary Footer Row",//汇总
+    userDataOnFooter : true,//汇总
+    footerrow:true,//汇总
+    multiselect: true,
+    multikey: "ctrlKey",
+    multiboxonly: true,
+
+
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                                + "' class='scroll'></table><div id='"
+                                + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: "../OwnReport/OwnReportDetail?operateDateEnd="+$('#operateDateEnd').val()+"&operateDateBegin=" + $('#operateDateBegin').val() + "&parkIdInput=" + row_id,
+    datatype: "json",
+    colNames: [ '月份', '欠费总额', '已追缴', '跨月追缴', '删除历史欠费'],
+    colModel: [
+    { name: 'Month', index: 'Month', width: 100 },
+    { name: 'SumOwn', index: 'SumOwn', width: 100,formatter: 'number' },
+    { name: 'SumRecovered', index: 'SumRecovered', width: 100,formatter: 'number' },
+    { name: 'SpanSumRecovered', index: 'SpanSumRecovered', width: 100,formatter: 'number' },
+    { name: 'DelSumRecovered', index: 'DelSumRecovered', width: 100,formatter: 'number' }
+    ],
+    sortname: 'Month',
+    rowNum : 50,
+    sortorder: "asc",
+    height: 'auto'
+    });
+    },
+
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    },
+    loadComplete: function(){
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    },
+    caption: "@ViewBag.Title"
+    });
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myDate = new Date();
+        var operateDateEnd = 0;
+
+        myDate.toLocaleDateString()
+        var operateDateBegin = myDate.getFullYear() + "-"+ (myDate.getMonth()+1); 
+        if ((myDate.getMonth() + 2) > 12) {
+             operateDateEnd = (myDate.getFullYear() + 1) + "-" + (myDate.getMonth() - 10);
+        } else {
+            operateDateEnd = myDate.getFullYear() + "-" + (myDate.getMonth()+1);
+        }
+        
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('#operateDateBegin').datetimepicker({
+            format: 'yyyy-mm',
+            autoclose: true,
+            todayBtn: true,
+            startView: 'year',
+            minView: 'year',
+            maxView: 'decade',
+            todayBtn: 0
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            format: 'yyyy-mm',
+            autoclose: true,
+            todayBtn: true,
+            startView: 'year',
+            minView: 'year',
+            maxView: 'decade',
+            todayBtn: 0
+        });
+        $('.chosen-select').chosen();
+        $('#employeeIdInput_chosen').css('width', '150px');
+    });
+</script>

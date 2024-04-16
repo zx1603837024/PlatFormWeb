@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <content>
+            <force>0</force>
+            <remind>0</remind>
+            <md5>bbb4a02a0e415b216bf60985c3af68dd</md5>
+            <versionCode>2500</versionCode>
+            <versionName>v2.0-beta1</versionName>
+            <description>（1）修复：版本升级导致应用闪退的BUG。</description>
+            <apkurl>http://192.168.3.122:778/App/DownAppApk?filename=app_v2.0beta.apk</apkurl>
+        </content>

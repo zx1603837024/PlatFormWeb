@@ -1,0 +1,43 @@
+﻿@using P4.Web.Models.Weixin
+@model WeixinModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>泊位列表</title>
+</head>
+<body>
+   <table align="center" border="1" width="100%">
+       @for (int i = 0; i < Model.BerthList.Count; i++)
+       {
+           if (i % 2 == 0)
+           {
+               if (Model.BerthList[i].BerthStatus == "1")
+               {
+                @Html.Raw("<tr><td bgcolor='#E89C8F'>泊位号：" + @Model.BerthList[i].BerthNumber + "<br />车牌号：" + @Model.BerthList[i].RelateNumber + "<br />入场时间：" + @Model.BerthList[i].InCarTimeStr + "</td>  ")
+               }
+               else
+               {
+                @Html.Raw("<tr><td bgcolor='#81B97B'>泊位号：" + @Model.BerthList[i].BerthNumber + "<br />车牌号：空车位<br />入场时间</td>  ")
+               }
+           }
+           else
+           {
+               if (Model.BerthList[i].BerthStatus == "1")
+               {
+                @Html.Raw("<td bgcolor='#E89C8F'>泊位号：" + @Model.BerthList[i].BerthNumber + "<br />车牌号：" + @Model.BerthList[i].RelateNumber + "<br />入场时间：" + @Model.BerthList[i].InCarTimeStr + "</td></tr>")
+               }
+               else
+               {
+                @Html.Raw("<td bgcolor='#81B97B'>泊位号：" + @Model.BerthList[i].BerthNumber + "<br />车牌号：空车位<br />入场时间</td></tr>")
+               }
+           }
+       }
+   </table>
+</body>
+</html>

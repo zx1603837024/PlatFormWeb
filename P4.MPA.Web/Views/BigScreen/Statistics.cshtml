@@ -1,0 +1,277 @@
+﻿@model P4.Web.Models.BigScreenModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>智能停车决策统计系统</title>
+    <link rel="stylesheet" href="../css/Statistics.css">
+    <link rel="stylesheet" href="../css/progresscircle.css">
+    <script src="../../assets/js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="../Scripts/BigScreen/echarts4.min.js"></script>
+    <script type="text/javascript" src="../Scripts/BigScreen/Statistics.js"></script>
+    <script type="text/javascript" src="../Scripts/BigScreen/progresscircle.js"></script>
+
+    @*signalr-begin*@
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="../signalr/hubs"></script>
+    @*signalr-end*@
+    <script type="text/javascript">
+        $(function () {
+            var whdef = 100 / 916;// 表示1920的设计图,使用100PX的默认值
+            var wH = window.innerHeight;// 当前窗口的高度
+            var wW = window.innerWidth;// 当前窗口的宽度
+          
+            var rem = wH * whdef;// 以默认比例值乘以当前窗口宽度,得到该宽度下的相应FONT-SIZE值
+            $('html').css('font-size', rem + "px");
+
+            $.ajax({
+                type: "Post",
+                url: "../BigScreen/GetTodayStatistics?Status=0",
+                success: function (data) {
+                    var datavalue = [{
+                        value: data.CashPay,
+                        name: '现金'
+                    }, {
+                        value: data.OnlinePay,
+                        name: '在线支付'
+                    }, {
+                        value: data.PaymentOnlinePay,
+                        name: '在线追缴'
+                    }, {
+                        value: data.PaymentCashPay,
+                        name: '现金追缴'
+                    }, {
+                        value: data.EscapeMoney,
+                        name: '未付金额'
+                    }];
+                    //加载统计图1---当天收入
+                    loadoOption1(datavalue, data.Money);
+                }
+            });
+                              
+            $.ajax({
+                type: "Post",
+                url: "../BigScreen/GetTodayStatistics?Status=1",
+                success: function (data) {
+                    var datavalue = [{
+                        value: data.CashPay,
+                        name: '现金'
+                    }, {
+                        value: data.OnlinePay,
+                        name: '在线支付'
+                    }, {
+                        value: data.PaymentOnlinePay,
+                        name: '在线追缴'
+                    }, {
+                        value: data.PaymentCashPay,
+                        name: '现金追缴'
+                    }, {
+                        value: data.EscapeMoney,
+                        name: '未付金额'
+                    }];
+                    //加载统计图2---全局实时工作
+                    loadoOption2(datavalue, data.Money);
+                }
+            });
+           
+            $.ajax({
+                type: "Post",
+                url: "../BigScreen/GetStopTimesRank",
+                success: function (data) {
+                    var month = [];
+                    var totals = [];
+                    for (var i = 0; i < data.length; i++) {
+                        month.push(data[i].Month);
+                        totals.push(data[i].Totals)
+                    }
+                    //加载统计图3----近6个月停车汇总
+                    loadoOption3(month, totals);
+                }
+            });
+
+            $.ajax({
+                type: "post",
+                url: '../BigScreen/GetMonthlyCar',
+                dataType: 'json',
+                success: function (result) {
+                    var data = [result[0], result[1], result[2]];
+                    loadoOption4(data);
+                }
+            });
+
+            $.ajax({
+                type: "post",
+                url: '../BigScreen/GetWeixinTuser',
+                dataType: 'json',
+                success: function (result) {
+                    var totalCount = [result[0], result[1], result[2]];  
+                    loadoOption5(totalCount);
+                }
+            });
+        
+            var chat = $.connection.chat;
+            $.connection.hub.start().done(function () {
+                chat.server.userlogin("@Model.UserId" + ' index' + "@Model.TenantId.Value");
+            });
+            chat.client.sendIndexMessage = function (berthsecName, berthsecid, employeeid, message, type) {
+                var typeval = "";
+                var val = "";
+                if (type == 1) {
+                    typeval = "停车出场";
+                    val = "应收金额：" + message;
+                } else if (type == 2)//实收
+                {
+                    var temp = parseFloat($("#today").text());
+                    $("#today").html(temp + 1);
+                    var temp1 = parseFloat($("#all").text());
+                    $("#all").html(temp1 + 1);
+                    typeval = "停车出场";
+                    val = "实收金额：" + message;
+                    var trList = $("#berthsec").children("tr");
+                    var flag = false;
+                    $('#berthsec tr').each(function (i) {
+                        if ($(this).attr('id') == berthsecid) {
+                            flag = true;
+                            $(this).remove();
+                        }
+                    });
+
+                    if (!flag) {
+                        $('#berthsec tr:eq(1)').remove();
+                    }
+                    //异步获取数据
+                    $.ajax({
+                        type: "Post",
+                        url: "../BigScreen/GetBerthsecStatistics",
+                        data: {
+                            BerthsecId: berthsecid
+                        },
+                        success: function (data) {
+                            $("#berthsec").append("<tr id=" + berthsecid + "><td>" + berthsecName + "</td><td>" + data.Money + "</td><td>" + data.FaceMoney + "</td></tr>");
+                        }
+                    });
+                }
+                else if (type == 3) {
+                    typeval = "欠费出场";
+                    val = "欠费金额：" + message;
+                    $('#berthsec tr:eq(1)').remove();
+                }
+                else if (type == 4) {
+                    typeval = "欠费补缴";
+                    val = "补缴金额：" + message;
+                }
+                if (type != 5) {
+                    var myDate = new Date();
+                    myDate.toLocaleDateString();
+                    var operateDateBegin = myDate.getFullYear() + "-"
+                        + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+                        + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate()) + " " + myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds();
+                    $('ul li:eq(0)').remove();
+                    $("#loglist").append(" <li  title=" + message + "><b>【" + typeval + "】时间：" + operateDateBegin + "，" + val + "元。</b></li>");
+                }
+            }
+        });
+
+         $(window).resize(function ()// 绑定到窗口的这个事件中
+         {
+             var whdef = 100/916;// 表示1920的设计图,使用100PX的默认值
+             var wH = window.innerHeight;// 当前窗口的高度
+             var wW = window.innerWidth;// 当前窗口的宽度
+             var rem = wH * whdef;// 以默认比例值乘以当前窗口宽度,得到该宽度下的相应FONT-SIZE值
+             $('html').css('font-size', rem + "px");
+             myChart1.resize();
+             myChart2.resize();
+             myChart3.resize();
+             myChart4.resize();
+             myChart5.resize();
+         });
+    </script>
+   
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a id="switch_btnOut" href="../Metro/MetroIndex"></a>
+            <div class="herder_bg"></div>
+            <a id="switch_btn" href="../BigScreen/Index"></a>
+        </header>
+        <article>
+            <div class="wrap">
+                <div class="wrap-left">
+                    <div class="left-top sun-div">
+                        <div class="sun-title"><span class="">收费情况简介</span></div>
+                        <div class="left-top-ec">
+                            <span>当天收入</span> <span>全局收入统计</span>
+                            <!--统计图一-->
+                            <div id="ec1">
+                            </div>
+                            <!--统计图二-->
+                            <div id="ec2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="left-btm sun-div">
+                        <div class="sun-title"><span class="">平台日志</span></div>
+                        <div class="notice">
+                            <ul id="loglist">
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                                <li title="123"><b> </b></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="wrap-right">
+                    <div class="right-top sun-div">
+                        <div class="sun-title"><span class="">停车车次信息</span></div>
+                        <div id="data-list">
+                            <table style="width: 100%">
+                                <tr style="height: 0.5rem"><td style="text-align: center;width: 33%;font-size: 0.22rem">今日车次</td><td style="text-align: center;width: 33%;font-size: 0.22rem">总车次</td><td style="text-align: center;width: 33%;font-size: 0.22rem">日均车次</td></tr>
+                                <tr>
+                                    <td style="text-align:center; font-size: 0.35rem" height="110px"  id="today">@Model.Today</td>
+                                    <td style="text-align: center; font-size: 0.35rem" id="all">@Model.AllStopTimes</td>
+                                    <td style="text-align: center; font-size: 0.35rem" id="average">@Model.AverageStopTimes</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="ec3">
+                        </div>
+                    </div>
+
+                    <div class="right-btm">
+
+                        <div class="r-btm-left">
+                            <div class="sun-title"><span class="">包月车辆用户概况</span></div>
+                             <div id="ec4">
+                            </div>
+                        </div>
+
+
+                        <div class="r-btm-righ">
+                            <div class="sun-title"><span class="">微信注册用户概况</span></div>
+                            <div id="ec5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+    <script type="text/javascript">
+        var myChart1 = echarts.init(document.getElementById('ec1'));
+         var myChart2 = echarts.init(document.getElementById('ec2'));
+         var myChart3 = echarts.init(document.getElementById('ec3'));
+       var myChart4 = echarts.init(document.getElementById('ec4'));
+        var myChart5 = echarts.init(document.getElementById('ec5'));
+    </script>
+</body>
+</html>

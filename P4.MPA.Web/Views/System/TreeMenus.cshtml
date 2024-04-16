@@ -1,0 +1,313 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("MenusManagement");
+    ViewBag.ActiveMenu = "MenusManagement";
+}
+
+@section styles
+{
+    <link href="~/Content/element-ui/element-ui.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/metroStyle.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+    <style>
+        .li_style {
+            list-style-type: none;
+        }
+
+        li[treenode] {
+            cursor: pointer;
+        }
+
+        .level1 {
+            padding-left: 5px;
+        }
+        [v-cloak]{
+            display:none;
+        }
+    </style>
+    <script src="~/Content/element-ui/vue.min.js"></script>
+    <script src="~/Content/element-ui/element-ui.js"></script>
+    <script src="~/Content/element-ui/axios.min.js"></script>
+}
+
+@section scriptsindex{
+
+
+}
+
+
+<div id="app" class="row" v-cloak>
+    <div class="col-sm-5">
+        <div class="widget-box">
+            <div class="widget-header header-color-blue2">
+                <h4 class="lighter smaller">系统功能树形菜单</h4>
+                <el-button type="text" style="color: #FFF;float:right;margin-right:20px;" @@click="addMenu">新增菜单</el-button>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main padding-8">
+                    <el-tree :data="treeData" ref="menu"  :key="treeKey"
+                             :props="defaultProps"
+                             :default-expanded-keys='expandedKeys'
+                             node-key = "code"
+                             accordion highlight-current
+                             @@node-click="handleNodeClick">
+                    </el-tree>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-7">
+        <div class="widget-box">
+            <div class="widget-header header-color-blue2">
+                <h4 class="lighter smaller">功能详细信息</h4>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main padding-8">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 菜单编码： </label>
+                            <div class="col-sm-9">
+                                <el-input v-model="selectNode.code" :disabled="selectNode.key>0"></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 菜单名称： </label>
+                            <div class="col-sm-9">
+                                <el-input v-model="selectNode.name"></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 父菜单名称： </label>
+                            <div class="col-sm-9" v-if="menuData.length>0">
+                                <el-tree-select ref="tree" v-model="selectNode.pId" :tree="menuData" nodeKey="code" size="small"></el-tree-select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 链接地址： </label>
+                            <div class="col-sm-9">
+                                <el-input v-model="selectNode.url"></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 排序： </label>
+                            <div class="col-sm-9">
+                                <el-input v-model="selectNode.order" type="number" min="0"></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 基础权限： </label>
+                            <div class="col-sm-9">
+                                <el-checkbox-group v-model="selectNode.basePowers">
+                                    <el-checkbox value="Insert" label="Insert">新增</el-checkbox>
+                                    <el-checkbox value="Update" label="Update">更新</el-checkbox>
+                                    <el-checkbox value="Delete" label="Delete">删除</el-checkbox>
+                                    <el-checkbox value="Info" label="Info">查看</el-checkbox>
+                                    <el-checkbox value="Search" label="Search">查询</el-checkbox>
+                                    <el-checkbox value="Refresh" label="Refresh">刷新</el-checkbox>
+                                </el-checkbox-group>
+                            </div>
+                        </div>
+                        <div class="form-group" >
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">
+                                自定义权限
+                                <el-tooltip class="item" effect="dark" content="根据具体需求来新增" placement="top">
+                                    <i class="el-icon-question"></i>
+                                </el-tooltip>
+                                ：
+                            </label>
+                            <div class="col-sm-9">
+                                <el-button type="text" @@click="addCustom()">&nbsp;&nbsp;新增</el-button>
+                                <el-table :data="selectNode.customPower" style="width:100%" :show-header="false" size="mini" v-if="selectNode.customPower.length>0">
+                                    <el-table-column>
+                                        <template slot-scope="scope">
+                                            <el-input type="text" v-model="scope.row.code" placeholder="请输入自定义权限编码"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column>
+                                        <template slot-scope="scope">
+                                            <el-input type="text" v-model="scope.row.desc" placeholder="请输入自定义权限描述"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column width="100">
+                                        <template slot-scope="scope">
+                                            <el-popconfirm title="确定要移除吗？" style="margin-left:10px;" @@confirm="removeCustom(scope.row,scope.$index)">
+                                                <el-button type="text" slot="reference">删除</el-button>
+                                            </el-popconfirm>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"></label>
+                            <div class="col-sm-9">
+                                <button id="loading-btn" type="button" class="btn btn-success" data-loading-text="Loading..." @@click="saveMenu">
+                                    <i class="icon-ok bigger-110"></i> 保存
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@RenderPage("TreeSelect.cshtml")
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            treeData: [],
+            menuData: [],
+            expandedKeys: [],
+            treeKey: "123456",
+            defaultProps: {
+                children: 'children',
+                label: 'name'
+            },
+            selectNode: {
+                key: 0,
+                code: "",
+                name: "",
+                pId:"",
+                basePowers: [],
+                customPower: []
+            },
+        },
+        methods: {
+            //封装axios
+            axiosPost: function (url, data, cb) {
+                var loading = this.$loading({
+                    lock: true,
+                    loadingType: 'spinner',
+                    overlay: true,
+                    duration: 0,
+                    text: ""
+                });
+                axios.post(url, data).then(res => {
+                    setTimeout(function () {
+                        loading.close();
+                    }, 400);
+                    if (res.data) {
+                        cb(res.data);
+                    } else {
+                        this.$message.error(res.data.Message);
+                    }
+                }).catch(function (error) {
+                    setTimeout(function () {
+                        loading.close();
+                    }, 400);
+                    console.log(error);
+                });
+            },
+            uuid() {
+                var s = [];
+                var hexDigits = "0123456789abcdef";
+                for (var i = 0; i < 36; i++) {
+                    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+                }
+                s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+                s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+                s[8] = s[13] = s[18] = s[23] = "-";
+
+                var uuid = s.join("");
+                return uuid;
+            },
+            handleNodeClick: function (node) {
+                this.selectNode = JSON.parse(JSON.stringify(node));
+                if (this.selectNode.pId == "0") {
+                    this.selectNode.pId = "";
+                }
+            },
+            addMenu: function () {
+                this.selectNode = {
+                    key: 0,
+                    code: "",
+                    name: "",
+                    pId: "",
+                    basePowers: [],
+                    customPower: []
+                }
+            },
+            addCustom: function () {
+                this.selectNode.customPower.push({ code: "",desc:"" });
+            },
+            removeCustom: function (row, index) {
+                this.selectNode.customPower.splice(index, 1);
+            },
+            saveMenu: function () {
+                this.$confirm('确定保存吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var sendData = {
+                        menuId: this.selectNode.key,
+                        menuCode: this.selectNode.code,
+                        menuName: this.selectNode.name,
+                        menuParentCode: this.selectNode.pId,
+                        menuUrl: this.selectNode.url,
+                        editionId: 6,
+                        order: this.selectNode.order,
+                        menuPowers: []
+                    };
+                    if (sendData.menuParentCode == "") {
+                        sendData.menuParentCode = "0";
+                    }
+                    this.selectNode.basePowers.forEach(function (item) {
+                        if (item == "Insert") {
+                            sendData.menuPowers.push({ code: item, desc: "新增" });
+                        }
+                        if (item == "Update") {
+                            sendData.menuPowers.push({ code: item, desc: "更新" });
+                        }
+                        if (item == "Delete") {
+                            sendData.menuPowers.push({ code: item, desc: "删除" });
+                        }
+                        if (item == "Info") {
+                            sendData.menuPowers.push({ code: item, desc: "查看" });
+                        }
+                        if (item == "Search") {
+                            sendData.menuPowers.push({ code: item, desc: "查询" });
+                        }
+                        if (item == "Refresh") {
+                            sendData.menuPowers.push({ code: item, desc: "刷新" });
+                        }
+                    });
+                    this.selectNode.customPower.forEach(function (item) {
+                        sendData.menuPowers.push(item);
+                    });
+                   
+                    this.axiosPost("@Url.Action("SaveMenu", "Edition")", sendData, res => {
+                        if (res.Success) {
+                            this.$message.success("保存成功,重启网站后生效");
+                            this.axiosPost("../Edition/GetMenuTree/6", {}, (tree) => {
+                                this.expandedKeys = [sendData.menuCode];
+                                this.treeData = tree;
+                                this.menuData = tree;
+                                this.treeKey = this.uuid();
+                                this.$nextTick(() => {
+                                    this.$refs.menu.setCurrentKey(sendData.menuCode)
+                                })
+                            });
+                        } else {
+                            this.$message.error("保存失败:" + res.Message);
+                        }
+                    })
+                })
+            }
+        },
+        mounted: function () {
+            this.axiosPost("../Edition/GetMenuTree/6", {}, (res) => {
+                this.treeData = res;
+                this.menuData = res;
+            });
+        }
+    })
+</script>
+
+@section scripts
+{
+}

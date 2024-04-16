@@ -1,0 +1,361 @@
+﻿@model P4.Web.Models.BigScreenModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>智能停车决策分析系统</title>
+    <link rel="stylesheet" href="../css/Decision.css" />
+    <script type="text/javascript" src="../Scripts/BigScreen/jquery-1.8.1.min.js"></script>
+    <script type="text/javascript" src="../Scripts/BigScreen/echarts4.min.js"></script>
+    <script type="text/javascript" src="../Scripts/BigScreen/Decision.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=39b5eb8bb91adccfa6487135d960a1e8"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/InfoBox/1.2/src/InfoBox.js"></script>
+    <script type="text/javascript" src="../Scripts/BigScreen/bmap.js?v=20170921"></script>
+
+    <script type="text/javascript" src="http://api.map.baidu.com/library/RectangleZoom/1.2/src/RectangleZoom_min.js"></script>
+
+    <script type="text/javascript">
+        $(window).resize(function ()// 绑定到窗口的这个事件中
+        {
+            var whdef = 100 / 916;// 表示1920的设计图,使用100PX的默认值
+            var wH = window.innerHeight;// 当前窗口的高度
+            var rem = wH * whdef;// 以默认比例值乘以当前窗口宽度,得到该宽度下的相应FONT-SIZE值
+            $('html').css('font-size', rem + "px");
+            myChart1.resize(); //随屏幕大小改变大小
+            myChart2.resize();
+            myChart3.resize();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <a id="switch_btnOut" href="../Metro/MetroIndex"></a>
+            <div class="herder_bg"></div>
+            <a id="switch_btn" href="../BigScreen/Statistics"></a>
+        </header>
+        <article>
+            <div id="hideleft"></div>
+            <div id="hideright"></div>
+
+            <div class="wrap">
+                <div class="center">
+                    <div id="map" style="width: 98%;height: 97%;    margin-left: 1%;top: 1.5%;"></div>
+                </div>
+            </div>
+            @*开始 左边列表*@
+            <div class="left_margin  box-div">
+
+                <div class="sun-div">
+                    <div class="sun-title"><span style="font-size: 14pt; font-family:楷体">地磁情况</span></div>
+                    <div id="ec1" class="left-ec">
+                    </div>
+                </div>
+
+                <div class="sun-div">
+                    <div class="sun-title"><span style="font-size: 14pt; font-family:楷体">泊位使用率</span></div>
+                    <div id="ec2" class="left-ec"></div>
+                </div>
+
+                <div class="sun-div">
+                    <div class="sun-title"><span style="font-size: 14pt; font-family:楷体">泊位段今日金额</span></div>
+                    <table class="ri-table" style="width:100%" id="berthsec">
+                        <tr>
+                            <td style="width: 45%;"><span style="font-size: 12pt; color:#fda400; font-family:楷体">泊位段名称</span></td>
+                            <td style="width: 27.5%;" align="center" valign="middle"><span style="font-size: 12pt; color:#fda400; font-family:楷体">收入</span></td>
+                            <td style="width: 27.5%;" align="center" valign="middle"><span style="font-size: 12pt; color:#fda400; font-family:楷体">欠费</span></td>
+                        </tr>
+                        @foreach (var temp in Model.BerthsecStatisticsList)
+                        {
+                            <tr id="@temp.BerthsecId">
+                                <td>@temp.BerthsecName</td>
+                                <td align="center" valign="middle">@temp.ToatalMoney</td>
+                                @if (temp.Money == 0)
+                                {
+                                    <td align="center" valign="middle">0.00</td>
+                                }
+                                else
+                                {
+                                    <td align="center" valign="middle">@temp.Money</td>
+                                }
+                            </tr>
+                        }
+                    </table>
+                </div>
+
+            </div>
+
+            @*结束 左边列表*@
+
+            @*开始 右边列表*@
+            <div class="right_margin box-div">
+
+                <div class="sun-div">
+                    <div class="sun-title"><span style="font-size: 14pt; font-family:楷体">今日金额概况</span></div>
+                    <table style="width:100%">
+                        <tr>
+                            <td align="center" valign="top">
+                                <span style="font-size: 13pt; color: #fda400; font-family:楷体">应收金额</span><p>
+                                    @if (Model.SumReceivable == 0)
+                                    {<span id="Receivable">0.00</span>}
+                                    else
+                                    {<span id="Receivable">@Model.SumReceivable</span>}
+                                </p>
+                            </td>
+
+                            <td align="center" valign="top">
+                                <span style="font-size: 13pt; color: #fda400; font-family:楷体">实收金额</span><p>
+                                    @if (Model.SumFactReceive == 0)
+                                    {<span id="FactReceive">0.00</span>}
+                                    else
+                                    {<span id="FactReceive">@Model.SumFactReceive</span>}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" valign="top">
+                                <span style="font-size: 13pt; color: #fda400; font-family:楷体">欠费金额</span><p>
+                                    @if (Model.SumArrearage == 0)
+                                    {<span id="Arrearage">0.00</span>}
+                                    else
+                                    {<span id="Arrearage">@Model.SumArrearage</span>}
+                                </p>
+                            </td>
+                            <td align="center" valign="top">
+                                <span style="font-size: 13pt; color: #fda400; font-family:楷体">欠费补缴</span><p>
+                                    @if (Model.SumRepayment == null || Model.SumRepayment == 0)
+                                    {<span id="Repayment">0.00</span>}
+                                    else
+                                    {<span id="Repayment">@Model.SumRepayment</span>}
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="sun-div">
+                    <div class="sun-title"><span style="font-size: 14pt; font-family:楷体">日收入环比</span></div>
+                    <div id="ec3" class="right-ec"></div>
+                </div>
+
+                <div class="sun-div">
+                    <div class="sun-title"><span style="font-size: 14pt; font-family:楷体">收费员今日收费情况</span></div>
+                    <table class="ri-table" style="width:100%" id="employee">
+                        <tr>
+                            <td style="width: 40%;"><span style="font-size: 12pt; color:#fda400; font-family:楷体">收费员名称</span></td>
+                            <td style="width: 30%;" align="center" valign="middle"><span style="font-size: 12pt; color:#fda400; font-family:楷体">实收</span></td>
+                            <td style="width: 30%;" align="center" valign="middle"><span style="font-size: 12pt; color:#fda400; font-family:楷体">追缴</span></td>
+                        </tr>
+                        @foreach (var temp in Model.EmployeeChargesList)
+                        {
+                            <tr id="@temp.EmployeeId">
+                                <td>&emsp;@temp.EmployName</td>
+
+                                @if (temp.FactReceive == null || temp.FactReceive == 0)
+                                {
+                                    <td align="center" valign="middle">0.00</td>
+                                }
+                                else
+                                {
+                                    <td align="center" valign="middle">@temp.FactReceive</td>}
+                                @if (temp.Repayment == null || temp.Repayment == 0)
+                                {
+                                    <td align="center" valign="middle">0.00</td>
+                                }
+                                else
+                                {
+                                    <td align="center" valign="middle">@temp.Repayment</td>}
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+
+            @*结束 右边列表*@
+        </article>
+    </div>
+
+    @*signalr-begin*@
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="../signalr/hubs"></script>
+    @*signalr-end*@
+    
+    <script type="text/javascript">
+        var myChart1 = echarts.init(document.getElementById('ec1'));
+        var myChart2 = echarts.init(document.getElementById('ec2'));
+        var myChart3 = echarts.init(document.getElementById('ec3'));
+
+        //更新
+        function updateTable(employeeid, berthsecid) {
+            var flag = false;
+            var berthseccount;
+            $('#berthsec tr').each(function (i) {
+                if ($(this).attr('id') == berthsecid) {
+                    flag = true;
+                    $(this).remove();
+                }
+                berthseccount = i;
+            });
+            if (!flag && berthseccount > 5) {
+                $('#berthsec tr:eq(1)').remove();
+            }
+            loadBerthsecStatistics(berthsecid);
+
+            var bool = false;
+            var employeecount;
+            $('#employee tr').each(function (i) {
+                if ($(this).attr('id') == employeeid) {
+                    bool = true;
+                    $(this).remove();
+                }
+                employeecount = i;
+            });
+            if (!bool && employeecount > 5) {
+                $('#employee tr:eq(1)').remove();
+            }
+            loadTodayFactReceiveList(employeeid);
+        }
+
+        //异步加载泊位段今日实收金额
+        function loadBerthsecStatistics(berthsecid) {
+            $.ajax({
+                type: "Post",
+                url: "../BigScreen/GetBerthsecStatistics",
+                data: {BerthsecId: berthsecid},
+                success: function (data) {
+                    $("#berthsec").append("<tr id=" + berthsecid + "><td>" + data.BerthsecName + "</td><td align='center' valign='middle'>" + parseFloat(data.FaceMoney + data.Repayment).toFixed(2) + "</td><td align='center' valign='middle'>" + parseFloat(data.Money).toFixed(2) + "</td></tr>");
+                }
+            });
+        }
+
+         //异步加载收费员今日实收
+        function loadTodayFactReceiveList(employeeid) {
+            $.ajax({
+                type: "Post",
+                url: "../BigScreen/GetTodayFactReceiveList",
+                data: { EmployeeId: employeeid },
+                success: function (data) {
+                    $("#employee").append("<tr id=" + employeeid + "><td>" + "&emsp;" + data.EmployName + "</td><td align='center' valign='middle'>" + parseFloat(data.FactReceive).toFixed(2) + "</td><td align='center' valign='middle'>" + parseFloat(data.Repayment).toFixed(2) + "</td></tr>");
+                }
+            });
+        }        
+
+$(function () {
+            //加载地磁图表数据  
+              $.ajax({
+        type: "post",
+        url: '../BigScreen/GetSensorsDetails',
+        dataType: 'json',
+        success: function (result) {
+            data = [
+                { value: result.OffLine, name: '离线地磁' },
+                { value: result.OnLine, name: '在线地磁' }];
+            total = result.SensorsTotal;
+            loadSensorsDetails(data, total);
+        }
+    });
+
+            //加载泊位使用率数据
+            loadGetBerthsecsUtilization();
+            //加载获取环比金额数据
+             $.ajax({
+        type: "post",
+        url: '../BigScreen/GetMoneyChain',
+        dataType: 'json',
+        success: function (result) {
+            var totalmoney = [];
+            var dayTime = [];
+            for (var i = 0; i < result.length; i++) {
+                totalmoney.push(result[i].MoneyTotal);
+                dayTime.push(result[i].Daytime + "  ");
+            }
+            loadMoneyChain(totalmoney, dayTime);
+        }
+    });
+
+              var chat = $.connection.chat;
+            $.connection.hub.start().done(function () {
+                chat.server.userlogin("@Model.UserId" + ' index' + "@Model.TenantId.Value");
+            });
+
+            chat.client.sendIndexMessage = function (Name, berthsecid, employeeid, message, type) {
+                delEmpolyeePoint(employeeid);
+                var typeval = "";
+                var val = "";
+                if (type == 1) {
+                    typeval = "停车出场";
+                    val = "应收金额：" + message;                 
+                }
+                else if (type == 2)//实收
+                {
+                    var factReceive = parseFloat($("#FactReceive").text());
+                    $("#FactReceive").html(parseFloat(factReceive + message).toFixed(2));
+                    typeval = "停车出场";
+                    val = "实收金额：" + message;
+                    updateTable(employeeid, berthsecid);   
+
+                    delEmpolyeePoint(employeeid, message, type);
+                }
+                else if (type == 3) {
+                    var arrearage = parseFloat($("#Arrearage").text());
+                    $("#Arrearage").html(parseFloat(arrearage + message).toFixed(2));
+                    typeval = "欠费出场";
+                    val = "欠费金额：" + message;
+                    //$('#berthsec tr:eq(1)').remove();
+                    updateTable(employeeid, berthsecid);       
+                }
+                else if (type == 4) {
+                    var repayment = parseFloat($("#Repayment").text());
+                    $("#Repayment").html(parseFloat(repayment + message).toFixed(2));
+                    typeval = "欠费补缴";
+                    val = "补缴金额：" + message;
+                  //  $('#employee tr:eq(1)').remove();
+                    updateTable(employeeid, berthsecid);       
+                  //  loadTodayFactReceiveList(employeeid);
+                    delEmpolyeePoint(employeeid, message, type);
+                }
+                if (type != 5) {
+                    var myDate = new Date();
+                    myDate.toLocaleDateString();
+                    var operateDateBegin = myDate.getFullYear() + "-"
+                        + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+                        + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate()) + " " + myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds();
+                    $('ul li:eq(0)').remove();
+                    $("#loglist").append(" <li  title=" + message + "><b>【" + typeval + "】时间：" + operateDateBegin + "，" + val + "元。</b></li>");
+                }
+            }
+
+            $("#hideleft").toggle(
+                function () {
+                    $(".left_margin").animate({ marginLeft: "-125%" });
+                    $(".wrap").animate({ marginLeft: 0 });
+                    $(".center").animate({ marginLeft: 0 });
+                },
+                function () {
+                    $(".center").animate({ marginLeft: "25%" });
+                    $(".left_margin").animate({ marginLeft: "-100%" });
+                }
+            );
+            $("#hideright").toggle(
+                function () {
+                    $(".right_margin").animate({ marginRight: "-125%" });
+                    //隐藏
+                    $("#ec3").hide();
+                    $(".wrap").animate({ marginRight: 0 });
+                    $(".center").animate({ marginRight: 0 });
+                },
+                function () {
+                    $(".center").animate({ marginRight: "25%" });
+                    $(".right_margin").animate({ marginLeft: "-25%" });
+                    $("#ec3").show();
+                    //显示
+                }
+            );
+        });
+    </script>
+</body>
+</html>

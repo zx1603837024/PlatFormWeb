@@ -1,0 +1,324 @@
+﻿@{ 
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - 路外停车场管理系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- basic styles -->
+    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css" />
+
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="../../assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!-- page specific plugin styles -->
+    <!-- fonts -->
+
+    <link rel="stylesheet" href="~/assets/css/jquery-ui-1.10.3.full.min.css" />
+
+    <link rel="stylesheet" href="~/assets/font/fontawesome-webfont.woff" />
+
+    <link rel="stylesheet" href="~/assets/css/datepicker.css" />
+    <link href="~/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+
+    <!--<link rel="stylesheet" href="https://fonts.css.network/css?family=Open+Sans:400,300" />-->
+    <!-- ace styles -->
+
+    <link href="~/Content/element-ui/element-ui.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/css/ace.min.css" />
+    <link rel="stylesheet" href="../../assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="../../assets/css/ace-skins.min.css" />
+
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="../../assets/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+
+    <script src="../../assets/js/ace-extra.min.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="../../assets/js/html5shiv.js"></script>
+    <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="../../assets/js/jquery-2.0.3.min.js"></script>
+
+    @*右下角提示栏-begin*@
+    <script src="~/assets/global/plugins/bootstrap-toastr/toastr.js" type="text/javascript"></script>
+    <script src="~/assets/global/plugins/bootstrap-toastr/p4.toastr.js" type="text/javascript"></script>
+    <link href="~/assets/global/plugins/bootstrap-toastr/toastr.css" rel="stylesheet" />
+    @*右下角提示栏-end*@
+
+    @*提示框-begin*@
+    <script src="~/assets/global/plugins/jquery-sweetalert/sweetalert-dev.js"></script>
+    <link rel="stylesheet" href="~/assets/global/plugins/jquery-sweetalert/sweetalert.css" />
+    @*提示框-end*@
+    <script src="~/Content/element-ui/vue.min.js"></script>
+    <script src="~/Content/element-ui/element-ui.js"></script>
+    <script src="~/Content/element-ui/axios.min.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-default" id="navbar">
+        <script type="text/javascript">
+            try {
+                ace.settings.check('navbar', 'fixed');
+            } catch (e) { }
+        </script>
+
+        <div class="navbar-container" id="navbar-container">
+            <div class="navbar-header pull-left">
+                <a href="#" class="navbar-brand">
+                    <small>
+                        <img src="../Users/ShowImage" width="22px" height="22px" />
+                        @Html.Action("Header", "Layout")
+                    </small>
+                </a><!-- /.brand -->
+            </div><!-- /.navbar-header -->
+
+            <div class="navbar-header pull-right" role="navigation">
+                <ul class="nav ace-nav">
+                    @Html.Action("TopBar", "Layout")
+                </ul><!-- /.ace-nav -->
+            </div><!-- /.navbar-header -->
+        </div><!-- /.container -->
+    </div>
+
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+            try { ace.settings.check('main-container', 'fixed') } catch (e) { }
+        </script>
+
+        <div class="main-container-inner">
+            <a class="menu-toggler" id="menu-toggler" href="#">
+                <span class="menu-text"></span>
+            </a>
+
+            <div class="sidebar" id="sidebar">
+                <script type="text/javascript">
+                    try { ace.settings.check('sidebar', 'fixed') } catch (e) { }
+                </script>
+
+                <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                    <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+                        <button class="btn btn-success" onclick="javascript: window.location.href = '../Platform/ExtraLock'">
+                            <i class="icon-lock"></i>
+                        </button>
+
+                        <button class="btn btn-info">
+                            <i class="icon-pencil"></i>
+                        </button>
+
+                        <button class="btn btn-warning" onclick="javascript: $('#bridgeFrame').attr('src','../Users/ProfileInfo')">
+                            <i class="icon-user"></i>
+                        </button>
+
+                        <button class="btn btn-danger" onclick="javascript: window.location.href = '../Metro/MetroIndex'">
+                            <i class="icon-cogs">
+                            </i>
+                        </button>
+                    </div>
+                    <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+                        <span class="btn btn-success"></span>
+                        <span class="btn btn-info"></span>
+                        <span class="btn btn-warning"></span>
+                        <span class="btn btn-danger"></span>
+                    </div>
+                </div><!-- #sidebar-shortcuts -->
+
+                <ul class="nav nav-list">
+                    <li data-title="停车场管理" class="open">
+                        <a class="dropdown-toggle">
+                            <i class="icon-dashboard"></i>
+                            <span class="menu-text"> 停车场管理 </span>
+                            <span class="badge badge-primary ">3</span>
+                            <b class="arrow icon-angle-down"></b>
+                        </a>
+
+                        <ul class="submenu" style="display:block;">
+                            <li data-title="停车场管理" class="active">
+                                <a href="../ParkingLot/CurbParkingManagement" class="">
+                                    <i class="icon-double-angle-right"></i>
+                                    <i class="icon-dashboard"></i>
+                                    停车场管理
+                                    <span class="badge badge-primary ">0</span>
+                                    <b class=""></b>
+                                </a>
+                            </li>
+                            <li data-title="包月管理" >
+                                <a href="../ParkingLot/MonthlyCarManage" class="">
+                                    <i class="icon-double-angle-right"></i>
+                                    <i class="icon-dashboard"></i>
+                                    包月管理
+                                    <span class="badge badge-primary ">0</span>
+                                    <b class=""></b>
+                                </a>
+                            </li>
+                            <li data-title="停车记录管理" class="">
+                                <a href="../ParkingLot/ParkRecordManage" class="">
+                                    <i class="icon-double-angle-right"></i>
+                                    <i class="icon-dashboard"></i>
+                                    停车记录管理
+                                    <span class="badge badge-primary ">0</span>
+                                    <b class=""></b>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+
+
+                <div class="sidebar-collapse" id="sidebar-collapse">
+                    <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+                </div>
+
+                <script type="text/javascript">
+                    try { ace.settings.check('sidebar', 'collapsed'); }
+                    catch (e) {
+                        NotifyError("固定滚动条失败！", "系统提示");
+                    }
+                </script>
+            </div>
+
+            <div class="main-content">
+                <iframe class="" src="../ParkingLot/CurbParkingManagement" id="bridgeFrame" frameborder="0"></iframe>
+            </div><!-- /内容数据 -->
+            @*系统界面设置-begin*@
+            <div class="ace-settings-container" id="ace-settings-container">
+                <div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn">
+                    <i class="icon-cog bigger-150"></i>
+                </div>
+
+                <div class="ace-settings-box" id="ace-settings-box">
+                    <div>
+                        <div class="pull-left">
+                            <select id="skin-colorpicker" class="hide">
+                                <option data-skin="default" value="#02509B">#02509B</option>
+                                <option data-skin="skin-1" value="#222A2D">#222A2D</option>
+                                <option data-skin="skin-2" value="#C6487E">#C6487E</option>
+                                <option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+                            </select>
+                        </div>
+                        <span>&nbsp; 选择皮肤</span>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" class="ace ace-checkbox-2" checked="checked" id="ace-settings-navbar" />
+                        <label class="lbl" for="ace-settings-navbar">固定导航栏</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-sidebar" />
+                        <label class="lbl" for="ace-settings-sidebar">固定滑动条</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-breadcrumbs" />
+                        <label class="lbl" for="ace-settings-breadcrumbs">固定路径栏</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-rtl" />
+                        <label class="lbl" for="ace-settings-rtl">切换到左边</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-add-container" />
+                        <label class="lbl" for="ace-settings-add-container">
+                            切换窄屏
+                            <b></b>
+                        </label>
+                    </div>
+                </div>
+            </div><!-- /#ace-settings-container -->
+            @*系统界面设置-end*@
+        </div><!-- /.main-container-inner -->
+
+        <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+            <i class="icon-double-angle-up icon-only bigger-110"></i>
+        </a>
+    </div><!-- /.main-container -->
+    <!-- basic scripts -->
+    <!--[if !IE]> -->
+  
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='../../assets/js/jquery-2.0.3.min.js'>" + "<" + "script>");
+    </script>
+    @Html.Action("ProfileSetting", "Layout")
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+     window.jQuery || document.write("<script src='../../assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+    </script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='../../assets/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+    </script>
+
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" charset="gb2312"></script>
+    <script src="~/assets/js/typeahead-bs2.min.js"></script>
+
+    <!-- page specific plugin scripts -->
+    <!--[if lte IE 8]>
+      <script src="../../assets/js/excanvas.min.js"></script>
+    <![endif]-->
+    
+
+    <!-- ace scripts -->
+
+    <script src="../../assets/js/ace-elements.min.js"></script>
+    <script src="../../assets/js/ace.min.js"></script>
+
+    <script>
+        jQuery(function ($) {
+            //计算iframe的高度宽度
+            function changeFrameHeight() {
+                var siderHeight = $(document).height() - $("#navbar").height();
+                var frameHeight = $("#bridgeFrame").contents().find("body").height()
+                var frameWidth = $(document).width() - $("#sidebar").width() - 20;
+                $("#bridgeFrame").attr("width", frameWidth).attr("height", siderHeight);
+            }
+
+            $("#bridgeFrame").attr("onload", changeFrameHeight);
+            $("#sidebar-collapse").click(function () {
+                setTimeout(changeFrameHeight, 100);
+            })
+            window.onresize = changeFrameHeight;
+            var bind = function () {
+                $(".nav.nav-list").find("a[href]").unbind();
+                $(".nav.nav-list").find("a[href]").click(function () {
+                    event.preventDefault();
+                    var dom = $(this);
+                    var menuName = dom.parent().data("title");
+                    $(".activeactive").removeClass("activeactive").removeClass("open");//特殊处理控制台
+                    $(".active").removeClass("active");//取消选中样式
+                    dom.parent().addClass("active");//选中样式
+                    document.title = `${menuName} - 互联网设备数据管理平台`;
+                    var href = dom.attr("href");
+                    if (href) {
+                        $("#bridgeFrame").attr("src", href);
+                    }
+                })
+                $("#menuUL").on("click", "li", function () {
+                    $(this).siblings('li').removeClass('active');  // 删除其兄弟元素的样式
+                    $(this).addClass('active');                    // 为点击元素添加类名
+                });
+            };
+            bind();
+        });
+
+    </script>
+
+    @Html.Action("Signalr", "Layout")
+
+
+    <div style="display:none">
+    </div>
+</body>
+</html>
+

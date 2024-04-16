@@ -1,0 +1,78 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("PeakPeriod");
+    ViewBag.ActiveMenu = "PeakPeriod";
+}
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../Decision/GetPeakPeriodList',
+    datatype: "json",
+    ajaxSelectOptions　: {type: "GET"} ,
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit: false,
+    colNames: ['操作','ID', '预警事件', '开始时间', '结束时间', '是否过期'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false, search: false,
+    formatter: 'actions',hidden:window.rowedit, frozen : true, align: 'center',
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true},
+    { name: 'Remark', index: 'Remark', editable: true , width:500, required: true},
+    { name: 'BeginTime', index: 'BeginTime', editable: true, required: true , formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'EndTime', index: 'EndTime', editable: true, required: true, formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }  },
+    { name: 'IsActive', index: 'IsActive', editable: true, search: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:currencyFmatter, width:80, stype:'select', align:'center',
+    searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    //editurl: "../Decision/ProcessDictionaryType",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+
+    function addCellAttr(rowId, val, rawObject, cm, rdata) {
+    if(val == '是')
+    return "style='color:red'";
+    }
+
+    function currencyFmatter (cellvalue, options)
+    {
+    if(cellvalue== true)
+    return "<span class='badge badge-success'>已结束</span>";
+    else
+    return "<span class='badge badge-warning'>未结束</span>";
+    }
+}
+
+
+
+
+
+

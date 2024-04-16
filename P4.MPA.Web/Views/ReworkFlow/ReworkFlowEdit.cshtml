@@ -1,0 +1,372 @@
+﻿
+@{
+    ViewBag.Title = L("ReworkFlowEdit");
+    ViewBag.ActiveMenu = "ReworkFlowEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<style type="text/css">
+    table ul {
+        margin-left: 213px;
+    }
+
+        table ul li {
+            list-style: none;
+            margin: 10px 0;
+        }
+</style>
+
+<div class="alert alert-info">
+    <i class="icon-hand-right"></i>
+    设备返修
+    <button class="close" data-dismiss="alert">
+        <i class="icon-remove"></i>
+    </button>
+</div>
+
+<form class="form-horizontal" role="form" id="myform" enctype="multipart/form-data">
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 设备编号 </label>
+        <div class="col-sm-9">
+            @*<table><tr><td><select id="ddlBatchNum" /></td><td>&nbsp;&nbsp;设备编号&nbsp;&nbsp;<select id="ddlEqId" /></td><td>&nbsp;&nbsp;配件编号&nbsp;&nbsp;<select id="ddlPartsId" /></td></tr></table>*@
+
+            <input type="text" id="txtEqId" value="" placeholder="设备编号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 配件编号 </label>
+        <div class="col-sm-9">
+            <table><tr><td><select id="ddlPartsId" class="form-control" /></td></tr></table>
+            @*<input type="text" id="txtPartsId" value="" placeholder="配件编号" class="col-xs-10 col-sm-5" />*@
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 返修批次号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtBatchNum" value="" placeholder="同批返修设备请输入相同批次号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    @*<div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 快递单号 </label>
+
+            <div class="col-sm-9">
+                <input type="text" id="txtCompanyCustomerExpressId" value="" placeholder="快递单号" class="col-xs-10 col-sm-5" />
+            </div>
+        </div>*@
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 故障关键字 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtFaultKeyword" value="" placeholder="故障关键字" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">故障描述 </label>
+
+        <div class="col-sm-9">
+            <textarea id="txtFaultDescription" value="" placeholder="故障描述" class="col-xs-10 col-sm-5" rows="10" /></textarea>
+            @*<input type="text" id="txtFaultDescription" value="" placeholder="故障描述" class="col-xs-10 col-sm-5" />*@
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 上传图片 </label>
+        <div class="col-sm-9">
+            @*<img class="editable img-responsive" id="avatar" src="~/assets/avatars/fuser.jpg" />*@
+            @*<input type="file" id="pic" name="pic" value="" placeholder="上传图片" class="col-xs-10 col-sm-5" />
+                <img src="" class="img" />*@
+            <input multiple="" type="file" id="id-input-file-3" />
+            <label>
+                <input type="checkbox" name="file-format" id="id-file-format" class="ace" />
+                <span class="lbl"> 只上传图片</span>
+            </label>
+        </div>
+    </div>
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-3 col-md-9">
+            <button class="btn btn-info" type="button" onclick="javascript:Save()">
+                <i class="icon-ok bigger-110"></i>
+                保存
+            </button>
+
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            <button class="btn" type="reset">
+                <i class="icon-undo bigger-110"></i>
+                重置
+            </button>
+        </div>
+    </div>
+
+</form>
+
+
+<script type="text/javascript">
+
+        jQuery(function ($) {
+            $('#id-disable-check').on('click', function () {
+                var inp = $('#form-input-readonly').get(0);
+                if (inp.hasAttribute('disabled')) {
+                    inp.setAttribute('readonly', 'true');
+                    inp.removeAttribute('disabled');
+                    inp.value = "This text field is readonly!";
+                }
+                else {
+                    inp.setAttribute('disabled', 'disabled');
+                    inp.removeAttribute('readonly');
+                    inp.value = "This text field is disabled!";
+                }
+            });
+
+
+            $(".chosen-select").chosen();
+            $('#chosen-multiple-style').on('click', function (e) {
+                var target = $(e.target).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+
+            $('[data-rel=tooltip]').tooltip({ container: 'body' });
+            $('[data-rel=popover]').popover({ container: 'body' });
+
+
+            //dynamically change allowed formats by changing before_change callback function
+            $('#id-file-format').removeAttr('checked').on('change', function () {
+                var before_change
+                var btn_choose
+                var no_icon
+                if (this.checked) {
+                    btn_choose = "Drop images here or click to choose";
+                    no_icon = "icon-picture";
+                    before_change = function (files, dropped) {
+                        var allowed_files = [];
+                        for (var i = 0 ; i < files.length; i++) {
+                            var file = files[i];
+                            if (typeof file === "string") {
+                                //IE8 and browsers that don't support File Object
+                                if (!(/\.(jpe?g|png|gif|bmp)$/i).test(file)) return false;
+                            }
+                            else {
+                                var type = $.trim(file.type);
+                                if ((type.length > 0 && !(/^image\/(jpe?g|png|gif|bmp)$/i).test(type))
+                                        || (type.length == 0 && !(/\.(jpe?g|png|gif|bmp)$/i).test(file.name))//for android's default browser which gives an empty string for file.type
+                                    ) continue;//not an image so don't keep this file
+                            }
+
+                            allowed_files.push(file);
+                        }
+                        if (allowed_files.length == 0) return false;
+
+                        return allowed_files;
+                    }
+                }
+                else {
+                    btn_choose = "Drop files here or click to choose";
+                    no_icon = "icon-cloud-upload";
+                    before_change = function (files, dropped) {
+                        return files;
+                    }
+                }
+                var file_input = $('#id-input-file-3');
+                file_input.ace_file_input('update_settings', { 'before_change': before_change, 'btn_choose': btn_choose, 'no_icon': no_icon })
+                file_input.ace_file_input('reset_input');
+            });
+
+
+
+
+            $('#spinner1').ace_spinner({ value: 0, min: 0, max: 200, step: 10, btn_up_class: 'btn-info', btn_down_class: 'btn-info' })
+            .on('change', function () {
+                //alert(this.value)
+            });
+            $('#spinner2').ace_spinner({ value: 0, min: 0, max: 10000, step: 100, touch_spinner: true, icon_up: 'icon-caret-up', icon_down: 'icon-caret-down' });
+            $('#spinner3').ace_spinner({ value: 0, min: -100, max: 100, step: 10, on_sides: true, icon_up: 'icon-plus smaller-75', icon_down: 'icon-minus smaller-75', btn_up_class: 'btn-success', btn_down_class: 'btn-danger' });
+
+          
+
+            //chosen plugin inside a modal will have a zero width because the select element is originally hidden
+            //and its width cannot be determined.
+            //so we set the width after modal is show
+            $('#modal-form').on('shown.bs.modal', function () {
+                $(this).find('.chosen-container').each(function () {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '200px');
+                });
+            })
+            /**
+            //or you can activate the chosen plugin after modal is shown
+            //this way select element becomes visible with dimensions and chosen works as expected
+            $('#modal-form').on('shown', function () {
+                $(this).find('.modal-chosen').chosen();
+            })
+            */
+
+            $('#id-input-file-3').ace_file_input({
+                style: 'well',
+                btn_choose: '把文件拖放到这里，或单击以选择',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'small',
+                allowedFileExtensions: ['jpg', 'png', 'gif'],//接收的文件后缀
+                preview_error: function (filename, error_code) {
+                    alert(error_code);
+                }
+
+            }).on('change', function () {
+
+                //var thumb = $('#id-input-file-3').next().find('img').data('thumb');
+                //alert(thumb);
+               
+            });
+        });
+
+        function Save() {
+            if ($.trim($("#txtEqId").val()) == "")
+            { swal("失败!", "设备编号不能为空！", "error"); }
+            else if ($.trim($("#txtBatchNum").val()) == "")
+            { swal("失败!", "批次号不能为空！", "error"); }
+            else if ($.trim($("#txtFaultKeyword").val()) == "")
+            { swal("失败!", "故障关键字不能为空！", "error"); }
+            else if ($.trim($("#txtFaultDescription").val()) == "")
+            { swal("失败!", "故障描述不能为空！", "error"); }
+            else
+            {
+                swal({
+                    title: "系统提示?",
+                    text: "您确定要保存吗？",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定,保存!",
+                    closeOnConfirm: false
+                },
+             function () {
+                 swal("成功!", "正在保存.", "success");
+                 if ("FileReader" in window) {
+                     var thumb = $('#id-input-file-3').next().find('img').data('thumb');
+                     //var thumb = $('#id-input-file-3').val();
+                     if (thumb) $('#id-input-file-3').get(0).src = thumb;
+                     $.ajax({
+                         type: "Post",
+                         url: '../ReworkFlow/Insert',
+                         data: {
+                             EqId: $("#txtEqId").val(),
+                             PartsId: $("#ddlPartsId").val(),
+                             FaultKeyword: $("#txtFaultKeyword").val(),
+                             FaultDescription: $("#txtFaultDescription").val(),
+                             //批次号
+                             BatchNum: $("#txtBatchNum").val(),
+                             base64String: thumb
+                             //CompanyCustomerExpressSerialNum: $("#txtCompanyCustomerExpressSerialNum").val(),
+                             //CompanyCustomerExpressId: $("#txtCompanyCustomerExpressId").val(),
+                         },
+                         success: function (data) {
+                             if (data.Success == true) {
+                                 NotifySuccess('数据保存成功！', '系统消息');
+                                 $("#txtEqId").val("");
+                                 //$("#txtPartsId").val("");
+                                 $("#txtFaultKeyword").val("");
+                                 $("#txtFaultDescription").val("");
+                                 $("#txtCompanyCustomerExpressSerialNum").val("");
+                                 //removeli();
+                             }
+                             else if (data.Success == false) {
+                                 swal("", data.Error.Message, "error");
+                             }
+                         }, error: function () {
+                         }
+                     });
+                     //$.ajax({
+                     //    type: "Post",
+                     //    url: "../ReworkFlow/SaveReworkFlowPicture",
+                     //    data: {
+                     //        base64String: thumb
+                     //    },
+                     //    success: function (data) {
+                     //    }
+                     //});
+                 }
+
+                 
+             });
+            }
+        }
+
+        $(document).ready(function () {
+            //GetByJquery();
+            //$("#ddlBatchNum").change(function () { GetEqId() });
+           // $("#ddlEqId").change(function () { GetPartsId() });
+            $("#txtEqId").blur(function () {
+                $("#ddlPartsId").empty();
+                var url = "/ReworkFlow/GetPartsIdByEqId/" + $("#txtEqId").val();
+                $.getJSON(url, function (data) {
+                    $("<option></option>")
+                            .val("")
+                            .text("")
+                            .appendTo($("#ddlPartsId"));
+                    $.each(data, function (i, item) {
+                        $("<option></option>")
+                            .val(item["PartsId"])
+                            .text(item["PartsId"])
+                            .appendTo($("#ddlPartsId"));
+                    });
+                });
+            })
+        });
+
+    //    function GetByJquery() {
+
+    //        $("#ddlBatchNum").empty(); 
+
+    //        $.getJSON("/ReworkFlow/GetAllBatchNum", function (data) {
+    //            $.each(data, function (i, item) {
+    //                $("<option></option>")
+    //                    .val(item["BatchNum"])
+    //                    .text(item["BatchNum"])
+    //                    .appendTo($("#ddlBatchNum"));
+    //            });
+    //            GetEqId();
+    //        });
+
+    //    }
+
+    //    function GetEqId() {
+
+    //        $("#ddlEqId").empty(); 
+    //        var url = "/ReworkFlow/GetEqIdByBatchNum/" + $("#ddlBatchNum").val();
+    //        $.getJSON(url, function (data) {
+    //            $.each(data, function (i, item) {
+    //                $("<option></option>")
+    //                    .val(item["EqId"])
+    //                    .text(item["EqId"])
+    //                    .appendTo($("#ddlEqId"));
+    //            });
+    //            GetPartsId();
+    //        });
+    //    }
+
+    //function GetPartsId() {
+    //    $("#ddlPartsId").empty();
+    //    var url = "/ReworkFlow/GetPartsIdByEqId/" + $("#ddlEqId").val();
+
+    //        $.getJSON(url, function (data) {
+    //            $.each(data, function (i, item) {
+    //                $("<option></option>")
+    //                    .val(item["PartsId"])
+    //                    .text(item["PartsId"])
+    //                    .appendTo($("#ddlPartsId"));
+    //            });
+    //        });
+    //    }
+</script>
+

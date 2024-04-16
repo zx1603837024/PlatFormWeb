@@ -1,0 +1,344 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("PDAEquipment");
+    ViewBag.ActiveMenu = "PDAEquipment";
+}
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            @*
+                <td><label for="id-date-picker-1">查询日期：</label></td>
+                <td>
+                    <div class="row">
+                        <div class="col-xs-8 col-sm-11">
+                            <div class="input-group">
+                                <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                                <span class="input-group-addon">
+                                    <i class="icon-calendar bigger-110"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td style="text-align: center;">到&nbsp;&nbsp;</td>
+                <td>
+                    <div class="row">
+                        <div class="col-xs-8 col-sm-11">
+                            <div class="input-group">
+                                <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                                <span class="input-group-addon">
+                                    <i class="icon-calendar bigger-110"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td colspan="2" style="text-align: center;">
+
+                    <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                        搜索
+                    </button>
+                </td>*@
+            <td width="80%">&nbsp;</td>
+            <td>
+                <div id="mySwitch" class="switch has-switch" data-on-label="列表" data-off-label="图形" style="float:right">
+                    <input checked="checked" type="checkbox">
+                </div>
+            </td>
+            <td width="200px" style="text-align: right;"></td>
+            <td colspan="2" style="text-align: right;">
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出使用状态统计数据
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="jqgridDiv">
+    <table id="grid-table"></table>
+    <div id="grid-pager"></div>
+</div>
+<div id="echarDiv" style="height: 410px;width:100%;">
+
+</div>
+
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript">
+    $('#mySwitch').on('switch-change', function (e, data) {
+        var $el = $(data.el), value = data.value;
+        if (value == true) {
+            $('#echarDiv').css('display', 'none');
+            $('#jqgridDiv').css('display', 'block');
+            GetAjaxChartData();//更改线性数据
+        }
+        else {
+            $('#echarDiv').css('display', 'block');
+            $('#jqgridDiv').css('display', 'none');
+            GetAjaxChartData();//更改线性数据
+        }
+    });
+    /*
+    $('#myButton').on('click', function () {
+
+        GetAjaxChartData();//更改线性数据
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            url: '..//',
+            datatype: 'json',
+            postData:
+                {
+                    'operateDateBegin': $('#operateDateBegin').val(),
+                    'operateDateEnd': $('#operateDateEnd').val()
+                },
+            page: 1
+        }).trigger('reloadGrid');
+        //jQuery('#grid-table').jqGrid('setCaption', "操作权限").trigger('reloadGrid');
+    });
+    */
+    $('#exportButton').on('click', function () {
+
+        window.location.href = "../Equipments/CargoInfoExport";
+
+    });
+</script>
+
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/chart/line.js"></script>
+
+<script type="text/javascript">
+
+    var options = {
+        title: {
+            text: 'PDA设备使用状态饼状图',
+            subtext: '未使用/领用/返修',
+            x: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            data: ['未使用', '领用', '返修']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                dataView: { show: true, readOnly: false },
+                magicType: {
+                    show: true,
+                    type: ['pie', 'funnel'],
+                    option: {
+                        funnel: {
+                            x: '25%',
+                            width: '50%',
+                            funnelAlign: 'left',
+                            max: 1548
+                        }
+                    }
+                },
+                restore: { show: true },
+                saveAsImage: { show: true }
+            }
+        },
+
+        calculable: true,
+        series: [
+            {
+                name: 'PDA设备使用状态',
+                type: 'pie',
+                radius: '55%',
+                data: [
+                    { value: "0", name: '未使用' },
+                    { value: "0", name: '领用' },
+                    { value: "0", name: '返修' }
+                ]
+            }
+        ]
+    };
+    var myChart;
+
+
+    // Step:4 require echarts and use it in the callback.
+    // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+    require.config({
+        paths: {
+            echarts: '../../assets/js/echarts-2.2.7/build/echarts',
+            'echarts/chart/pie': '../../assets/js/echarts-2.2.7/build/echarts'
+        }
+    });
+    require(
+        [
+            'echarts',
+            'echarts/chart/pie', //加载bar模块，按需加载
+        ],
+        //DrawEChart //异步加载的回调函数绘制图表
+        function (ec) {
+            myChart = ec.init(document.getElementById('echarDiv'));
+            //选择一个空图表
+            myChart.setOption(options);
+            GetAjaxChartData();
+        }
+    );
+
+    ///点击按钮获取图表数据采用ajax方式
+    function GetAjaxChartData() {
+
+        //获得图表的options对象
+        //var options = window.myChart.getOption();
+        //图表显示提示信息
+        myChart.showLoading({
+            text: "图表数据正在努力加载..."
+        });
+        //通过Ajax获取数据
+        $.ajax({
+            type: "post",
+            async: false, //同步执行
+            url: '../Equipments/GetEquipmentNumGroupByUseStatus',
+            data: {
+                //'operateDateBegin': $('#operateDateBegin').val(),
+                //'operateDateEnd': $('#operateDateEnd').val(),
+                //'rows': 15,
+                //'page': 1
+            },
+            // data: { operatedatebegin: $('#operateDateBegin').datebox('getValue'), operatedateend: $('#operateDateEnd').datebox('getValue') },
+            //  url: "EmployeeMoneyLine.aspx?type=getData&operateDateBegin=2015/6/30",
+            dataType: "json", //返回数据形式为json
+            success: function (result) {
+                if (result) {
+                    options.series = result.series;
+                    myChart.hideLoading();
+                    myChart.setOption(options, true);
+                }
+            },
+            error: function (errorMsg) {
+                console.log(errorMsg);
+                alert("不好意思，图表请求数据失败啦!");
+            }
+
+        });
+    }
+</script>
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../Equipments/GetEquipments',
+    datatype: "json",
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    ajaxSelectOptions: { type: "GET" , async: false },
+    colNames: ['操作', 'ID', '分公司名称', '设备编号',  '设备型号', '设备类型', 'SIM卡', '车牌识别卡', 'Psam卡', '是否有打印机', '是否启用', '版本号', '是否升级', '制式', 'GPS模块', '扫描头', '使用状态', '领用用户名称', '领用时间', '备注'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false, search: false,
+    formatter: 'actions',hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id',search: false, sorttype: "int", key: true, hidden: true},
+    { name: 'CompanyName', editable: true, index: 'CompanyName',search:false ,edittype:"select",
+    editoptions:{ dataUrl: '../Equipments/GetAllCompanyName/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+    { name: 'PDA', index: 'PDA', search: true, editable: true },
+    { name: 'DeviceType', index: 'DeviceType', search: true,  stype:'select', editable: false, searchoptions: { dataUrl:'../Dictionarys/GetDictionaryListOnCombox/A10017', sopt:['eq', 'ne']}   },
+    { name: 'Type', index: 'Type', editable: true ,edittype:"select",editoptions:{ dataUrl: '../Equipments/GetEquipmentType/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+    { name: 'Sim', index: 'Sim',search: false,editable: true },
+    { name: 'SD', index: 'SD',search:false, editable: true, edittype: "select", editoptions: { value: "true:有;false:无" }, formatter:HaveAndNo },
+    { name: 'Pasm', index: 'Pasm',search: false ,editable: true},
+    { name: 'Printers', index: 'Printers',search:false, editable: true, edittype: "select", editoptions: { value: "true:有;false:无" }, formatter:HaveAndNo },
+    { name: 'IsActive', index: 'IsActive', search:true, editable: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:YesAndNo, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'Version', index: 'Version',search: true },
+    { name: 'IsUpgrade', index: 'IsUpgrade', search:true, editable: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:YesAndNo, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'Standard', index: 'Standard', editable: true ,edittype:"select",editoptions:{ dataUrl: '../Equipments/GetEquipmentStandard/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+    { name: 'GPS', index: 'GPS',search:false, editable: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:HaveAndNo },
+    { name: 'Scan', index: 'Scan',search:false, editable: true, edittype: "select", editoptions: { value: "true:是;false:否" },  formatter:HaveAndNo },
+
+    { name: 'UseStatus', index: 'UseStatus', editable: true ,edittype:"select", editoptions:{ dataUrl: '../Equipments/GetUseStatus/'+(new Date()).getMilliseconds(), defaultValue: '0' },
+    stype:'select', searchoptions: { dataUrl:'../Equipments/GetUseStatus/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+
+    { name: 'EmployeeName', editable: true, index: 'EmployeeName',search:false ,edittype:"select",
+    editoptions:{ dataUrl: '../Equipments/GetEmployeeName/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+    { name: 'GetTime', index: 'GetTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'Remark', index: 'Remark', editable: true, edittype:'textarea' }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    editurl: "../Equipments/ProcessEquipment",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('#echarDiv').css('display', 'none');
+        $('#jqgridDiv').css('display', 'block');
+
+        $('.date-picker').datepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        $('.chosen-select').chosen();
+        $('#employeeIdInput_chosen').css('width', '150px');
+    });
+</script>
+
+
+
+
+
+
+
+

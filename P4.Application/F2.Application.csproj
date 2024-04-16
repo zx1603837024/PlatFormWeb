@@ -1,0 +1,1016 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EDF5D964-4C0F-4F19-B674-58A38A5E5401}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>P4</RootNamespace>
+    <AssemblyName>P4.Application</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DocumentationFile>bin\Debug\P4.Application.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Abp, Version=2.0.1.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.2.0.1.5\lib\net451\Abp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Abp.AutoMapper, Version=2.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.AutoMapper.2.0.0.1\lib\net451\Abp.AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Abp.EntityFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.EntityFramework.1.0.0.0\lib\net451\Abp.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Abp.SignalR, Version=1.0.0.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.SignalR.1.0.0.7\lib\net451\Abp.SignalR.dll</HintPath>
+    </Reference>
+    <Reference Include="Abp.Zero, Version=2.0.2.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.Zero.2.0.2.3\lib\net451\Abp.Zero.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.LoggingFacility.3.3.0\lib\net45\Castle.Facilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="DCommon.LinqToNPOI, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqToNPOI.1.0.2\lib\net40\DCommon.LinqToNPOI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.DynamicFilters, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.DynamicFilters.1.4.0\lib\net40\EntityFramework.DynamicFilters.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SqlServer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SqlServer.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Conversion.v4.0" />
+    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="MongoDB">
+      <HintPath>..\ExternalDLL\MongoDB.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OOXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.0.34.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable.1.0.34.0.Fakes">
+      <HintPath>FakesAssemblies\System.Collections.Immutable.1.0.34.0.Fakes.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdvancedFeaturesManager\AdvancedFeaturesManagerAppService.cs" />
+    <Compile Include="AdvancedFeaturesManager\IAdvancedFeaturesManagerAppService.cs" />
+    <Compile Include="AdvancedFeaturesManager\IAdvancedFeaturesManagerRepository.cs" />
+    <Compile Include="AdvancedFeaturesManager\Model\FlatAccountView.cs" />
+    <Compile Include="AliPay\AliPayOrderAppService.cs" />
+    <Compile Include="AliPay\Dto\AliPayOrdersDto.cs" />
+    <Compile Include="AliPay\Dto\AliPayOrderUserData.cs" />
+    <Compile Include="AliPay\Dto\GetAllAliPayOrdersOutput.cs" />
+    <Compile Include="AliPay\Dto\SearchAliPayOrdersInput.cs" />
+    <Compile Include="AliPay\IAliPayOrderAppService.cs" />
+    <Compile Include="AliPay\IAliPayOrderRepository.cs" />
+    <Compile Include="AppManage\AppManageAppService.cs" />
+    <Compile Include="AppManage\Dto\AppManageDto.cs" />
+    <Compile Include="AppManage\Dto\GetAllAppOutput.cs" />
+    <Compile Include="AppManage\Dto\NoticeDto.cs" />
+    <Compile Include="AppManage\Dto\SearchAppInput.cs" />
+    <Compile Include="AppManage\IAppManageAppService.cs" />
+    <Compile Include="AppMessages\AppMessageAppService.cs" />
+    <Compile Include="AppMessages\Dtos\AppMessageDto.cs" />
+    <Compile Include="AppMessages\Dtos\GetAllAppMessagesOutput.cs" />
+    <Compile Include="AppMessages\IAppMessageAppService.cs" />
+    <Compile Include="AuditLogs\AuditLogAppService.cs" />
+    <Compile Include="AuditLogs\Dto\AuditLogDto.cs" />
+    <Compile Include="AuditLogs\Dto\GetAllAuditLogOutput.cs" />
+    <Compile Include="AuditLogs\Dto\SearchAuditLogInput.cs" />
+    <Compile Include="AuditLogs\IAuditLogAppService.cs" />
+    <Compile Include="Authorization\P4AuthorizationProvider.cs" />
+    <Compile Include="Authorization\P4FeatureProvider.cs" />
+    <Compile Include="Berthsecs\BerthsecAppService.cs" />
+    <Compile Include="Berthsecs\Dto\BerthsecCheckDto.cs" />
+    <Compile Include="Berthsecs\Dto\BerthsecCheckInput.cs" />
+    <Compile Include="Berthsecs\Dto\BerthsecDto.cs" />
+    <Compile Include="Berthsecs\Dto\BerthsecMapDto.cs" />
+    <Compile Include="Berthsecs\Dto\CreateOrUpdateBerthsecInput.cs" />
+    <Compile Include="Berthsecs\Dto\GetAllBerthsecCheckListOutput.cs" />
+    <Compile Include="Berthsecs\Dto\GetAllBerthsecsListOutput.cs" />
+    <Compile Include="Berthsecs\Dto\SearchBerthsecInput.cs" />
+    <Compile Include="Berthsecs\IBerthsecAppService.cs" />
+    <Compile Include="Berthsecs\IBerthsecRepository.cs" />
+    <Compile Include="Berths\BerthAppService.cs" />
+    <Compile Include="Berths\Dtos\BerthDto.cs" />
+    <Compile Include="Berths\Dtos\BerthInput.cs" />
+    <Compile Include="Berths\Dtos\BerthSensorDto.cs" />
+    <Compile Include="Berths\Dtos\BerthSyn.cs" />
+    <Compile Include="Berths\Dtos\CreatOrUpdateBerthInput.cs" />
+    <Compile Include="Berths\Dtos\GetAllBerthOutput.cs" />
+    <Compile Include="Berths\Dtos\MoneyChain.cs" />
+    <Compile Include="Berths\IBerthAppService.cs" />
+    <Compile Include="Berths\IBerthRepository.cs" />
+    <Compile Include="BigScreen\BigScreenAppService.cs" />
+    <Compile Include="BigScreen\Dtos\BerthsecStatisticsDto.cs" />
+    <Compile Include="BigScreen\Dtos\BerthsecsUtilization.cs" />
+    <Compile Include="BigScreen\Dtos\EmployeeFactReceiveDto.cs" />
+    <Compile Include="BigScreen\Dtos\EmpolyeePoint.cs" />
+    <Compile Include="BigScreen\Dtos\StatisticsDto.cs" />
+    <Compile Include="BigScreen\IBigScreenAppService.cs" />
+    <Compile Include="BigScreen\Dtos\BigScreenMoneyDetail.cs" />
+    <Compile Include="BigScreen\Dtos\SensorsDetail.cs" />
+    <Compile Include="BlackLists\BlackListsAppService.cs" />
+    <Compile Include="BlackLists\Dtos\BlackListsDto.cs" />
+    <Compile Include="BlackLists\Dtos\BlackListsInput.cs" />
+    <Compile Include="BlackLists\Dtos\CreateOrUpdateBlackListsInput.cs" />
+    <Compile Include="BlackLists\Dtos\GetAllBlackListsOutput.cs" />
+    <Compile Include="BlackLists\IBlackListRepository.cs" />
+    <Compile Include="BlackLists\IBlackListsAppService.cs" />
+    <Compile Include="Businesses\BusinessAppService.cs" />
+    <Compile Include="Businesses\BusinessV2AppService.cs" />
+    <Compile Include="Businesses\Dtos\BInsertCarInDto.cs" />
+    <Compile Include="Businesses\Dtos\BInsertCarOutDto.cs" />
+    <Compile Include="Businesses\Dtos\BMessage.cs" />
+    <Compile Include="Businesses\Dtos\BusinessDecisionDto.cs" />
+    <Compile Include="Businesses\Dtos\BusinessDetailPictureDto.cs" />
+    <Compile Include="Businesses\Dtos\BusinessDetailsDto.cs" />
+    <Compile Include="Businesses\Dtos\BusinessDetailsExcelDto.cs" />
+    <Compile Include="Businesses\Dtos\BusinessDetailUserData.cs" />
+    <Compile Include="Businesses\Dtos\CarInAndCarOut.cs" />
+    <Compile Include="Businesses\Dtos\CreateOrUpdateEscpeDetails.cs" />
+    <Compile Include="Businesses\Dtos\EscapeDetailsDto.cs" />
+    <Compile Include="Businesses\Dtos\EscapeDetailsDtoTow.cs" />
+    <Compile Include="Businesses\Dtos\EscapeDetailsExcelDto.cs" />
+    <Compile Include="Businesses\Dtos\EscapeDetailsUserData.cs" />
+    <Compile Include="Businesses\Dtos\EscapeRankDto.cs" />
+    <Compile Include="Businesses\Dtos\FeeBackBusiness.cs" />
+    <Compile Include="Businesses\Dtos\FeeBackData.cs" />
+    <Compile Include="Businesses\Dtos\GetBusinessDetailsInput.cs" />
+    <Compile Include="Businesses\Dtos\GetBusinessDetailsOutput.cs" />
+    <Compile Include="Businesses\Dtos\GetEscapeDetailsInput.cs" />
+    <Compile Include="Businesses\Dtos\GetEscapeDetailsOutput.cs" />
+    <Compile Include="Businesses\Dtos\GetEscapeRankInput.cs" />
+    <Compile Include="Businesses\Dtos\GetEscapeRankOutput.cs" />
+    <Compile Include="Businesses\Dtos\GetReconciliation.cs" />
+    <Compile Include="Businesses\Dtos\GetSubstantialOrderInput.cs" />
+    <Compile Include="Businesses\Dtos\InsertCarInModel.cs" />
+    <Compile Include="Businesses\Dtos\InsertCarOutModel.cs" />
+    <Compile Include="Businesses\Dtos\MonthBerthsUseDto.cs" />
+    <Compile Include="Businesses\Dtos\MonthBerthsUseExcelDto.cs" />
+    <Compile Include="Businesses\Dtos\PicMongoDto.cs" />
+    <Compile Include="Businesses\Dtos\PictureStoreDto.cs" />
+    <Compile Include="Businesses\Dtos\StatisticsDto.cs" />
+    <Compile Include="Businesses\Dtos\StopTimesRankDto.cs" />
+    <Compile Include="Businesses\IBusinessV2AppService.cs" />
+    <Compile Include="Businesses\IPictureStoreAppService.cs" />
+    <Compile Include="Businesses\PictureStoreAppService.cs" />
+    <Compile Include="Camera\CameraAppService.cs" />
+    <Compile Include="Camera\Dtos\AlarmReportRequestDto.cs" />
+    <Compile Include="Camera\Dtos\AlarmReportResponseDto.cs" />
+    <Compile Include="Camera\Dtos\BaseResponseDto.cs" />
+    <Compile Include="Camera\Dtos\CameraRequestDto.cs" />
+    <Compile Include="Camera\Dtos\BaseRequestDto.cs" />
+    <Compile Include="Camera\Dtos\HeartbeatRequestDto.cs" />
+    <Compile Include="Camera\Dtos\HeartbeatResponseDto.cs" />
+    <Compile Include="Camera\Dtos\LocationDto.cs" />
+    <Compile Include="Camera\Dtos\LoginRequestDto.cs" />
+    <Compile Include="Camera\Dtos\LoginRespnseDto.cs" />
+    <Compile Include="Camera\Dtos\PicDataDto.cs" />
+    <Compile Include="Camera\Dtos\ResponseDto.cs" />
+    <Compile Include="Camera\Dtos\TimeStampDto.cs" />
+    <Compile Include="Camera\ICameraAppService.cs" />
+    <Compile Include="CardCode\Dtos\CreateOrUpdateIPassCardCodeInput.cs" />
+    <Compile Include="CardCode\Dtos\GetAllIPassCardCodeInput.cs" />
+    <Compile Include="Card\Dtos\GetAllIPassCardInput.cs" />
+    <Compile Include="Card\Dtos\GetAllIPassCardOutput.cs" />
+    <Compile Include="CardCode\Dtos\GetAlllPassCardCodeOutput.cs" />
+    <Compile Include="CardCode\Dtos\IPassCardCodeDto.cs" />
+    <Compile Include="Card\Dtos\IPassBlackCardDto.cs" />
+    <Compile Include="Card\Dtos\IPassCardDto.cs" />
+    <Compile Include="Card\IIPassBlackCardAppService.cs" />
+    <Compile Include="Card\IIPassCardAppService.cs" />
+    <Compile Include="CardCode\IIPassCardCodeAppService.cs" />
+    <Compile Include="Card\IPassBlackCardAppService.cs" />
+    <Compile Include="Card\IPassCardAppService.cs" />
+    <Compile Include="CardCode\IPassCardCodeAppService.cs" />
+    <Compile Include="CarownerApp\CarownerAppService.cs" />
+    <Compile Include="CarownerApp\Dtos\AppAccountOutput.cs" />
+    <Compile Include="CarownerApp\Dtos\AppBerthListDto.cs" />
+    <Compile Include="CarownerApp\Dtos\DeductionRecordDto.cs" />
+    <Compile Include="CarownerApp\Dtos\MonthyDto.cs" />
+    <Compile Include="CarownerApp\Dtos\OrderDto.cs" />
+    <Compile Include="CarownerApp\Dtos\ParkDto.cs" />
+    <Compile Include="CarownerApp\Dtos\HistoryParkingDto.cs" />
+    <Compile Include="CarownerApp\Dtos\HistoryParkingOutput.cs" />
+    <Compile Include="CarownerApp\Dtos\ParkOutput.cs" />
+    <Compile Include="CarownerApp\Dtos\SettingInfoDto.cs" />
+    <Compile Include="CarownerApp\ICarownerAppService.cs" />
+    <Compile Include="Collectors\Dtos\GetBerthCheckTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetBerthsecReportTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetOperatorsCompanyTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetEmployeeReportTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetMonthTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetParkTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetSensorCheckTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetsignoOnlineOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetWeixinOutput.cs" />
+    <Compile Include="Collectors\Dtos\GetYearTotalOutput.cs" />
+    <Compile Include="Collectors\Dtos\MonthCarChainDto.cs" />
+    <Compile Include="Collectors\Dtos\TitleModelDto.cs" />
+    <Compile Include="Collectors\ICollectorRepository.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\CompanyCustomerExpressAppService.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\CompanyFactoryExpressAppService.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\CompanyCustomerExpressDto.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\CompanyFactoryExpressDto.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\CreateOrUpdateCompanyCustomerExpress.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\CreateOrUpdateCompanyFactoryExpress.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\GetAllCompanyCustomerExpress.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\GetAllCompanyFactoryExpress.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\SearchCompanyCustomerExpress.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\Dto\SearchCompanyFactoryExpress.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\ICompanyCustomerExpressAppService.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\ICompanyCustomerExpressRepository.cs" />
+    <Compile Include="CompanyCustomerExpressManagement\ICompanyFactoryExpressAppService.cs" />
+    <Compile Include="CouponsDetails\CouponDetailsAppService.cs" />
+    <Compile Include="CouponsDetails\Dtos\CouponDetailDto.cs" />
+    <Compile Include="CouponsDetails\Dtos\GetAllCouponDetailOutput.cs" />
+    <Compile Include="CouponsDetails\Dtos\SearchCouponDetailInput.cs" />
+    <Compile Include="CouponsDetails\ICouponDetailsAppService.cs" />
+    <Compile Include="Coupons\CouponAppService.cs" />
+    <Compile Include="Coupons\Dtos\CouponDto.cs" />
+    <Compile Include="Coupons\Dtos\CreateOrUpdateCouponInput.cs" />
+    <Compile Include="Coupons\Dtos\GetAllCouponOutput.cs" />
+    <Compile Include="Coupons\Dtos\SearchCouponInput.cs" />
+    <Compile Include="Coupons\ICouponAppService.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\GetUtilizationHourListOutput.cs" />
+    <Compile Include="Editions\Dtos\ElTreeDto.cs" />
+    <Compile Include="Editions\Dtos\SaveMenuInput.cs" />
+    <Compile Include="EmployeeBatchNoDynamicReport\Dtos\EmployeeDetail.cs" />
+    <Compile Include="EmployeeBatchNoDynamicReport\Dtos\GetEmployeeBatchNoDynamicReportInput.cs" />
+    <Compile Include="EmployeeBatchNoDynamicReport\EmployeeBatchNoDynamicReportAppSerVice.cs" />
+    <Compile Include="EmployeeBatchNoDynamicReport\IEmployeeBatchNoDynamicReportAppSerVice.cs" />
+    <Compile Include="Employees\Dtos\EmployeeGps.cs" />
+    <Compile Include="EquipmentDetailManagement\Dtos\CreateOrUpdateEquipmentDetailInput.cs" />
+    <Compile Include="EquipmentDetailManagement\Dtos\EquipmentDetailDto.cs" />
+    <Compile Include="EquipmentDetailManagement\Dtos\GetAllEquipmentDetailOutput.cs" />
+    <Compile Include="EquipmentDetailManagement\Dtos\SearchEquipmentDetailInput.cs" />
+    <Compile Include="EquipmentDetailManagement\EquipmentDetailAppService.cs" />
+    <Compile Include="EquipmentDetailManagement\IEquipmentDetailAppService.cs" />
+    <Compile Include="EquipmentMaintain\Dtos\CreateOrUpdateEquipmentsMInput.cs" />
+    <Compile Include="EquipmentMaintain\Dtos\EquipmentsMDto.cs" />
+    <Compile Include="EquipmentMaintain\Dtos\GetAllEquipmentsMOutput.cs" />
+    <Compile Include="EquipmentMaintain\Dtos\SearchEquipmentsMInput.cs" />
+    <Compile Include="EquipmentMaintain\EquipmentsMAppService.cs" />
+    <Compile Include="EquipmentMaintain\IEquipmentsMAppService.cs" />
+    <Compile Include="EquipmentMaintain\IEquipmentsMRepository.cs" />
+    <Compile Include="Equipments\Dtos\AndroidLogDto.cs" />
+    <Compile Include="Events\BlackListActivityWriter.cs" />
+    <Compile Include="Events\MonthCarActivityWriter.cs" />
+    <Compile Include="Events\WhiteListActivityWriter.cs" />
+    <Compile Include="ExportCommon\Dtos\ExportCodeDto.cs" />
+    <Compile Include="ExportCommon\ExportCodeAppService.cs" />
+    <Compile Include="ExportCommon\IExportCodeAppService.cs" />
+    <Compile Include="InspectorCharges\Dtos\GetAllInspectorChargesOutput.cs" />
+    <Compile Include="InspectorCharges\Dtos\InspectorChargeInput.cs" />
+    <Compile Include="InspectorCharges\Dtos\InspectorChargesDto.cs" />
+    <Compile Include="InspectorCharges\Dtos\InspectorChargesExcelDto.cs" />
+    <Compile Include="InspectorCharges\Dtos\InspectorUserData.cs" />
+    <Compile Include="InspectorCharges\IInspectorChargesAppService.cs" />
+    <Compile Include="InspectorCharges\InspectorChargesAppService.cs" />
+    <Compile Include="Inspectors\Dtos\GetAllInspectorApiOutput.cs" />
+    <Compile Include="Jobs\MakeInactiveMonthPassWorker.cs" />
+    <Compile Include="Jobs\MakeInactiveNoticePassWorker.cs" />
+    <Compile Include="Jobs\MonthCarAnomalyDetection.cs" />
+    <Compile Include="Jobs\MonthyProcessJob.cs" />
+    <Compile Include="Jobs\SmsNoticeProcessJob.cs" />
+    <Compile Include="Jobs\WeixinNoticeProcessJob.cs" />
+    <Compile Include="Messages\Dto\GetAllSignalRMessageTypeOutput.cs" />
+    <Compile Include="Messages\Dto\SignalRMessageTypeDto.cs" />
+    <Compile Include="Messages\Dto\SignalRMessageTypeInput.cs" />
+    <Compile Include="MonthlyCars\Dtos\DecisionDto.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarExportDto.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarHistoryExportDto.cs" />
+    <Compile Include="MonthlyCars\IMonthlyCarHistoryRespository.cs" />
+    <Compile Include="OtherAccounts\Dtos\PlateDto.cs" />
+    <Compile Include="DataLogs\Dtos\DataLogInput.cs" />
+    <Compile Include="DataLogs\Dtos\DataLogItemDto.cs" />
+    <Compile Include="DataLogs\Dtos\DataLogItemInput.cs" />
+    <Compile Include="DataLogs\Dtos\GetAllDataLogItemsOutput.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\BerthsecAnalysisResultDto.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\GetAllPeakPeriodOutput.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\PeakPeriodDto.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\SearchBerthsecAnalysisResultInput.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\SearchPeakPriodInput.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\SearchUtilizationInput.cs" />
+    <Compile Include="DecisionAnalysis\Dtos\UtilizationHourDto.cs" />
+    <Compile Include="DecisionAnalysis\IPeakPeriodAppService.cs" />
+    <Compile Include="DecisionAnalysis\PeakPeriodAppService.cs" />
+    <Compile Include="Editions\Dtos\CreateOrUpdateEditionInput.cs" />
+    <Compile Include="Editions\Dtos\EditionDto.cs" />
+    <Compile Include="Editions\Dtos\GetAllEditionOutput.cs" />
+    <Compile Include="Editions\Dtos\SearchEditionInput.cs" />
+    <Compile Include="Editions\EditionAppService.cs" />
+    <Compile Include="Editions\IEditionAppService.cs" />
+    <Compile Include="EmployeeCharges\Dto\EmployeeChargeInput.cs" />
+    <Compile Include="EmployeeCharges\Dto\EmployeeChargesDto.cs" />
+    <Compile Include="EmployeeCharges\Dto\EmployeeChargesExcelDto.cs" />
+    <Compile Include="EmployeeCharges\Dto\EmployeeUserData.cs" />
+    <Compile Include="EmployeeCharges\Dto\GetAllEmployeeChargesOutput.cs" />
+    <Compile Include="EmployeeCharges\EmployeeChargesAppService.cs" />
+    <Compile Include="EmployeeCharges\IEmployeeChargesAppService.cs" />
+    <Compile Include="EmployeeLoggings\Dtos\CreatOrUpdateEmployeeCheckInput.cs" />
+    <Compile Include="EmployeeLoggings\Dtos\EmployeeCheckDto.cs" />
+    <Compile Include="EmployeeLoggings\Dtos\EmployeeCheckInput.cs" />
+    <Compile Include="EmployeeLoggings\Dtos\GetAllEmployeeCheckOutput.cs" />
+    <Compile Include="EmployeeLoggings\EmployeeCheckAppService.cs" />
+    <Compile Include="EmployeeLoggings\IEmployeeCheckAppService.cs" />
+    <Compile Include="EmployeeLoggings\IEmployeeCheckRepository.cs" />
+    <Compile Include="Employees\Dtos\EmployeePDADto.cs" />
+    <Compile Include="Employees\Dtos\EmployeeCheckInOutInput.cs" />
+    <Compile Include="Employees\Dtos\EmployeeSelectDto.cs" />
+    <Compile Include="Equipments\Dtos\CreateOrUpdateEquipmentInput.cs" />
+    <Compile Include="Equipments\Dtos\CreateOrUpdateEquipmentMaintenanceInput.cs" />
+    <Compile Include="Equipments\Dtos\EquipmentBeatDto.cs" />
+    <Compile Include="Equipments\Dtos\EquipmentDto.cs" />
+    <Compile Include="Equipments\Dtos\EquipmentExcelDto.cs" />
+    <Compile Include="Equipments\Dtos\EquipmentInput.cs" />
+    <Compile Include="Equipments\Dtos\EquipmentMaintenanceDto.cs" />
+    <Compile Include="Equipments\Dtos\EquipmentMaintenanceInput.cs" />
+    <Compile Include="Equipments\Dtos\GetAllEquipmentMaintenanceOutput.cs" />
+    <Compile Include="Equipments\Dtos\GetAllEquipmentOutput.cs" />
+    <Compile Include="Equipments\Dtos\GetGpsOutput.cs" />
+    <Compile Include="Equipments\Dtos\GpsDto.cs" />
+    <Compile Include="Equipments\EquipmentAppService.cs" />
+    <Compile Include="Equipments\IEquipmentAppService.cs" />
+    <Compile Include="Equipments\IEquipmentRepository.cs" />
+    <Compile Include="EquipmentVersion\Dtos\CreateOrUpdateEquipmentVersionInput.cs" />
+    <Compile Include="EquipmentVersion\Dtos\EquipmentVersionDto.cs" />
+    <Compile Include="EquipmentVersion\Dtos\GetAllEquipmentVersionOutput.cs" />
+    <Compile Include="EquipmentVersion\Dtos\SearchEquipmentVersionInput.cs" />
+    <Compile Include="EquipmentVersion\EquipmentVersionAppService.cs" />
+    <Compile Include="EquipmentVersion\IEquipmentVersionAppService.cs" />
+    <Compile Include="EquipmentVersion\IEquipmentVersionRepository.cs" />
+    <Compile Include="Events\BerthActivityWriter.cs" />
+    <Compile Include="Features\Dtos\FeaturesDto.cs" />
+    <Compile Include="Features\FeaturesAppService.cs" />
+    <Compile Include="Features\IFeaturesAppService.cs" />
+    <Compile Include="Inducibles\Dtos\GetAllInducibleListOutput.cs" />
+    <Compile Include="Inducibles\Dtos\InducibleDto.cs" />
+    <Compile Include="Inducibles\Dtos\InducibleToADDto.cs" />
+    <Compile Include="Inducibles\Dtos\InducibleToParkDto.cs" />
+    <Compile Include="Inducibles\Dtos\InsertOrUpdateInducibleInput.cs" />
+    <Compile Include="Inducibles\Dtos\SearchInducibleInput.cs" />
+    <Compile Include="Inducibles\IInducibleAppService.cs" />
+    <Compile Include="Inducibles\InducibleAppService.cs" />
+    <Compile Include="Inspectors\Dtos\CreatOrUpdateInspectorTaskFeedbacks.cs" />
+    <Compile Include="Inspectors\Dtos\CreatOrUpdateInspectorTasks.cs" />
+    <Compile Include="Inspectors\Dtos\GetAllInspectorOutput.cs" />
+    <Compile Include="Businesses\Dtos\GetMoneyInput.cs" />
+    <Compile Include="Businesses\Dtos\GetMoneyOutput.cs" />
+    <Compile Include="Businesses\IBusinessAppService.cs" />
+    <Compile Include="Businesses\IBusinessRepository.cs" />
+    <Compile Include="Companys\CompanyAppService.cs" />
+    <Compile Include="Companys\Dtos\CompanyDto.cs" />
+    <Compile Include="Companys\Dtos\CreateCompanyInput.cs" />
+    <Compile Include="Companys\Dtos\GetAllCompanyOutput.cs" />
+    <Compile Include="Companys\Dtos\GetCompanyInput.cs" />
+    <Compile Include="Companys\Dtos\OperatorCompanyInput.cs" />
+    <Compile Include="Companys\ICompanyAppService.cs" />
+    <Compile Include="Configuration\MySettingProvider.cs" />
+    <Compile Include="DataLogs\DataLogsAppService.cs" />
+    <Compile Include="DataLogs\Dtos\DataLogDto.cs" />
+    <Compile Include="DataLogs\Dtos\GetAllDataLogsOutput.cs" />
+    <Compile Include="DataLogs\IDataLogsAppService.cs" />
+    <Compile Include="DataLogs\IDataLogsRepository.cs" />
+    <Compile Include="DataPermissions\DataPermissionsAppService.cs" />
+    <Compile Include="DataPermissions\Dtos\CreateOrUpdateDataPermissionsInput.cs" />
+    <Compile Include="DataPermissions\Dtos\DataPermissionsDto.cs" />
+    <Compile Include="DataPermissions\Dtos\DataPermissionsInput.cs" />
+    <Compile Include="DataPermissions\Dtos\GetAllDataPermissionsOutput.cs" />
+    <Compile Include="DataPermissions\IDataPermissinsRepository.cs" />
+    <Compile Include="DataPermissions\IDataPermissionsAppService.cs" />
+    <Compile Include="Dictionarys\DictionarysAppService.cs" />
+    <Compile Include="Dictionarys\Dtos\CreateOrUpdateDictionaryValueInput.cs" />
+    <Compile Include="Dictionarys\Dtos\CreateOrUpdateDictionaryTypeInput.cs" />
+    <Compile Include="Dictionarys\Dtos\DictionaryTypeDto.cs" />
+    <Compile Include="Dictionarys\Dtos\DictionaryTypeInput.cs" />
+    <Compile Include="Dictionarys\Dtos\DictionaryValueInput.cs" />
+    <Compile Include="Dictionarys\Dtos\GetAllDictionaryTypeOutput.cs" />
+    <Compile Include="Dictionarys\Dtos\DictionaryValueDto.cs" />
+    <Compile Include="Dictionarys\Dtos\GetAllDictionaryValueOutput.cs" />
+    <Compile Include="Dictionarys\Dtos\GetAllValueDataDto .cs" />
+    <Compile Include="Dictionarys\IDictionaryRepository.cs" />
+    <Compile Include="Dictionarys\IDictionarysAppService.cs" />
+    <Compile Include="DtoMappings.cs" />
+    <Compile Include="Collectors\Dtos\CollectorDto.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collectors\Dtos\GetEmployeesCheckTotalOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collectors\CollectorAppService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collectors\ICollectorAppService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Employees\Dtos\CreatOrUpdateEmployee.cs" />
+    <Compile Include="Employees\Dtos\EmployeeDto.cs" />
+    <Compile Include="Employees\Dtos\EmployeeInput.cs" />
+    <Compile Include="Employees\Dtos\GetAllEmployeeOutput.cs" />
+    <Compile Include="Employees\IEmployeeRepository.cs" />
+    <Compile Include="Employees\EmployeeAppService.cs" />
+    <Compile Include="Employees\IEmployeeAppService.cs" />
+    <Compile Include="Events\ActivityWriter.cs" />
+    <Compile Include="Events\DictionaryActivityWriter.cs" />
+    <Compile Include="Inspectors\Dtos\CreatOrUpdateInspector.cs" />
+    <Compile Include="Inspectors\Dtos\GetAllInspectorTaskFeedbacksOutput.cs" />
+    <Compile Include="Inspectors\Dtos\GetAllInspectorTasksOutput.cs" />
+    <Compile Include="Inspectors\Dtos\GetInspectorByTopInput.cs" />
+    <Compile Include="Inspectors\Dtos\GetInspectorByTopOutput.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorDto.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorInput.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorRPB.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorTaskFeedbacksDto.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorTaskFeedbacksInput.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorTasksDto.cs" />
+    <Compile Include="Inspectors\Dtos\InspectorTasksInput.cs" />
+    <Compile Include="Inspectors\IInspectorAppService.cs" />
+    <Compile Include="Inspectors\IInspectorRepository.cs" />
+    <Compile Include="Inspectors\InspectorAppService.cs" />
+    <Compile Include="Menus\Dto\TreeMenusOutput.cs" />
+    <Compile Include="Menus\Dto\MenuDto.cs" />
+    <Compile Include="Menus\Dto\MenuTreeDto.cs" />
+    <Compile Include="Menus\IMenuAppService.cs" />
+    <Compile Include="Menus\MenuAppService.cs" />
+    <Compile Include="Messages\Dto\GetAllMessageOutput.cs" />
+    <Compile Include="Messages\Dto\MessageDto.cs" />
+    <Compile Include="Messages\Dto\MessageInput.cs" />
+    <Compile Include="Messages\IMessageAppService.cs" />
+    <Compile Include="Messages\MessageAppService.cs" />
+    <Compile Include="Organizations\Dtos\CreateOrUpdateOrganization.cs" />
+    <Compile Include="MonthlyCars\Dtos\CreateOrUpdateMonthlyCarAbnormalInput.cs" />
+    <Compile Include="MonthlyCars\Dtos\CreateOrUpdateMonthlyCarInput.cs" />
+    <Compile Include="MonthlyCars\Dtos\GetAllMonthlyCarAbnormalOutput.cs" />
+    <Compile Include="MonthlyCars\Dtos\GetAllMonthlyCarHistoryOutput.cs" />
+    <Compile Include="MonthlyCars\Dtos\GetAllMonthlyCarsOutput.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarAbnormalDto.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarAbnormalInput.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarDto.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarHistoryDto.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarHistoryInput.cs" />
+    <Compile Include="MonthlyCars\Dtos\MonthlyCarInput.cs" />
+    <Compile Include="MonthlyCars\IMonthlyCarAppService.cs" />
+    <Compile Include="MonthlyCars\IMonthlyCarRespository.cs" />
+    <Compile Include="MonthlyCars\MonthlyCarAppService.cs" />
+    <Compile Include="Notices\Dto\GetAllNoticeOutput.cs" />
+    <Compile Include="Notices\Dto\NoticeDto.cs" />
+    <Compile Include="Notices\Dto\NoticeInput.cs" />
+    <Compile Include="Notices\INoticeAppService.cs" />
+    <Compile Include="Notices\NoticeAppService.cs" />
+    <Compile Include="Organizations\Dtos\GetAllOrganizationOutput.cs" />
+    <Compile Include="Organizations\Dtos\OrganizationDto.cs" />
+    <Compile Include="Organizations\Dtos\OrganizationInput.cs" />
+    <Compile Include="Organizations\IOrganizationAppService.cs" />
+    <Compile Include="Organizations\OrganizationAppService.cs" />
+    <Compile Include="OperationLog\Dtos\GetAllOperationLogOutput.cs" />
+    <Compile Include="OperationLog\Dtos\OperationLogDto.cs" />
+    <Compile Include="OperationLog\Dtos\OperationLogInput.cs" />
+    <Compile Include="OperationLog\IOperationLogAppService.cs" />
+    <Compile Include="OperationLog\IOperationLogRepository.cs" />
+    <Compile Include="OperationLog\OperationLogAppService.cs" />
+    <Compile Include="OperationPermissions\Dtos\GetOperationPermissionsList.cs" />
+    <Compile Include="OperationPermissions\Dtos\OperationPermissionsDto.cs" />
+    <Compile Include="OperationPermissions\IOperationPermissionsAppService.cs" />
+    <Compile Include="OperationPermissions\OperationPermissionsAppService.cs" />
+    <Compile Include="OtherAccounts\Dtos\AccountAndDeductionRecordsDto.cs" />
+    <Compile Include="OtherAccounts\Dtos\CreateOrUpdateOtherAccountInput.cs" />
+    <Compile Include="OtherAccounts\Dtos\DeductionRecordDto.cs" />
+    <Compile Include="OtherAccounts\Dtos\DynamicReportInput.cs" />
+    <Compile Include="OtherAccounts\Dtos\EnbledCardNo.cs" />
+    <Compile Include="OtherAccounts\Dtos\ReturnOtherAccountModel.cs" />
+    <Compile Include="OtherAccounts\Dtos\SearchDeductionRecordInput.cs" />
+    <Compile Include="OtherAccounts\Dtos\GetAllDeductionRecordOutput.cs" />
+    <Compile Include="OtherAccounts\Dtos\GetAllOtherAccountOutput.cs" />
+    <Compile Include="OtherAccounts\Dtos\OtherAccountDto.cs" />
+    <Compile Include="OtherAccounts\Dtos\SearchOtherAccountInput.cs" />
+    <Compile Include="OtherAccounts\Dtos\UpdateOtherAccountInput.cs" />
+    <Compile Include="OtherAccounts\IOtherAccountRepository.cs" />
+    <Compile Include="OtherAccounts\IOtherAccountAppService.cs" />
+    <Compile Include="OtherAccounts\OtherAccountAppService.cs" />
+    <Compile Include="OtherPlateNumbers\Dtos\GetAllOtherPlateNumberOutput.cs" />
+    <Compile Include="OtherPlateNumbers\Dtos\OtherPlateNumberDto.cs" />
+    <Compile Include="OtherPlateNumbers\IOtherPlateNumberAppService.cs" />
+    <Compile Include="OtherPlateNumbers\OtherPlateNumberAppService.cs" />
+    <Compile Include="P4ApplicationModule.cs" />
+    <Compile Include="P4AppServiceBase.cs" />
+    <Compile Include="ParkCharges\Dto\BerthsecChargesExcelDto.cs" />
+    <Compile Include="ParkCharges\Dto\GetAllParkChargesOutput.cs" />
+    <Compile Include="ParkCharges\Dto\OwnChargesExcelDto.cs" />
+    <Compile Include="ParkCharges\Dto\ParkChargeInput.cs" />
+    <Compile Include="ParkCharges\Dto\ParkChargesData.cs" />
+    <Compile Include="ParkCharges\Dto\ParkChargesDto.cs" />
+    <Compile Include="ParkCharges\Dto\ParkChargesExcelDto.cs" />
+    <Compile Include="ParkCharges\IParkChargesAppService.cs" />
+    <Compile Include="ParkCharges\ParkChargesAppService.cs" />
+    <Compile Include="ParkingLot\Dto\AbpParkingMonthlyRentDto.cs" />
+    <Compile Include="ParkingLot\Dto\ModifyMonthlyRentInput.cs" />
+    <Compile Include="ParkingLot\Dto\CreateOrUpdateParkChannelInput.cs" />
+    <Compile Include="ParkingLot\Dto\GetParkChannelInput.cs" />
+    <Compile Include="ParkingLot\Dto\GetParkingMonthlyRentListInput.cs" />
+    <Compile Include="ParkingLot\Dto\GetParkingMonthlyRentListOutput.cs" />
+    <Compile Include="ParkingLot\Dto\GetParkRecordListInput.cs" />
+    <Compile Include="ParkingLot\Dto\GetParkRecordListOutput.cs" />
+    <Compile Include="ParkingLot\Dto\ModifyParkChannelInput.cs" />
+    <Compile Include="ParkingLot\Dto\ParkingRecordEntity.cs" />
+    <Compile Include="ParkingLot\IParkingAppService.cs" />
+    <Compile Include="ParkingLot\ParkingAppService.cs" />
+    <Compile Include="Parks\Dtos\CreateOrUpdateParkInput.cs" />
+    <Compile Include="Parks\Dtos\GetAllParkOutput.cs" />
+    <Compile Include="ParkingLot\Dto\GetParkChannelOutput.cs" />
+    <Compile Include="Parks\Dtos\ParkAppDto.cs" />
+    <Compile Include="ParkingLot\Dto\ParkChannelDto.cs" />
+    <Compile Include="Parks\Dtos\ParkDto.cs" />
+    <Compile Include="Parks\Dtos\ParkInfoMap.cs" />
+    <Compile Include="Parks\Dtos\ParkInput.cs" />
+    <Compile Include="Parks\IParkAppService.cs" />
+    <Compile Include="Parks\IParkRepository.cs" />
+    <Compile Include="Parks\ParkAppService.cs" />
+    <Compile Include="Parking\Dtos\WeixinPlateDto.cs" />
+    <Compile Include="Parking\IParkingAppService.cs" />
+    <Compile Include="Parking\ParkingAppService.cs" />
+    <Compile Include="PayLevelSettingsNs\Dtos\CreateOrUpdatePayLevel.cs" />
+    <Compile Include="PayLevelSettingsNs\Dtos\PayLevelInput.cs" />
+    <Compile Include="PayLevelSettingsNs\Dtos\PayLevelOutput.cs" />
+    <Compile Include="PayLevelSettingsNs\Dtos\PayLevelSettingsDto.cs" />
+    <Compile Include="PayLevelSettingsNs\IPayLevelRepository.cs" />
+    <Compile Include="PayLevelSettingsNs\IPayLevelSettingAppService.cs" />
+    <Compile Include="PayLevelSettingsNs\PayLevelSettingAppService.cs" />
+    <Compile Include="Permissions\Dto\CreateOrUpdateRolePermissionsInput.cs" />
+    <Compile Include="Permissions\Dto\GetAllRolePermissionsTypeOutput.cs" />
+    <Compile Include="Permissions\Dto\PermissionDto.cs" />
+    <Compile Include="Permissions\Dto\RolePermissionsInput.cs" />
+    <Compile Include="Permissions\Dto\UserPermissionDto.cs" />
+    <Compile Include="Permissions\Dto\UserPermissionsInput.cs" />
+    <Compile Include="Permissions\Dto\ZTree.cs" />
+    <Compile Include="Permissions\IPermissionAppService.cs" />
+    <Compile Include="Permissions\PermissionAppService.cs" />
+    <Compile Include="PrintAdvertisement\Dtos\CreatOrUpdatePrintAdInput.cs" />
+    <Compile Include="PrintAdvertisement\Dtos\GetAllPrintAdsOutput.cs" />
+    <Compile Include="PrintAdvertisement\Dtos\PrintAdDto.cs" />
+    <Compile Include="PrintAdvertisement\Dtos\PrintAdInput.cs" />
+    <Compile Include="PrintAdvertisement\IPrintAdAppService.cs" />
+    <Compile Include="PrintAdvertisement\PrintAdAppService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Menus\Dto\GetMenuInput.cs" />
+    <Compile Include="Rates\Dtos\GetAllRateOutput.cs" />
+    <Compile Include="Rates\Dtos\RateCalculateModel.cs" />
+    <Compile Include="Rates\Dtos\RateDto.cs" />
+    <Compile Include="Rates\Dtos\RateInput.cs" />
+    <Compile Include="Rates\Dtos\RateModel.cs" />
+    <Compile Include="Rates\Dtos\RateSaveOrUpdateDto.cs" />
+    <Compile Include="Rates\IRatesAppService.cs" />
+    <Compile Include="Rates\IRatesRepository.cs" />
+    <Compile Include="Rates\RatesAppService.cs" />
+    <Compile Include="RechargeRule\Dtos\CreateOrUpdateRechargeRuleInput.cs" />
+    <Compile Include="RechargeRule\Dtos\GetAllRechargeRuleOutput.cs" />
+    <Compile Include="RechargeRule\Dtos\RechargeRuleDto.cs" />
+    <Compile Include="RechargeRule\Dtos\SearchRechargeRuleInput.cs" />
+    <Compile Include="RechargeRule\IRechargeRuleAppService.cs" />
+    <Compile Include="RechargeRule\RechargeRuleAppService.cs" />
+    <Compile Include="Regions\Dtos\CreateOrUpdateDtoInput.cs" />
+    <Compile Include="Regions\Dtos\GetAllRegionsInput.cs" />
+    <Compile Include="Regions\Dtos\GetAllRegionsOutput.cs" />
+    <Compile Include="Regions\Dtos\RegionDto.cs" />
+    <Compile Include="Regions\IRegionAppService.cs" />
+    <Compile Include="Regions\RegionAppService.cs" />
+    <Compile Include="RegisterEventBus.cs" />
+    <Compile Include="ReworkFlowManagement\Dto\CreateOrUpdateReworkFlowInput.cs" />
+    <Compile Include="ReworkFlowManagement\Dto\GetAllReworkFlowOutput.cs" />
+    <Compile Include="ReworkFlowManagement\Dto\ReworkFlowDto.cs" />
+    <Compile Include="ReworkFlowManagement\Dto\ReworkPictureDto.cs" />
+    <Compile Include="ReworkFlowManagement\Dto\SearchReworkFlowInput.cs" />
+    <Compile Include="ReworkFlowManagement\IReworkFlowAppService.cs" />
+    <Compile Include="ReworkFlowManagement\ReworkFlowAppService.cs" />
+    <Compile Include="Roles\Dto\CreateOrUpdateRoleInput.cs" />
+    <Compile Include="Roles\Dto\GetAllRoleOutput.cs" />
+    <Compile Include="Roles\Dto\RoleDto.cs" />
+    <Compile Include="Roles\Dto\RoleInput.cs" />
+    <Compile Include="Roles\IRoleAppService.cs" />
+    <Compile Include="SchedulingSystem\Dto\CreateOrUpdateHolidaysInput.cs" />
+    <Compile Include="SchedulingSystem\Dto\GetAllSchedulingSystemScheduleDetailOutput.cs" />
+    <Compile Include="SchedulingSystem\Dto\GetAllSchedulingSystemLeaveAdministrationOutput.cs" />
+    <Compile Include="SchedulingSystem\Dto\GetAllSchedulingSystemHolidaysManagerOutput.cs" />
+    <Compile Include="SchedulingSystem\Dto\GetAllSchedulingSystemEmployeeCheckOutput.cs" />
+    <Compile Include="SchedulingSystem\Dto\SchedulingSystemEmployeeCheckDto.cs" />
+    <Compile Include="SchedulingSystem\Dto\SchedulingSystemHolidaysManagerDto.cs" />
+    <Compile Include="SchedulingSystem\Dto\SchedulingSystemLeaveAdministrationDto.cs" />
+    <Compile Include="SchedulingSystem\Dto\SchedulingSystemScheduleDetailDto.cs" />
+    <Compile Include="SchedulingSystem\Dto\SearchSchedulingSystemLeaveAdministrationInput.cs" />
+    <Compile Include="SchedulingSystem\Dto\SearchSchedulingSystemScheduleDetailInput.cs" />
+    <Compile Include="SchedulingSystem\Dto\SearchSchedulingSystemHolidaysManagerInput.cs" />
+    <Compile Include="SchedulingSystem\Dto\SearchSchedulingSystemEmployeeCheckInput.cs" />
+    <Compile Include="SchedulingSystem\ISchedulingSystemAppService.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemAppService.cs" />
+    <Compile Include="SensorBusinessDetails\Dtos\CreatOrUpdateSensorBusinessDetailInput.cs" />
+    <Compile Include="SensorBusinessDetails\Dtos\GetAllSensorBusinessDetailOutput.cs" />
+    <Compile Include="SensorBusinessDetails\Dtos\SensorBusinessDetailDto.cs" />
+    <Compile Include="SensorBusinessDetails\Dtos\SensorBusinessDetailInput.cs" />
+    <Compile Include="SensorBusinessDetails\ISensorBusinessDetailAppService.cs" />
+    <Compile Include="SensorBusinessDetails\ISensorBusinessDetailRepository.cs" />
+    <Compile Include="SensorBusinessDetails\SensorBusinessDetailAppService.cs" />
+    <Compile Include="Sensors\Dtos\GetAllSensorRunStatusOutput.cs" />
+    <Compile Include="Sensors\Dtos\GetAllSensorsFaultOutput.cs" />
+    <Compile Include="Sensors\Dtos\GetAllSensorsBeatOutput.cs" />
+    <Compile Include="Sensors\Dtos\GetAllSensorsListOutput.cs" />
+    <Compile Include="Sensors\Dtos\GetSensorInfoOutPut.cs" />
+    <Compile Include="Sensors\Dtos\GetSensorLogOutput.cs" />
+    <Compile Include="Sensors\Dtos\GetSensorParkRation.cs" />
+    <Compile Include="Sensors\Dtos\GetSensorPosOutPut.cs" />
+    <Compile Include="Sensors\Dtos\INmotionDto.cs" />
+    <Compile Include="Sensors\Dtos\RateMode.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorBeatInput.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorFaultInput.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorLogInput.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorPosDto.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorPosInput.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorRunStatusInput.cs" />
+    <Compile Include="Sensors\Dtos\SearchSensorsInput.cs" />
+    <Compile Include="Sensors\Dtos\SensorBeatDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorFaultDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorInduciblesDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorInfoDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorLogDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorLogInput.cs" />
+    <Compile Include="Sensors\Dtos\SensorParkRatioDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorPosUserData.cs" />
+    <Compile Include="Sensors\Dtos\SensorRunStatusDto.cs" />
+    <Compile Include="Sensors\Dtos\SensorToParkDto.cs" />
+    <Compile Include="Sensors\Dtos\TransmitterDto.cs" />
+    <Compile Include="Sensors\ISensorAppService.cs" />
+    <Compile Include="Sensors\ISensorsRepository.cs" />
+    <Compile Include="Sensors\SensorAppService.cs" />
+    <Compile Include="Sensors\Dtos\SensorDto.cs" />
+    <Compile Include="Signo\Dtos\GetAllSignoOutput.cs" />
+    <Compile Include="Signo\Dtos\GetIllegalOpenOutput.cs" />
+    <Compile Include="Signo\Dtos\IllegalOpenSignoDto.cs" />
+    <Compile Include="Signo\Dtos\SignoParkInformationDto.cs" />
+    <Compile Include="Signo\ISignoParkInformationAppService.cs" />
+    <Compile Include="Signo\SignoParkInformationAppService.cs" />
+    <Compile Include="SmsManagements\Dtos\CreateOrUpdateDtoInput.cs" />
+    <Compile Include="SmsManagements\Dtos\GetAllSmsModelOutput.cs" />
+    <Compile Include="SmsManagements\Dtos\GetAllSmsOutput.cs" />
+    <Compile Include="SmsManagements\Dtos\SearchSmsModelInput.cs" />
+    <Compile Include="SmsManagements\Dtos\SearchSmssInput.cs" />
+    <Compile Include="SmsManagements\Dtos\SmsModelDto.cs" />
+    <Compile Include="SmsManagements\ISmsModelAppService.cs" />
+    <Compile Include="SmsManagements\SmsModelAppService.cs" />
+    <Compile Include="SpecialLists\Dtos\CreateOrUpdateSpecialListsInput.cs" />
+    <Compile Include="SpecialLists\Dtos\GetAllSpecialListsOutput.cs" />
+    <Compile Include="SpecialLists\Dtos\SpecialListInput.cs" />
+    <Compile Include="SpecialLists\Dtos\SpecialListsDto.cs" />
+    <Compile Include="SpecialLists\ISpecialListAppSevice.cs" />
+    <Compile Include="SpecialLists\ISpecialRepository.cs" />
+    <Compile Include="SpecialLists\SpecialListAppSevice..cs" />
+    <Compile Include="StaticReport\Dtos\AccountRecordsExcelDto.cs" />
+    <Compile Include="StaticReport\Dtos\BerthsecReportDto.cs" />
+    <Compile Include="StaticReport\Dtos\DetailsParkingDto.cs" />
+    <Compile Include="StaticReport\Dtos\EmployeeReportDto.cs" />
+    <Compile Include="Collectors\Dtos\GetReportTotalOutput.cs" />
+    <Compile Include="StaticReport\Dtos\GetAllOperatorsCompanyReportOutput.cs" />
+    <Compile Include="StaticReport\Dtos\GetAllEmployeeReportOutput.cs" />
+    <Compile Include="StaticReport\Dtos\GetAllBerthsecReportOutput.cs" />
+    <Compile Include="StaticReport\Dtos\GetAllParkReportOutput.cs" />
+    <Compile Include="StaticReport\Dtos\GetBerthsecDto.cs" />
+    <Compile Include="StaticReport\Dtos\GetEmployeeDto.cs" />
+    <Compile Include="StaticReport\Dtos\GetOperatorCompanyDto.cs" />
+    <Compile Include="StaticReport\Dtos\GetParkDto.cs" />
+    <Compile Include="StaticReport\Dtos\StaticReportInput.cs" />
+    <Compile Include="StaticReport\Dtos\TbucketBerthsecStaticRExcelDto.cs" />
+    <Compile Include="StaticReport\Dtos\TimeBucketParkReportExcelDto.cs" />
+    <Compile Include="StaticReport\Dtos\WorkGroupReportExcelDto.cs" />
+    <Compile Include="StaticReport\IStaticReportAppService.cs" />
+    <Compile Include="StaticReport\StaticReportAppService.cs" />
+    <Compile Include="SubscribeManager\ISubscribeAppService.cs" />
+    <Compile Include="SubscribeManager\SubscribeAppService.cs" />
+    <Compile Include="SystemManager\Dtos\DBerthDto.cs" />
+    <Compile Include="SystemManager\Dtos\DBerthsecDto.cs" />
+    <Compile Include="SystemManager\ISystemAppService.cs" />
+    <Compile Include="SystemManager\SystemAppService.cs" />
+    <Compile Include="Tasks\Dto\GetAllTaskOutput.cs" />
+    <Compile Include="Tasks\Dto\TaskInput.cs" />
+    <Compile Include="Tenants\Dto\CreateOrUpdateTenantInput.cs" />
+    <Compile Include="Tenants\Dto\GetAllTenantOutput.cs" />
+    <Compile Include="Tenants\Dto\TenantInput.cs" />
+    <Compile Include="Tenants\ITenantRepository.cs" />
+    <Compile Include="TicketManagement\Dto\TicketStyleDto.cs" />
+    <Compile Include="TicketManagement\ITickeAppService.cs" />
+    <Compile Include="TicketManagement\TickeAppService.cs" />
+    <Compile Include="Transmitters\Dtos\CreateOrUpdateTransmitterInput.cs" />
+    <Compile Include="Transmitters\Dtos\GetAllTransmitterOutput.cs" />
+    <Compile Include="Transmitters\Dtos\TransmitterDto.cs" />
+    <Compile Include="Transmitters\Dtos\TransmitterInput.cs" />
+    <Compile Include="Transmitters\ITransmitterAppService.cs" />
+    <Compile Include="Transmitters\ITransmitterRepository.cs" />
+    <Compile Include="Transmitters\TransmitterAppService.cs" />
+    <Compile Include="Tree\ITreeAppService.cs" />
+    <Compile Include="Tree\TreeAppService.cs" />
+    <Compile Include="Users\IUserRepository.cs" />
+    <Compile Include="Roles\RoleAppService.cs" />
+    <Compile Include="SmsManagements\Dtos\GetSmsAccountInput.cs" />
+    <Compile Include="SmsManagements\Dtos\SmsAccountDto.cs" />
+    <Compile Include="SmsManagements\Dtos\SmsDto.cs" />
+    <Compile Include="SmsManagements\ISmsManagementAppService.cs" />
+    <Compile Include="SmsManagements\SmsManagementAppService.cs" />
+    <Compile Include="Tasks\Dto\TaskDto.cs" />
+    <Compile Include="Tasks\ITaskAppService.cs" />
+    <Compile Include="Tasks\TaskAppService.cs" />
+    <Compile Include="Tenants\Dto\TenantDto.cs" />
+    <Compile Include="Tenants\ITenantAppService.cs" />
+    <Compile Include="Tenants\TenantAppService.cs" />
+    <Compile Include="Users\Dto\GetAllUserOutput.cs" />
+    <Compile Include="Users\Dto\UserDto.cs" />
+    <Compile Include="Users\Dto\UserInput.cs" />
+    <Compile Include="Users\IUserAppService.cs" />
+    <Compile Include="Users\UserAppService.cs" />
+    <Compile Include="UserTrials\Dtos\GetAllUseTrialOutput.cs" />
+    <Compile Include="UserTrials\Dtos\SearchUseTrialInput.cs" />
+    <Compile Include="UserTrials\Dtos\UserTrialDto.cs" />
+    <Compile Include="UserTrials\Dtos\UserTrialInput.cs" />
+    <Compile Include="UserTrials\IUserTrialAppService.cs" />
+    <Compile Include="UserTrials\UserTrialAppService.cs" />
+    <Compile Include="VideoCarStopData\Dtos\CreateOrUpdateVideoCarDto.cs" />
+    <Compile Include="VideoCarStopData\Dtos\GetAllVideoCarDto.cs" />
+    <Compile Include="VideoCarStopData\Dtos\VideoCarInputDto.cs" />
+    <Compile Include="VideoCarStopData\Dtos\VideoCarOutDto.cs" />
+    <Compile Include="VideoCarStopData\IVideoCarDetailAppService.cs" />
+    <Compile Include="VideoCarStopData\IVideoCarDetailRepository.cs" />
+    <Compile Include="VideoCarStopData\VideoCarDetailAppService.cs" />
+    <Compile Include="VideoEquipBusinessDetails\Dtos\CreateOrUpdateVideoEqBusDetail.cs" />
+    <Compile Include="VideoEquipBusinessDetails\Dtos\GetAllVideoEqBusinessDetailOutput.cs" />
+    <Compile Include="VideoEquipBusinessDetails\Dtos\VideoEqBusinessDetailDto.cs" />
+    <Compile Include="VideoEquipBusinessDetails\Dtos\VideoEquipBusinessDetailInput.cs" />
+    <Compile Include="VideoEquipBusinessDetails\IVideoEqBusinessDetailRepository.cs" />
+    <Compile Include="VideoEquipBusinessDetails\IVideoEquipBusinessDetailAppService.cs" />
+    <Compile Include="VideoEquipBusinessDetails\VideoEquipBusinessDetailAppService.cs" />
+    <Compile Include="VideoEquipFaultsNs\Dtos\CreateOrUpdateVideoEqFault.cs" />
+    <Compile Include="VideoEquipFaultsNs\Dtos\VeqFaultInput.cs" />
+    <Compile Include="VideoEquipFaultsNs\Dtos\VeqFaultOutput.cs" />
+    <Compile Include="VideoEquipFaultsNs\Dtos\VideoEqFaultDto.cs" />
+    <Compile Include="VideoEquipFaultsNs\IVideoEqFaultRepository.cs" />
+    <Compile Include="VideoEquipFaultsNs\IVideoEquipFaultsAppService.cs" />
+    <Compile Include="VideoEquipFaultsNs\VideoEquipFaultsAppService.cs.cs" />
+    <Compile Include="WebChat\Dtos\AdDto.cs" />
+    <Compile Include="WebChat\Dtos\BusinessPicDto.cs" />
+    <Compile Include="WebChat\Dtos\GetAdsOutput.cs" />
+    <Compile Include="WebChat\Dtos\GetStopCarOutput.cs" />
+    <Compile Include="WebChat\Dtos\StopCarDto.cs" />
+    <Compile Include="WebChat\Dtos\StopCarInfoDto.cs" />
+    <Compile Include="WebChat\IWebchatAppService.cs" />
+    <Compile Include="WebChat\WebchatAppService.cs" />
+    <Compile Include="WeixinPushMsg\Dtos\GetAllWeixinPushMsgOutput.cs" />
+    <Compile Include="WeixinPushMsg\Dtos\SearchWeixinPushMsgInput.cs" />
+    <Compile Include="WeixinPushMsg\Dtos\WeixinPushMsgDto.cs" />
+    <Compile Include="WeixinPushMsg\IWeixinHistoryMsgAppService.cs" />
+    <Compile Include="WeixinPushMsg\WeixinHistoryMsgAppService.cs" />
+    <Compile Include="WeixinSendMsgModel\Dtos\CreateOrUpdateWeixinSendMsgModelInput.cs" />
+    <Compile Include="WeixinSendMsgModel\Dtos\GetAllWeixinSendMsgModelOutput.cs" />
+    <Compile Include="WeixinSendMsgModel\Dtos\SearchWeixinSendMsgModelInput.cs" />
+    <Compile Include="WeixinSendMsgModel\Dtos\WeixinSendMsgModelDto.cs" />
+    <Compile Include="WeixinSendMsgModel\IWeixinSendMsgModelAppService.cs" />
+    <Compile Include="WeixinSendMsgModel\WeixinSendMsgModelAppService.cs" />
+    <Compile Include="WeixinsSendRecords\Dtos\WeixinSendRecordDto.cs" />
+    <Compile Include="WeixinsSendRecords\IWeixinSendRecordAppService.cs" />
+    <Compile Include="WeixinsSendRecords\WeixinSendRecordAppService.cs" />
+    <Compile Include="Weixin\Dtos\CreateOrUpdateWeixinConfigInput.cs" />
+    <Compile Include="Weixin\Dtos\CreateOrUpdateWeixinMonthRuleInput.cs" />
+    <Compile Include="Weixin\Dtos\CreateOrUpdateWeixinRechargeRuleInput.cs" />
+    <Compile Include="Weixin\Dtos\DecisionWeixinDto.cs" />
+    <Compile Include="Weixin\Dtos\GetAllWeixinConfigOutput.cs" />
+    <Compile Include="Weixin\Dtos\GetAllWeixinIdeaOutput.cs" />
+    <Compile Include="Weixin\Dtos\GetAllWeixinMonthRuleOutput.cs" />
+    <Compile Include="Weixin\Dtos\GetAllWeixinRechargeRuleOutput.cs" />
+    <Compile Include="Weixin\Dtos\GetAllWeixinTUserOutput.cs" />
+    <Compile Include="Weixin\Dtos\GetAllWeixinUserOutput.cs" />
+    <Compile Include="Weixin\Dtos\GetWeixinOrdersOutput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinConfigInput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinIdeaInput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinMonthRuleInput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinOrdersInput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinRechargeRuleInput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinTUserInput.cs" />
+    <Compile Include="Weixin\Dtos\SearchWeixinUserInput.cs" />
+    <Compile Include="Weixin\Dtos\WeixinConfigDto.cs" />
+    <Compile Include="Weixin\Dtos\WeixinIdeaDto.cs" />
+    <Compile Include="Weixin\Dtos\WeixinMonthRuleDto.cs" />
+    <Compile Include="Weixin\Dtos\WeixinOrdersDto.cs" />
+    <Compile Include="Weixin\Dtos\WeixinRechargeRuleDto.cs" />
+    <Compile Include="Weixin\Dtos\WeixinTUserDto.cs" />
+    <Compile Include="Weixin\Dtos\WeixinUserDto.cs" />
+    <Compile Include="Weixin\IWeixinAppService.cs" />
+    <Compile Include="Weixin\WeixinAppService.cs" />
+    <Compile Include="WhiteLists\Dtos\CreateOrUpdateWhiteListsInput.cs" />
+    <Compile Include="WhiteLists\Dtos\GetAllWhiteListsOutput.cs" />
+    <Compile Include="WhiteLists\Dtos\WhiteListsDto.cs" />
+    <Compile Include="WhiteLists\Dtos\WhiteListsInput.cs" />
+    <Compile Include="WhiteLists\IWhiteListsRepository.cs" />
+    <Compile Include="WhiteLists\IWhiteListsAppService.cs" />
+    <Compile Include="WhiteLists\WhiteListsAppService.cs" />
+    <Compile Include="WorkGroupInspectors\Dto\CreateOrUpdateWorkGroupInspectorsInput.cs" />
+    <Compile Include="WorkGroupInspectors\Dto\GetAllWorkGroupInspectorsOutput.cs" />
+    <Compile Include="WorkGroupInspectors\Dto\GetAllWorkGroupInspectorsReport.cs" />
+    <Compile Include="WorkGroupInspectors\Dto\WorkGroupsInspectorsDto.cs" />
+    <Compile Include="WorkGroupInspectors\Dto\WorkGroupInspectorsEcharsDto.cs" />
+    <Compile Include="WorkGroupInspectors\Dto\WorkGroupInspectorsInput.cs" />
+    <Compile Include="WorkGroupInspectors\IWorkGroupInspectorsAppService.cs" />
+    <Compile Include="WorkGroupInspectors\IWorkGroupInspectorsRepository.cs" />
+    <Compile Include="WorkGroupInspectors\WorkGroupInspectorsAppService.cs" />
+    <Compile Include="WorkGroups\Dto\CreateOrUpdateWorkGroupInput.cs" />
+    <Compile Include="WorkGroups\Dto\GetAllWorkGroupOutput.cs" />
+    <Compile Include="WorkGroups\Dto\GetAllWorkGroupReport.cs" />
+    <Compile Include="WorkGroups\Dto\WorkGroupDto.cs" />
+    <Compile Include="WorkGroups\Dto\WorkGroupEcharsDto.cs" />
+    <Compile Include="WorkGroups\Dto\WorkGroupInput.cs" />
+    <Compile Include="WorkGroups\IWorkGroupAppService.cs" />
+    <Compile Include="WorkGroups\IWorkGroupRepository.cs" />
+    <Compile Include="WorkGroups\WorkGroupAppService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
+    <None Include="app.config" />
+    <Fakes Include="Fakes\System.Collections.Immutable.fakes" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\P4.Core\F2.Core.csproj">
+      <Project>{17298ea0-af73-4f30-b6f1-2066100d7d74}</Project>
+      <Name>F2.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.6.4.js" />
+    <Content Include="Scripts\jquery-1.6.4.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.js" />
+    <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AdvancedFeaturesManager\Dtos\" />
+    <Folder Include="Map\" />
+    <Folder Include="SubscribeManager\Dtos\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets" Condition="Exists('..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets')" />
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,326 @@
+﻿@using P4.Web.Models.Weixin
+@model WeixinModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>收费员定位</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="~/Scripts/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="../signalr/hubs"></script>
+</head>
+<body>
+    <div id="allmap" style="width:100%;height:100%;">
+    </div>
+</body>
+</html>
+@*signalr-end*@
+<script type="text/javascript">
+    var XMap = "100.22367479";
+    var YMap = "25.59689964";
+    var map = new BMap.Map("allmap");
+    map.enableScrollWheelZoom();
+    map.enableInertialDragging();
+    map.enableContinuousZoom();
+
+    map.addControl(new BMap.NavigationControl());
+
+    BMap.Icon.prototype.name = "";
+    BMap.Icon.prototype.setName = function (name) {
+        this.name = name;
+    }
+
+
+    //Websocket通讯
+    $(function () {
+        var chat = $.connection.chat;
+        $.connection.hub.logging = true;
+        $.connection.hub.start().done(function () {
+            chat.server.userlogin('1015 Employee1');//注册名称
+        });
+        chat.client.EmployeeMessage = function (Username, Messge, type) {
+            if (type == 0)      //签到
+            {
+                NotifySuccess(Messge, '收费员签到');
+                deletePoint(Username);
+            }
+            else if (type == 1) //签退
+            {
+                NotifySuccess(Messge, '收费员签退');
+                deletePoint(Username);
+            }
+            else if (type == 2) //车辆入场
+            {
+                NotifySuccess(Messge, '车辆入场');
+            }
+            else if (type == 3) //车辆正常出场
+            {
+                NotifyInfo(Messge, '车辆出场');
+            }
+            else if (type == 4) //车辆欠费出场
+            {
+                NotifyError(Messge, '车辆出场');
+            }
+            else if (type == 5)  //车辆补缴费用
+                NotifyWarn(Messge, '车辆补缴');
+        }
+    });
+    map.centerAndZoom(new BMap.Point(XMap, YMap), 16);
+    function showBerthsecMessage(item) {
+        var opts = {
+            width: 210,     // 信息窗口宽度
+            height: 160,     // 信息窗口高度
+            title: "<span style='font-size:18px;font-weight:bold'>" + item.BerthsecName + "</span>", // 信息窗口标题
+            enableMessage: true,//设置允许信息窗发送短息
+            message: item.BerthsecName
+        }
+        var BerthsecMessage = "<table border='0'>" +
+                          "<tr><td>操作状态：</td><td>" + (item.IsActive == true ? "启用" : "禁用") + "</td><td rowspan='5'></tr>" +
+                          "<tr><td>使用状态：</td><td>" + (item.UseStatus == true ? "签到" : "签退") + "</td></tr>" +
+                          "<tr><td>签到用户：</td><td>" + (item.CheckInName == null ? '未知' : item.CheckInName) + "</td></tr>" +
+                          "<tr><td>泊位总数：</td><td>" + item.BerthCount + "</td></tr>" +
+                          "<tr><td>签退用户：</td><td>" + (item.CheckOutName == null ? '未知' : item.CheckInName) + "</td></tr>" +
+                          "<tr><td>是否分配：</td><td>" + (item.isselected == true ? "已分配" : "未分配") + "</td></tr></table>";
+        var infoWindow = new BMap.InfoWindow(BerthsecMessage, opts);  // 创建信息窗口对象
+        return infoWindow;
+    }
+
+    var myIcongreen = new BMap.Icon("../assets/images/03.png", new BMap.Size(36, 36));  //绿色
+    var myIconyellow = new BMap.Icon("../assets/images/02.png", new BMap.Size(36, 36)); //黄色
+    var myIconred = new BMap.Icon("../assets/images/01.png", new BMap.Size(36, 36));    //红色
+
+    function loadberthsecpoint(Id) {
+        $.ajax({
+            type: "POST",
+            url: '../InspectorsClient/GetAllBerthsecGps?InspectorId=' + @(Model.InspectorId),
+            success: function (data) {
+                var X = "100.22367479";
+                var Y = "25.59689964";
+                var geoc = new BMap.Geocoder();
+                var geolocation = new BMap.Geolocation();
+                var customLayer;
+                function addCustomLayer(keyword) {
+                    if (customLayer) {
+                        map.removeTileLayer(customLayer);
+                    }
+                    customLayer = new BMap.CustomLayer({
+                        geotableId: 30960,
+                        q: '', //检索关键字
+                        tags: '', //空格分隔的多字符串
+                        filter: '' //过滤条件,参考http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
+                    });
+                    map.addTileLayer(customLayer);
+                    customLayer.addEventListener('hotspotclick', callback);
+                }
+
+                $.each(data, function (i, item) {
+                    X = item.Lat;
+                    Y = item.Lng;
+                    var mk;
+                    myIcongreen.setName(item.Id);
+                    mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIcongreen
+                    });
+                    map.addOverlay(mk);
+                    //mk.setLabel(label);
+                    //map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                    });
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showBerthsecMessage(item), pt); //开启信息窗口
+                    });
+                });
+            }, error: function () {
+
+            }
+        });
+    }
+
+    //loadberthsecpoint(0);
+
+    var myIcon = new BMap.Icon("../assets/images/employee.png", new BMap.Size(36, 36));
+    var myIconBlack = new BMap.Icon("../assets/images/outemployee.png", new BMap.Size(36, 36));
+    function loademployeepoint(id) {
+        $.ajax({
+            type: "POST",
+            url: '../InspectorsClient/GetEmplopyeeGps?InspectorId=' + @(Model.InspectorId),
+            success: function (data) {
+                var X = "100.22367479";
+                var Y = "25.59689964";
+                var geoc = new BMap.Geocoder();
+                var geolocation = new BMap.Geolocation();
+                var customLayer;
+                function addCustomLayer(keyword) {
+                    if (customLayer) {
+                        map.removeTileLayer(customLayer);
+                    }
+                    customLayer = new BMap.CustomLayer({
+                        geotableId: 30960,
+                        q: '', //检索关键字
+                        tags: '', //空格分隔的多字符串
+                        filter: '' //过滤条件,参考http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
+                    });
+                    map.addTileLayer(customLayer);
+                    customLayer.addEventListener('hotspotclick', callback);
+                }
+
+                $.each(data, function (i, item) {
+                    X = item.X;
+                    Y = item.Y;
+                    var mk;
+                    if (item.CheckOut == true) {
+                        myIconBlack.setName(item.Id);
+                        mk = new BMap.Marker(new BMap.Point(X, Y), {
+                            enableDragging: false,
+                            raiseOnDrag: true,
+                            icon: myIconBlack
+                        });
+                    }
+                    else {
+                        myIcon.setName(item.Id);
+                        mk = new BMap.Marker(new BMap.Point(X, Y), {
+                            enableDragging: false,
+                            raiseOnDrag: true,
+                            icon: myIcon
+                        });
+                    }
+                    //var label = new BMap.Label(item.TrueName + "(" + item.UserName + ")", { offset: new BMap.Size(30, 10) });
+                    //map.addOverlay(label);
+                    map.addOverlay(mk);
+                    //map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                    });
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                });
+            }, error: function () {
+
+            }
+        });
+    }
+
+    loademployeepoint(0);
+
+    function deletePoint(val) {
+        var allOverlay = map.getOverlays();
+        for (var i = 0; i < allOverlay.length; i++) {
+            if (allOverlay[i].toString() == "[object Marker]") {
+                if (allOverlay[i].getIcon().name == val) {
+                    map.removeOverlay(allOverlay[i]);
+                    loademployeepoint(val);
+                    return;
+                }
+            }
+        }
+        //loademployeepoint();
+    }
+
+    //百度地图自适应
+    $(document).ready(function () {
+        BaiDuMap();
+    });
+
+    $(window).resize(function () {
+        BaiDuMap();
+    });
+
+    function BaiDuMap() {
+        //alert('1223');
+        var winWidth = 0;  //1440
+        var winHeight = 0;   //417
+        //var bibi=
+        //获取窗口宽度
+        //if (window.innerWidth) {
+        //    winWidth = window.innerWidth;
+        a = window.innerWidth;
+        b = window.innerHeight;
+
+        //    a = document.body.clientHeight;
+        //    b = document.body.clientWidth;
+        //} else
+        if ((document.body) && (document.body.clientWidth)) {
+            //winWidth = document.body.clientWidth;
+        }
+        //alert('1223');
+        //获取窗口高度
+        //if (window.innerHeight) {
+        //    winHeight = window.innerHeight;
+        //} else
+        if ((document.body) && (document.body.clientHeight)) {
+            // winHeight = document.body.clientHeight;
+        }
+        //通过深入Document内部对body进行检测，获取窗口高度
+        if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth) {
+            winWidth = document.documentElement.clientWidth;
+            winHeight = document.documentElement.clientHeight;
+        }
+
+        var bibi = (parseInt(winHeight) * (650 / 805)).toString();
+        $("#allmap").css({ "height": parseInt(winHeight) -20 });
+
+        //$("#allmap").attr("style","width:100%;height:"+bibi+"px");
+
+        //$("#div1).css({"height":parseInt(winHeight),"width":parseInt(winWidth)});
+    }
+
+    function showMessage(item) {
+
+        var opts = {
+            width: 400,     // 信息窗口宽度
+            height: 380,     // 信息窗口高度
+            title: "<span style='font-size:18px;font-weight:bold'>" + item.TrueName + "(" + item.UserName + ") </span>", // 信息窗口标题
+            enableMessage: true,//设置允许信息窗发送短息
+            message: item.Address
+        }
+        var parkMessage = "<table border='0'><tr><td width='85px'>手机号码：</td><td><span style=\"font-size:14px;\">" + item.Telephone + "</span></td><td width='85px'>账号状态：</td><td>" + (item.AccountStatus == 1 ? "在岗" : "离岗") + "</td></tr>" +
+                          "<tr><td>使用设备：</td><td>" + (item.DeviceCode == null ? "未使用设备" : item.DeviceCode) + "</td><td>实收总计：</td><td>"+ item.EmployeeCharges.SumFactReceive +"</td></tr>" +
+                          "<tr><td>设备版本：</td><td>" + item.Version + "</td><td>现金收入：</td><td>"+ item.EmployeeCharges.XJSumFactReceive +"</td></tr>" +
+                          "<tr><td>签到状态：</td><td>" + (item.CheckIn == true ? "签到" : "未签到") + "</td><td>账号收入：</td><td>"+ item.EmployeeCharges.SKSumFactReceive +"</td></tr>" +
+                          "<tr><td>签到时间：</td><td>" + item.CheckInTimeStr + "</td><td>欠费总和：</td><td>"+ item.EmployeeCharges.SumArrearage +"</td></tr>" +
+                          "<tr><td>泊位段：</td><td>" + item.BerthsecName + "</td><td>应收总和：</td><td>"+ item.EmployeeCharges.SumMoney +"</td></tr>" +
+                          "<tr><td>签退状态：</td><td>" + (item.CheckOut == true ? "签退" : "未签退") + "</td><td>开户/充值：</td><td>"+ item.EmployeeCharges.CardMoney +"</td></tr>" +
+                          "<tr><td>签退时间：</td><td>" + item.CheckOutTimeStr + "</td><td>现金补缴：</td><td>"+ item.EmployeeCharges.XJSumRepayment +"</td></tr>" +
+                          "<tr><td>更新时间：</td><td>" + item.UpLastTime + "</td><td>刷卡补缴：</td><td>"+ item.EmployeeCharges.SKSumRepayment +"</td></tr>"+
+                          "<tr><td colspan='2'>总收入(收入+补缴+开户/充值)</td><td>"+ item.EmployeeCharges.SumIncomePlusBack +"</td></table>";
+        var infoWindow = new BMap.InfoWindow(parkMessage, opts);  // 创建信息窗口对象
+        return infoWindow;
+    }
+
+    $('#myButton').on('click', function () {
+        map.centerAndZoom($('#cityIdInput').val(), 11);
+    });
+</script>
+
+

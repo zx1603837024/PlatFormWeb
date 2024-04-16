@@ -1,0 +1,127 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("VideoEqManagementStopData_s");
+    ViewBag.ActiveMenu = "巡检车停车数据";
+}
+
+
+
+
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+
+
+
+@section scriptsgrid
+{
+    function alarmFormatter1(cellvalue, options, rowdata) {
+    if(rowdata.BeforePathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.BeforePathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.BeforePathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    function alarmFormatter2(cellvalue, options, rowdata) {
+    if(rowdata.AfterPathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.AfterPathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.AfterPathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    function alarmFormatter3(cellvalue, options, rowdata) {
+    if(rowdata.OutBeforePathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.OutBeforePathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.OutBeforePathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    function alarmFormatter4(cellvalue, options, rowdata) {
+    if(rowdata.OutAfterPathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.OutAfterPathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.OutAfterPathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../CarVideo/GetVideoEquipBusinessDetail',
+    datatype: "json",
+    ajaxSelectOptions: { type: "GET" },
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: ['操作','ID', '停车场名称', '泊位段名称','泊位号', '巡检车牌号', '巡检车类型','拍摄时速','车牌号', '应收', '车辆入场时间', '车辆出场时间', '停车时长','入场车前图片','入场车后图片','出场车前图片','出场车后图片'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false, search: false,
+    formatter: 'actions',hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id',search: false, sorttype: "int", key: true, hidden: true},
+    { name: 'ParkName', editable: false, index: 'ParkName',search:true,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllParkName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'BerthsecName', index: 'BerthsecName',search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetBerthsecListSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'BerthNumber', index: 'BerthNumber', search: true ,width:100},
+
+    { name: 'VideoCarPlate', index: 'VideoCarPlate',search: true,},
+    { name: 'VideoTypeName', index: 'VideoTypeName',search: false},
+    { name: 'Speed', index: 'Speed',search: false},
+
+    { name: 'PlateNumber',editable: true, index: 'PlateNumber',search: false,searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']}},
+    { name: 'Receivable', index: 'Receivable',search: false,width:85},
+    { name: 'CarInTime', index: 'CarInTime',search: false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }},
+    { name: 'CarOutTime', index: 'CarOutTime',search: false,sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }},
+    { name: 'StopTimes', index: 'StopTimes',search: false},
+    { name: 'BeforePathURL', index: 'BeforePathURL', width: 120, align: "center", sortable: false, editable: false, formatter: alarmFormatter1,search: false },
+    { name: 'AfterPathURL', index: 'AfterPathURL', width: 120, align: "center", sortable: false, editable: false, formatter: alarmFormatter2,search: false },
+    { name: 'OutBeforePathURL', index: 'OutBeforePathURL', width: 120, align: "center", sortable: false, editable: false, formatter: alarmFormatter3,search: false },
+    { name: 'OutAfterPathURL', index: 'OutAfterPathURL', width: 120, align: "center", sortable: false, editable: false, formatter: alarmFormatter4,search: false },
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: "desc",
+    toppager: false,
+    editurl: "../CarVideo/ProcessVideoEquipBusinessDetail",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+
+
+
+
+
+}
+

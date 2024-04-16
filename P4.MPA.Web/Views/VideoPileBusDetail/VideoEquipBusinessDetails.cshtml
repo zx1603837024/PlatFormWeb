@@ -1,0 +1,120 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("VideoPileManagementStopData");
+    ViewBag.ActiveMenu = "VideoPileManagementStopData";
+}
+
+
+
+
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+
+
+
+@section scriptsgrid
+{
+    window.edit=true;
+    function alarmFormatter(cellvalue, options, rowdata) {
+    if(rowdata.OssPathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.OssPathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.OssPathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    function alarmFormatterOut(cellvalue, options, rowdata) {
+    if(rowdata.OutOssPathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.OutOssPathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.OutOssPathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    function alarmFormatterDetail(cellvalue, options, rowdata) {
+    if(rowdata.DetailOssPathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.DetailOssPathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.DetailOssPathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    function alarmFormatterFix(cellvalue, options, rowdata) {
+    if(rowdata.FixOssPathURL != null)
+    {
+    return '<a href="/VideoPic/' + rowdata.FixOssPathURL + '" target="_blank" id="colorbox"><img src="/VideoPic/' + rowdata.FixOssPathURL + '" id="img' + rowdata.Id + '" style="width: 80px;  background-size:auto" /></a>';
+    }
+    else{
+    return "";
+    }
+    }
+
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../VideoPileBusDetail/GetVideoEquipBusinessDetail',
+    datatype: "json",
+    ajaxSelectOptions: { type: "GET" },
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: ['操作','ID', '停车场名称', '泊位段名称','泊位号', '视频设备编号', '设备类型','车牌号', '应收', '车辆入场时间', '车辆出场时间', '停车时长','入场照片','出场照片'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false ,search: false,
+    formatter: 'actions',hidden: true,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id',search: false, sorttype: "int", key: true, hidden: true},
+    { name: 'ParkName', editable: false, index: 'ParkName',search:true,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllParkName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'BerthsecName', index: 'BerthsecName',search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetBerthsecListSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'BerthNumber', index: 'BerthNumber', search: true ,width:100},
+    { name: 'SensorNumber', index: 'SensorNumber',search: true },
+    { name: 'VideoTypeName', index: 'VideoTypeName',search: false },
+    { name: 'PlateNumber', editable: true, index: 'PlateNumber',search: false,searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']}},
+    { name: 'Receivable', index: 'Receivable',search: false,width:85},
+    { name: 'CarInTime', index: 'CarInTime',search: false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }},
+    { name: 'CarOutTime', index: 'CarOutTime',search: false,sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }},
+    { name: 'StopTimes', index: 'StopTimes',search: false},
+    { name: 'OssPathURL', index: 'OssPathURL', width: 120, align: "center", sortable: false, editable: false, formatter: alarmFormatter,search: false },
+    { name: 'OutOssPathURL', index: 'OutOssPathURL', width: 120, align: "center", sortable: false, editable: false, formatter: alarmFormatterOut,search: false },
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: "desc",
+    toppager: false,
+    editurl: "../VideoPileBusDetail/ProcessVideoEquipBusinessDetail",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+
+    }, 0);
+    }
+    });
+
+}
+

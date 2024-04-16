@@ -1,0 +1,360 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+
+    ViewBag.ActiveMenu = "RolesManagement";
+}
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/metroStyle.css" />
+}
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">权限树</h4>
+            </div>
+            <div class="modal-body">
+                <div class="content_wrap">
+                    <div class="zTreeDemoBackground left">
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="getCheckedNodes()">查看权限信息</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="Save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scriptsgrid
+{
+    @*jQuery(function ($) {
+        var grid_selector = "#grid-table";
+        var pager_selector = "#grid-pager";*@
+
+    jQuery(grid_selector).jqGrid({
+    url: '../System/GetAllRoleList',
+    ajaxSelectOptions: { type: "GET" },
+    datatype: "json",
+    mtype: "post",
+    shrinkToFit: false,
+    height: 'auto',
+    autowidth: true,
+    colNames: ['操作', 'ID', '商户名', '分公司', '角色名', '角色名称', '是否静态', '是否默认', '创建时间', '创建用户', '最后修改时间', '最后修改用户'],
+    colModel: [
+    {
+    name: 'myac', index: '', width: 80, fixed: true, search: false, sortable: true, resize: false,
+    formatter: 'actions', hidden: window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", hidden: true, key: true },
+    { name: 'TenantName', index: 'TenantName', search: false, sorttype: "int", editable: true, edittype: "select", editoptions: { dataUrl: '../System/GetTenantsSelect', defaultValue: '1' },stype:'select', searchoptions: { dataUrl: '../System/GetTenantsSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'CompanyName', index: 'CompanyName', editable: true, search: false, edittype:"select", editoptions:{ dataUrl: '../Users/GetAllCompanyName/'+(new Date()).getMilliseconds(), defaultValue: '1' }, width: 240, stype:'select', searchoptions: { dataUrl: '../Users/GetAllCompanyName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'Name', index: 'Name', editable: true },
+    { name: 'DisplayName', index: 'DisplayName', editable: true },
+    { name: 'IsStatic', index: 'IsStatic', stype: 'select', searchoptions: { dataUrl: '../Dictionarys/GetYesOrNoSelect/' + (new Date()).getMilliseconds(), sopt: ['eq', 'ne'] } },
+    { name: 'IsDefault', index: 'IsDefault', editable: true, edittype: "select", formatter:YesAndNo, editoptions: { value: "true:是;false:否" },  stype: 'select', searchoptions: { dataUrl: '../Dictionarys/GetYesOrNoSelect/' + (new Date()).getMilliseconds(), sopt: ['eq', 'ne'] } },
+    { name: 'CreationTime', search: false, index: 'CreationTime', sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    //{ name: 'CreatorUserId', index: 'CreatorUserId' },
+    { name: 'CreatorUserName', search: false, index: 'CreatorUserName' },
+    { name: 'LastModificationTime', search: false, index: 'LastModificationTime', sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    //{ name: 'LastModifierUserId', index: 'LastModifierUserId' }
+    { name: 'LastModifierUserName', search: false, index: 'LastModifierUserName' }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    //toppager: true,
+    editurl: "../System/ProcessRoles",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    @*});*@
+
+    });
+}
+
+@section scriptsbuttonbyself{
+    if(window.field1){
+    // add first custom button
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "ui-icon-pencil",
+    title: "操作权限",
+    caption: "   操作权限",
+    position: "last",
+    modal:true,
+    onClickButton: function () {
+    Savetype = "oper";
+    var ids = jQuery(grid_selector).jqGrid('getGridParam', 'selarrrow');
+
+    if (ids.length == 1) {
+    chooseroleid = ids[0];
+    $.ajax({
+    type: "Post",
+    url: "/System/RoleOperPermission?roleid=" + ids[0],
+    success: function (data) {
+    // alert("data1:"+data);
+    treeini(data);
+    $("#myModal").modal('show');
+
+    }, error: function (data) {
+    swal("", "获取操作权限数据失败，请稍后重试...", "error");
+    }
+    });
+    }
+    else {
+    swal("", "请选择用户...", "info");
+    //alert("choose one row!");
+    }
+    }
+    });
+    }
+
+    if(window.field2){
+    /// add second custom button
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "ui-icon-pencil",
+    title: "数据权限",
+    caption: "数据权限",
+    position: "last",
+    onClickButton: function () {
+    Savetype = "data";
+    var ids = jQuery(grid_selector).jqGrid('getGridParam', 'selarrrow');
+    if (ids.length == 1) {
+    chooseroleid = ids[0];
+    $.ajax({
+    type: "Post",
+    url: "/System/RoleDataPermission?roleid=" + ids[0],
+    success: function (data) {
+    // alert("data1:"+data);
+    treeini(data);
+    $("#myModal").modal('show');
+    }, error: function (data) {
+    swal("", "获取数据权限数据失败，请稍后重试", "error");
+    }
+    });
+    }
+    else {
+    swal("", "请选择用户...", "info");
+    }
+    }
+    });
+    }
+}
+
+<script src="~/assets/js/z-tree/jquery.ztree.core-3.5.js"></script>
+<script src="~/assets/js/z-tree/jquery.ztree.excheck-3.5.js"></script>
+<script type="text/javascript" src="~/assets/js/z-tree/jquery.ztree.exedit-3.5.js"></script>
+<script type="text/javascript">
+
+    var setting = {
+        view: {
+            selectedMulti: false
+        },
+        check: {
+            enable: true
+        },
+        //data: {
+        //    simpleData: {
+        //        enable: true //数据是否采用Array格式（默认是false）
+        //    }, check: {
+        //        enable: true, // 显示多选框按钮
+        //        chkStyle: "checkbox", // 添加生效
+        //        chkboxType: { "Y": "ps", "N": "s" } //Y:勾选（参数：p:影响父节点），N：不勾（参数s：影响子节点）[p 和 s 为参数]
+        //    }
+        //},
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        callback: {
+            beforeCheck: beforeCheck,
+            onCheck: onCheck
+        }
+    };
+    var zNodes = "";
+
+    var code, log, className = "dark";
+    function beforeCheck(treeId, treeNode) {
+        className = (className === "dark" ? "" : "dark");
+        showLog("[ " + getTime() + " beforeCheck ]&nbsp;&nbsp;&nbsp;&nbsp;" + treeNode.name);
+        return (treeNode.doCheck !== false);
+    }
+    function onCheck(e, treeId, treeNode) {
+        showLog("[ " + getTime() + " onCheck ]&nbsp;&nbsp;&nbsp;&nbsp;" + treeNode.name);
+    }
+    function showLog(str) {
+        if (!log) log = $("#log");
+        log.append("<li class='" + className + "'>" + str + "</li>");
+        if (log.children("li").length > 6) {
+            log.get(0).removeChild(log.children("li")[0]);
+        }
+    }
+    function getTime() {
+        var now = new Date(),
+            h = now.getHours(),
+            m = now.getMinutes(),
+            s = now.getSeconds(),
+            ms = now.getMilliseconds();
+        return (h + ":" + m + ":" + s + " " + ms);
+    }
+
+    function checkNode(e) {
+        var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+            type = e.data.type,
+            nodes = zTree.getSelectedNodes();
+        if (type.indexOf("All") < 0 && nodes.length == 0) {
+            alert("请先选择一个节点");
+        }
+
+        if (type == "checkAllTrue") {
+            zTree.checkAllNodes(true);
+        } else if (type == "checkAllFalse") {
+            zTree.checkAllNodes(false);
+        } else {
+            var callbackFlag = $("#callbackTrigger").attr("checked");
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (type == "checkTrue") {
+                    zTree.checkNode(nodes[i], true, false, callbackFlag);
+                } else if (type == "checkFalse") {
+                    zTree.checkNode(nodes[i], false, false, callbackFlag);
+                } else if (type == "toggle") {
+                    zTree.checkNode(nodes[i], null, false, callbackFlag);
+                } else if (type == "checkTruePS") {
+                    zTree.checkNode(nodes[i], true, true, callbackFlag);
+                } else if (type == "checkFalsePS") {
+                    zTree.checkNode(nodes[i], false, true, callbackFlag);
+                } else if (type == "togglePS") {
+                    zTree.checkNode(nodes[i], null, true, callbackFlag);
+                }
+            }
+        }
+    }
+
+    function setAutoTrigger(e) {
+        var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+        zTree.setting.check.autoCheckTrigger = $("#autoCallbackTrigger").attr("checked");
+        $("#autoCheckTriggerValue").html(zTree.setting.check.autoCheckTrigger ? "true" : "false");
+    }
+
+    //$(document).ready(function () {
+    //    $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    //    alert("node:"+zNodes);
+    //    $("#checkTrue").bind("click", { type: "checkTrue" }, checkNode);
+    //    $("#checkFalse").bind("click", { type: "checkFalse" }, checkNode);
+    //    $("#toggle").bind("click", { type: "toggle" }, checkNode);
+    //    $("#checkTruePS").bind("click", { type: "checkTruePS" }, checkNode);
+    //    $("#checkFalsePS").bind("click", { type: "checkFalsePS" }, checkNode);
+    //    $("#togglePS").bind("click", { type: "togglePS" }, checkNode);
+    //    $("#checkAllTrue").bind("click", { type: "checkAllTrue" }, checkNode);
+    //    $("#checkAllFalse").bind("click", { type: "checkAllFalse" }, checkNode);
+
+    //    $("#autoCallbackTrigger").bind("change", {}, setAutoTrigger);
+    //    });
+    function treeini(data) {
+        // alert("data6:"+data);
+        zNodes = eval("[" + data + "]");
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+        $("#checkTrue").bind("click", { type: "checkTrue" }, checkNode);
+        $("#checkFalse").bind("click", { type: "checkFalse" }, checkNode);
+        $("#toggle").bind("click", { type: "toggle" }, checkNode);
+        $("#checkTruePS").bind("click", { type: "checkTruePS" }, checkNode);
+        $("#checkFalsePS").bind("click", { type: "checkFalsePS" }, checkNode);
+        $("#togglePS").bind("click", { type: "togglePS" }, checkNode);
+        $("#checkAllTrue").bind("click", { type: "checkAllTrue" }, checkNode);
+        $("#checkAllFalse").bind("click", { type: "checkAllFalse" }, checkNode);
+
+        $("#autoCallbackTrigger").bind("change", {}, setAutoTrigger);
+        var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+        type = { "Y": "ps", "N": "s" };
+        zTree.setting.check.chkboxType = type;
+    }
+
+    function getCheckedNodes() {
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        var nodes = treeObj.transformToArray(treeObj.getNodes());
+        var checkednode = "";
+        for (var i = 0; i < nodes.length; i++) {
+            var checked = nodes[i].checked;
+            if (checked == true) {
+                checkednode += nodes[i].name + " ,  ";
+                if (nodes[i].name.indexOf(".") > 0)
+                    checkednode += nodes[i].name + " ,\r\n  ";
+            }
+
+
+        }
+        alert(checkednode);
+    }
+    function Save() {
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        var nodes = treeObj.transformToArray(treeObj.getNodes());
+        var checkNodes = new Array();
+        for (var i = 0, j = 0; i < nodes.length; i++) {
+            var checked = nodes[i].checked;
+            var disabled = nodes[i].chkDisabled;
+            if (checked == true && disabled == false) {
+                checkNodes[j] = nodes[i];
+                j++;
+            }
+        }
+
+        var json = { "savetype": Savetype, "chooseroleid": chooseroleid, "nodes": JSON.stringify(checkNodes) };
+        var jsonstr = JSON.stringify(json);
+        //var post = { data: JSON.stringify(json) };//JSON.stringify(json)把json转化成字符串
+        $.ajax({
+            type: "POST",
+            url: "../System/SavePermission",
+            contentType: "application/json; charset=utf-8",
+            cache: false,
+            dataType: 'json',
+            //data: {
+            //    savetype: Savetype,
+            //    checkednode: checkednode
+            //},
+            data: jsonstr,
+            success: function (data) {
+
+                swal("", "保存成功", "info");
+                $('#myModal').modal('hide');
+            }
+        });
+        // alert(checkednode);
+    }
+</script>
+
+
+
+
+
+
+
+
+

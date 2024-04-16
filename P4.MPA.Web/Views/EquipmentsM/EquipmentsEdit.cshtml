@@ -1,0 +1,530 @@
+﻿@using P4.Web.Models
+@model EquipmentsEditModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("EquipmentsEdit");
+    ViewBag.ActiveMenu = "EquipmentsEdit";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<style type="text/css">
+    table ul {
+    margin-left:213px;
+    }
+    table ul li {
+        list-style: none;
+        margin: 10px 0;
+    }
+</style>
+
+<div class="alert alert-info">
+    <i class="icon-hand-right"></i>
+    设备基本参数录入
+    <button class="close" data-dismiss="alert">
+        <i class="icon-remove"></i>
+    </button>
+</div>
+
+<form class="form-horizontal" role="form" id="myform">
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 设备编号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtEqId" value="" placeholder="设备编号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 设备名称 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtEqName" value="" placeholder="设备名称" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 设备型号 </label>
+
+        <div class="col-sm-9">
+            <select class="width-50 chosen-select" id="EqVersionType" name="EqVersionType" data-placeholder="设备型号">
+                @foreach (var entity in Model.EqVersion)
+                    {
+                        <option value="@entity.ValueCode">@entity.ValueData</option>
+                    }
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 批次号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtBatchNum" value="" placeholder="批次号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 生产工厂 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtEqFactory" value="" placeholder="生产工厂" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    @*<div class=" form-group" id="Parts">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 配件类型 </label>
+        <div class="col-sm-3">
+            <select class="width-50 chosen-select" id="PartsType" name="PartsType" data-placeholder="配件类型">
+                @foreach (var entity in Model.PartsId)
+                    {
+                        <option value="@entity.ValueCode">@entity.ValueData</option>
+                    }
+            </select>
+        </div>
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 配件编号 </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="txtPartsId" value="" placeholder="配件编号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>*@
+    <table>
+        <tr class="partsSetting">
+            <td>
+                <ul id="Parts" class="parts"></ul>
+                <a href="#" style="margin-left:25px">+ 添加</a>
+            </td>
+        </tr>
+    </table>
+    @*<div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 配件编号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtPartsId" value="" placeholder="配件编号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>*@
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-3 col-md-9">
+            <button class="btn btn-info" type="button" onclick="javascript:Save()">
+                <i class="icon-ok bigger-110"></i>
+                保存
+            </button>
+
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            <button class="btn" type="reset">
+                <i class="icon-undo bigger-110"></i>
+                重置
+            </button>
+        </div>
+    </div>
+
+    </form>
+
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('#id-disable-check').on('click', function () {
+                var inp = $('#form-input-readonly').get(0);
+                if (inp.hasAttribute('disabled')) {
+                    inp.setAttribute('readonly', 'true');
+                    inp.removeAttribute('disabled');
+                    inp.value = "This text field is readonly!";
+                }
+                else {
+                    inp.setAttribute('disabled', 'disabled');
+                    inp.removeAttribute('readonly');
+                    inp.value = "This text field is disabled!";
+                }
+            });
+
+
+            $(".chosen-select").chosen();
+            $('#chosen-multiple-style').on('click', function (e) {
+                var target = $(e.target).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+
+            $('[data-rel=tooltip]').tooltip({ container: 'body' });
+            $('[data-rel=popover]').popover({ container: 'body' });
+
+            $('#id-input-file-1 , #id-input-file-2').ace_file_input({
+                no_file: 'No File ...',
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false //| true | large
+                //whitelist:'gif|png|jpg|jpeg'
+                //blacklist:'exe|php'
+                //onchange:''
+                //
+            });
+
+            $('#id-input-file-3').ace_file_input({
+                style: 'well',
+                btn_choose: 'Drop files here or click to choose',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'small'//large | fit
+                //,icon_remove:null//set null, to hide remove/reset button
+                /**,before_change:function(files, dropped) {
+                    //Check an example below
+                    //or examples/file-upload.html
+                    return true;
+                }*/
+                /**,before_remove : function() {
+                    return true;
+                }*/
+                ,
+                preview_error: function (filename, error_code) {
+                    //name of the file that failed
+                    //error_code values
+                    //1 = 'FILE_LOAD_FAILED',
+                    //2 = 'IMAGE_LOAD_FAILED',
+                    //3 = 'THUMBNAIL_FAILED'
+                    //alert(error_code);
+                }
+
+            }).on('change', function () {
+                //console.log($(this).data('ace_input_files'));
+                //console.log($(this).data('ace_input_method'));
+            });
+
+
+            //dynamically change allowed formats by changing before_change callback function
+            $('#id-file-format').removeAttr('checked').on('change', function () {
+                var before_change
+                var btn_choose
+                var no_icon
+                if (this.checked) {
+                    btn_choose = "Drop images here or click to choose";
+                    no_icon = "icon-picture";
+                    before_change = function (files, dropped) {
+                        var allowed_files = [];
+                        for (var i = 0 ; i < files.length; i++) {
+                            var file = files[i];
+                            if (typeof file === "string") {
+                                //IE8 and browsers that don't support File Object
+                                if (!(/\.(jpe?g|png|gif|bmp)$/i).test(file)) return false;
+                            }
+                            else {
+                                var type = $.trim(file.type);
+                                if ((type.length > 0 && !(/^image\/(jpe?g|png|gif|bmp)$/i).test(type))
+                                        || (type.length == 0 && !(/\.(jpe?g|png|gif|bmp)$/i).test(file.name))//for android's default browser which gives an empty string for file.type
+                                    ) continue;//not an image so don't keep this file
+                            }
+
+                            allowed_files.push(file);
+                        }
+                        if (allowed_files.length == 0) return false;
+
+                        return allowed_files;
+                    }
+                }
+                else {
+                    btn_choose = "Drop files here or click to choose";
+                    no_icon = "icon-cloud-upload";
+                    before_change = function (files, dropped) {
+                        return files;
+                    }
+                }
+                var file_input = $('#id-input-file-3');
+                file_input.ace_file_input('update_settings', { 'before_change': before_change, 'btn_choose': btn_choose, 'no_icon': no_icon })
+                file_input.ace_file_input('reset_input');
+            });
+
+
+
+
+            $('#spinner1').ace_spinner({ value: 0, min: 0, max: 200, step: 10, btn_up_class: 'btn-info', btn_down_class: 'btn-info' })
+            .on('change', function () {
+                //alert(this.value)
+            });
+            $('#spinner2').ace_spinner({ value: 0, min: 0, max: 10000, step: 100, touch_spinner: true, icon_up: 'icon-caret-up', icon_down: 'icon-caret-down' });
+            $('#spinner3').ace_spinner({ value: 0, min: -100, max: 100, step: 10, on_sides: true, icon_up: 'icon-plus smaller-75', icon_down: 'icon-minus smaller-75', btn_up_class: 'btn-success', btn_down_class: 'btn-danger' });
+
+            /////////
+            $('#modal-form input[type=file]').ace_file_input({
+                style: 'well',
+                btn_choose: 'Drop files here or click to choose',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'large'
+            })
+
+            //chosen plugin inside a modal will have a zero width because the select element is originally hidden
+            //and its width cannot be determined.
+            //so we set the width after modal is show
+            $('#modal-form').on('shown.bs.modal', function () {
+                $(this).find('.chosen-container').each(function () {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '200px');
+                });
+            })
+            /**
+            //or you can activate the chosen plugin after modal is shown
+            //this way select element becomes visible with dimensions and chosen works as expected
+            $('#modal-form').on('shown', function () {
+                $(this).find('.modal-chosen').chosen();
+            })
+            */
+
+        });
+
+        function Save() {
+           
+            if ($.trim($("#txtEqId").val()) == "")
+            { swal("失败!", "设备编号不能为空！", "error"); }
+            else if ($.trim($("#txtEqName").val()) == "")
+            { swal("失败!", "设备名称不能为空！", "error"); }
+            else if ($.trim($("#txtBatchNum").val()) == "")
+            { swal("失败!", "批次号不能为空！", "error"); }
+            else if ($.trim($("#txtEqFactory").val()) == "")
+            { swal("失败!", "生产工厂不能为空！", "error"); }
+            else if ($.trim($("#Parts li input").val()) == "")
+            { swal("失败!", "配件编号不能为空！", "error"); }
+            else
+            {
+                swal({
+                    title: "系统提示?",
+                    text: "您确定要保存吗？",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定,保存!",
+                    closeOnConfirm: false
+                },
+             function () {
+                 swal("成功!", "正在保存.", "success");
+                 var PartsList = new Array();
+                 var partsIndex = 0;
+                 $.each($(".parts"), function (i, n) {
+
+                     //alert("1203");
+                     $.each($(this).children(), function (i, n) {
+                         var partsobj = new Object();
+                         $.each($(this).children(), function (i, n) {
+                             partsobj.EqId = $("#txtEqId").val();
+                             if ($(this).attr("classname") == "Parts_select") {
+                                 partsobj.PartsType = this.value;
+                                 //this.options[this.options.selectedIndex].value;
+                                 //alert("Parts_select:" + $(this)[0].value);
+
+                             }
+                             if ($(this).attr("classname") == "Parts_text") {
+                                 partsobj.PartsId = this.value;
+                                 //alert("Parts_text:" + $(this)[0].value);
+                             }
+                         });
+                         PartsList[partsIndex++] = partsobj;
+                     });
+                 });
+
+
+                 $.ajax({
+                     type: "Post",
+                     url: '../EquipmentsM/SaveEquipmentsEdit',
+                     data: {
+                         //"{'EquipmentsEditModel':" + JSON.stringify(EquipmentsEditModel) + "}",
+                         EqId: $("#txtEqId").val(),
+                         EqName: $("#txtEqName").val(),
+                         EqVersion: $("#EqVersionType").val(),
+                         BatchNum: $("#txtBatchNum").val(),
+                         EqFactory: $("#txtEqFactory").val(),
+                         //PartsType: $("#PartsType").val(),
+                         //PartsId: $("#txtPartsId").val(),
+                         PartsList: PartsList
+                     },
+                     success: function (data) {
+                         if (data.Success == true) {
+                             NotifySuccess('数据保存成功！', '系统消息');
+                             $("#txtEqId").val("");
+                             $("#txtEqName").val("");
+                             $("#txtBatchNum").val("");
+                             $("#txtEqFactory").val("");
+                             //removeli();
+                             $("#Parts li input").val("");
+                         }
+                         else if (data.Success == false) {
+                             swal("", data.Error.Message, "error");
+                         }
+
+                         //$("#PartsType").html("");
+                         //$("#txtPartsId").html("");
+                     }, error: function () {
+                     }
+                 });
+             });
+            }
+
+            
+        }
+
+        window.flag = 1;
+        $(function () {
+            $("#Parts").easyinsert({
+                //toplimit: 1,
+                name: ["PartsType_tip", "PartsType_type", "PartsId_tip", "PartsId_Code"],
+                type: ["custom", "select", "custom", "text"],
+                value: ["配件类型：&nbsp;&nbsp;", @Model.PartsType, "&nbsp;&nbsp;配件编号：&nbsp;&nbsp;", "0"],
+                className: ["Parts_custom", "Parts_select", "Parts_custom", "Parts_text"]
+            });
+        });
+       
+        function removeli()
+        {
+            $.each($(".parts"), function (i, n) {
+                var lilength = $(this).children().length;
+                if (lilength > 1) {
+                    for (var j = lilength - 1; j > 0; j--) {
+                        //$(this).children()[j].remove();
+                        $(this.childNodes[j]).remove();
+                    }
+                    $(this.childNodes[0]).find(".remove").remove();
+                }
+            });
+        }
+        
+
+        (function ($) {
+            $.fn.extend({
+                "easyinsert": function (o) {
+                    o = $.extend({
+                        clicker: null,
+                        wrap: "li",
+                        name: "i-text",
+                        type: "text",
+                        value: "",
+                        maxlength: 20,
+                        className: "i-text",
+                        toplimit: 0,
+                        initValue: null
+                    }, o || {});
+                    var oo = {
+                        remove: "<a href=\"#nogo\" class=\"remove\">移除</a>",
+                        error1: "参数配置错误，数组的长度不一致，请检查。",
+                        error2: "参数配置错误，每组初始化值都必须是数组，请检查。"
+                    }
+
+                    var $container = $(this);
+                    var allowed = true;
+
+                    var arrCfg = new Array(o.name, o.type, o.value, o.maxlength, o.className);
+                    var arr = new Array();
+
+                    $.each(arrCfg, function (i, n) {
+                        if ($.isArray(n)) {
+                            arr[i] = n;
+                        } else {
+                            arr[i] = new Array();
+                            if (i === 0) {
+                                arr[0].push(n);
+                            } else {
+
+                                $.each(arr[0], function () {
+                                    arr[i].push(n);
+                                });
+                            }
+                        }
+
+                        if (arr[i].length !== arr[0].length) {
+                            allowed = false;
+                            $container.text(oo.error1);
+                        }
+
+                    });
+                    if (allowed) {
+                       
+                        var $Clicker = !o.clicker ? $container.next() : $(o.clicker);
+                        $Clicker.bind("click", function () {
+                            window.flag = window.flag + 1;
+                            var len = $container.children(o.wrap).length;
+                            var isMax = o.toplimit === 0 ? false : (len < o.toplimit ? false : true);
+                            if (!isMax) {
+                                var $Item = $("<" + o.wrap + ">").appendTo($container);
+                                $.each(arr[0], function (i) {
+                                    switch (arr[1][i]) {
+                                        case "select":
+                                            var option = "";
+                                            $.each(arr[2][i], function (i, n) {
+                                                option += "<option value='" + n + "'>" + i + "</option>";
+                                            });
+                                            $("<select>", {
+                                                name: arr[0][i] + window.flag,
+                                                className: arr[4][i]
+                                            }).append(option).appendTo($Item);
+                                            break;
+                                        case "custom":
+                                            $Item.append(arr[2][i]);
+                                            break;
+                                        default:
+                                            $("<input>", {
+                                                name: arr[0][i] + window.flag,
+                                                type: arr[1][i],
+                                                value: arr[2][i],
+                                                maxlength: arr[3][i],
+                                                className: arr[4][i]
+                                            }).appendTo($Item);
+                                    }
+                                });
+                                $Item = $container.children(o.wrap);
+
+                                len = $Item.length;
+                                if (len > 1) {
+                                    $Item.last().append(oo.remove);
+                                    if (len === 2) {
+                                        $Item.first().append(oo.remove);
+                                    }
+                                }
+                                $Item.find(".remove").click(function () {
+
+                                    $(this).parent().remove();
+
+                                    len = $container.children(o.wrap).length;
+                                    if (len === 1) {
+                                        $container.find(".remove").remove();
+                                    }
+                                    return false;
+                                });
+                            }
+                            return false;
+                        });
+                        if ($.isArray(o.initValue)) {
+                            $.each(o.initValue, function (i, n) {
+                                if (!$.isArray(n)) {
+                                    $container.empty().text(oo.error2);
+                                    return false;
+                                } else {
+                                    if (n.length !== arr[0].length) {
+                                        $container.empty().text(oo.error1);
+                                        return false;
+                                    }
+                                }
+                                var arrValue = new Array();
+
+                                $.each(n, function (j, m) {
+                                    arrValue[j] = arr[2][j]
+                                    arr[2][j] = m;
+                                });
+                                $Clicker.click();
+                                $.each(arrValue, function (j, m) {
+                                    arr[2][j] = m;
+                                });
+                            });
+                        } else {
+                            $Clicker.click();
+
+                        }
+                    }
+                }
+            });
+        })(jQuery);
+    </script>
+

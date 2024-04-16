@@ -1,0 +1,389 @@
+﻿@{
+Layout = "~/Views/Shared/_LayoutPage.cshtml";
+ViewBag.Title = L("CustomerOpinion");
+ViewBag.ActiveMenu = "CustomerOpinion";
+}
+
+@section styles
+{
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+}
+
+@section scriptsindex{
+<script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="~/assets/js/chosen.jquery.min.js"></script>
+<script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+}
+
+<!-- 顶部筛选优惠券发放 -->
+<div class="row" style="margin:10px 0">
+    <table style="width:100%;" border="0">
+        <tr>
+            <td style="width:5%;" align="left">手机号：</td>
+            <td style="width:12%;">
+                <input class="tel" type="text" />
+            </td>
+            <td style="width:5%;" align="left">优惠券状态：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container postState-chosen-select DetailsStatus" name="DetailsStatus"
+                    style="width:150px;">
+                    <option value="">全部</option>
+                    <option value="1">未使用</option>
+                    <option value="2">使用</option>
+                    <option value="3">过期</option>
+                </select>
+            </td>
+            <td style="width:5%;" align="left">方案状态：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container postState-chosen-select PlanStatus" name="PlanStatus"
+                    style="width:150px;">
+                    <option value="">全部</option>
+                    <option value="1">启用</option>
+                    <option value="2">停用</option>
+                    <option value="3">过期</option>
+                    <option value="4">终止</option>
+                </select>
+            </td>
+            <td colspan="1" style="text-align: left;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary"
+                    autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- 优惠券发放主表 -->
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<script>
+    // 筛选优惠发放搜索
+    $('#myButton').on('click', function () {
+        var param = {
+            'tel': $(".tel").val(),
+            'DetailsStatus': $(".DetailsStatus").val(),
+            'PlanStatus': $(".PlanStatus").val(),
+            'filters': null
+        };
+        console.log(param);
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            ajaxSelectOptions: {
+                type: "GET",
+                async: false
+            },
+            ajaxGridOptions: {
+                type: "POST",
+                async: false
+            },
+            url: '../Coupons/getCouponsDetail',
+            datatype: 'json',
+            postData: {
+                'tel': $(".tel").val(),
+                'DetailsStatus': $(".DetailsStatus").val(),
+                'PlanStatus': $(".PlanStatus").val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+</script>
+
+<script>
+    @section scriptsgrid {
+        // 优惠券发放主表
+        jQuery(grid_selector).jqGrid({
+            url: '../Coupons/getCouponsDetail',
+            datatype: "json",
+            ajaxSelectOptions: {
+                type: "GET"
+            },
+            mtype: "post",
+            shrinkToFit: false,
+            height: 'auto',
+            autowidth: true,
+            colNames: ["用户名", "手机号", "uid", "优惠券发放编号", "优惠券状态", "优惠券发放时间", "优惠券使用时间", "方案编号", "方案状态", "方案创建时间",
+                "优惠券类型",
+                "减免描述",
+                "满减类型", "满减金额", "优惠金额",
+                "优惠券生效时间",
+                "优惠券失效时间",
+                "发放上限(张)",
+                "发放数量(张)"
+            ],
+            colModel: [{
+                    name: 'nickName',
+                    index: 'nickName',
+                    search: false,
+                    key: true,
+                },
+                {
+                    name: 'tel',
+                    index: 'tel',
+                    search: false,
+                    key: true,
+                },
+                {
+                    name: 'uid',
+                    index: 'uid',
+                    width: 300,
+                    search: false,
+                    key: true,
+                },
+                {
+                    name: 'DetailsId',
+                    index: 'DetailsId',
+                    width: 300,
+                    search: false,
+                    key: true,
+                },
+                {
+                    name: 'DetailsStatus',
+                    index: 'DetailsStatus',
+                    width: 100,
+                    formatter: DetailsStatus,
+                    key: true,
+                },
+                {
+                    name: 'ProvideTime',
+                    index: 'ProvideTime',
+                    search: false
+                },
+                {
+                    name: 'UseTime',
+                    index: 'UseTime',
+                    search: false
+                },
+                {
+                    name: 'PlanId',
+                    index: 'PlanId',
+                    width: 80,
+                    search: false,
+                    sorttype: "int",
+                    key: true,
+                },
+                {
+                    name: 'PlanStatus',
+                    index: 'PlanStatus',
+                    width: 100,
+                    formatter: PlanStatus,
+                    key: true,
+                    editable: true,
+                    edittype: "select",
+                    editoptions: {
+                        value: "1:启用;2:停用"
+                    },
+                    stype: 'select',
+                    searchoptions: {
+                        value: {
+                            1: '启用',
+                            2: '停用',
+                        },
+                        sopt: ['eq']
+                    }
+                },
+                {
+                    name: 'CreatTime',
+                    index: 'CreatTime',
+                    search: false
+                },
+                {
+                    name: 'CouponsType',
+                    index: 'CouponsType',
+                    formatter: CouponsType,
+                    searchoptions: {
+                        value: {
+                            1: '月卡套餐',
+                            2: '钱包充值',
+                            3: '道路停车',
+                            4: '停车场停车',
+                        },
+                        sopt: ['eq']
+                    }
+                },
+                {
+                    name: 'Mark',
+                    index: 'Mark',
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'Type',
+                    index: 'Type',
+                    formatter: Type,
+                    searchoptions: {
+                        value: {
+                            1: '无门槛减免',
+                            2: '打折',
+                            3: '条件减免',
+                            4: '条件打折',
+                        },
+                        sopt: ['eq']
+                    }
+                },
+                {
+                    name: 'TermMoney',
+                    index: 'TermMoney',
+                    formatter: TermMoney,
+                    search: false
+                },
+                {
+                    name: 'CouponsMoney',
+                    index: 'CouponsMoney',
+                    search: false
+                },
+                {
+                    name: 'StartTime',
+                    index: 'StartTime',
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'EndTime',
+                    index: 'EndTime',
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'CouponNumber',
+                    index: 'CouponNumber',
+                    formatter: CouponNumber,
+                    search: false,
+                    editable: true,
+                    key: true,
+                },
+                {
+                    name: 'GetNumber',
+                    index: 'GetNumber',
+                    search: false
+                }
+            ],
+            viewrecords: true,
+            rowNum: 10,
+            rowList: [10, 20, 30],
+            pager: pager_selector,
+            altRows: true,
+            sortname: 'Id',
+            sortorder: 'desc',
+            //toppager: true,
+            editurl: "../OtherAccount/ProcessOtherAccount",
+            multiselect: true,
+            //multikey: "ctrlKey",
+            multiboxonly: true,
+            loadComplete: function () {
+                var table = this;
+                setTimeout(function () {
+                    styleCheckbox(table);
+                    updateActionIcons(table);
+                    updatePagerIcons(table);
+                    enableTooltips(table);
+                }, 0);
+            }
+        });
+    }
+
+    // 满减类型
+    function Type(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "无门槛减免";
+                break;
+            case 2:
+                return "打折";
+                break;
+            case 3:
+                return "条件减免";
+                break;
+            case 4:
+                return "条件打折";
+                break;
+            default:
+                return "";
+        }
+    }
+
+    // 满减金额
+    function TermMoney(cellvalue, options) {
+        switch (cellvalue) {
+            case null:
+                return "";
+                break;
+            default:
+                return cellvalue;
+        }
+    }
+
+    // 发放上限
+    function CouponNumber(cellvalue, options) {
+        switch (cellvalue) {
+            case -1:
+                return "无限";
+                break;
+            default:
+                return cellvalue;
+        }
+    }
+
+    // 优惠券类型
+    function CouponsType(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "月卡套餐";
+                break;
+            case 2:
+                return "钱包充值";
+                break;
+            case 3:
+                return "道路停车";
+                break;
+            case 4:
+                return "停车场停车";
+                break;
+            default:
+                return "";
+        }
+    }
+
+    // 优惠券状态
+    function DetailsStatus(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "<span class='badge badge-success'>未使用</span>";
+                break;
+            case 2:
+                return "<span class='badge badge-danger'>使用</span>";
+                break;
+            case 3:
+                return "<span class='badge badge-warning'>过期</span>";
+                break;
+            default:
+                return "";
+        }
+    }
+
+    // 方案状态
+    function PlanStatus(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "<span class='badge badge-success'>启用</span>";
+                break;
+            case 2:
+                return "<span class='badge badge-danger'>停用</span>";
+                break;
+            case 3:
+                return "<span class='badge badge-warning'>过期</span>";
+                break;
+            case 4:
+                return "<span class='badge badge-secondary'>终止</span>";
+                break;
+            default:
+                return "";
+        }
+    }
+</script>

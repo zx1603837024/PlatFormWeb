@@ -1,0 +1,122 @@
+﻿
+<style>
+    .el-tree-select-option {
+        height: auto;
+        line-height: 1;
+        padding: 0;
+        background-color: #fff;
+    }
+
+    .el-tree-select-tree {
+        padding: 4px 20px;
+        font-weight: 400;
+    }
+</style>
+<script type="text/html" id="treeSelect">
+    <el-select ref="select" :value="value" placeholder="请选择" :size="size" @@visible-change="visibleChange" clearable
+               style="width: 100%;" @@clear="clear">
+        <el-option ref="option" class="el-tree-select-option" :value="optionData.id" :label="optionData.name" :key="optionData.id">
+            <el-tree ref="tree" class="el-tree-select-tree" node-key="code" :data="tree" :props="defaultProps" :default-expanded-keys='[value]'
+                     highlight-current :expand-on-click-node="false" @@node-click="handleNodeClick"></el-tree>
+        </el-option>
+    </el-select>
+</script>
+<script>
+    //注册组件
+    Vue.component('el-tree-select', {
+        props: {
+            // v-model绑定
+            value: {
+                type: [String, Number],
+                default: ''
+            },
+            // 树形的数据
+            tree: {
+                type: Array,
+                default: function () {
+                    return []
+                }
+            },
+            size: {
+                type: String,
+                default:"small"
+            }
+        },
+        template: "#treeSelect",
+        data: function () {
+            return {
+                optionData: {
+                    id: '',
+                    name: ''
+                },
+                defaultProps: {
+                    children: 'children',
+                    label: 'name'
+                },
+            }
+        },
+        watch: {
+            'value': function (val) {
+                if (!this.isEmpty(this.tree)) {
+                    this.init(val)
+                }
+            },
+            'tree': function (val) {
+                if (!this.isEmpty(val)) {
+                    this.init(this.value)
+                }
+            }
+        },
+        methods: {
+            // 是否为空
+            isEmpty(val) {
+                for (let key in val) {
+                    return false
+                }
+                return true
+            },
+            handleNodeClick(data) {
+                this.optionData.id = data.code
+                this.optionData.name = data.name;
+                this.$emit('input', data.code);
+                this.$refs.select.visible = false
+            },
+            init(val) {
+                if (val) {
+                    this.$nextTick(() => {
+                        this.$refs.tree.setCurrentKey(val)
+                        let node = this.$refs.tree.getNode(val);
+                        this.optionData.id = val;
+                        this.optionData.name = node.data.name;
+                    })
+                } else {
+                    let node = null;
+                    if (node) {
+                        this.optionData.id = val;
+                        this.optionData.name = node.data.name;
+                    } else {
+                        this.$refs.tree.setCurrentKey(null);
+                    }
+
+                }
+            },
+            visibleChange(e) {
+                if (e) {
+                    let selectDom = document.querySelectorAll('.is-current');
+                    setTimeout(() => {
+                        this.$refs.select.scrollToOption({ $el: selectDom[selectDom.length-1] })
+                    }, 0)
+                }
+            },
+            clear() {
+                this.$refs.tree.setCurrentKey(null);
+                this.$emit('input', '')
+            }
+        },
+        mounted: function () {
+            if (!this.isEmpty(this.tree)) {
+                this.init(this.value)
+            }
+        }
+    })
+</script>

@@ -1,0 +1,305 @@
+﻿@using P4.Web.Models
+@model CompanyCustomerExpressModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("CompanyCustomerExpress");
+    ViewBag.ActiveMenu = "CompanyCustomerExpress";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<div class="alert alert-info">
+    <i class="icon-hand-right"></i>
+    设备发货
+    <button class="close" data-dismiss="alert">
+        <i class="icon-remove"></i>
+    </button>
+</div>
+
+<form class="form-horizontal" role="form" id="myform">
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 批次号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtBatchNum" value="" placeholder="批次号" class="col-xs-10 col-sm-5" />
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 流水号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtSerialNum" value="" placeholder="流水号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 快递单号 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="txtExpressId" value="" placeholder="快递单号" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 客户 </label>
+
+        <div class="col-sm-9">
+            <select class="width-50 chosen-select" id="txtCustomer" name="txtCustomer" data-placeholder="客户">
+               @foreach (var entity in Model.CompanyName)
+               {
+                   <option value="@entity.Id">@entity.CompanyName</option> 
+               }
+            </select>
+            @*<input type="text" id="txtCustomer" value="" placeholder="客户" class="col-xs-10 col-sm-5" />*@
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 设备发货类型 </label>
+
+        <div class="col-sm-9">
+            <select class="width-50 chosen-select" id="selectDeliveryType" name="selectDeliveryType" data-placeholder="设备发货类型">
+                @*@foreach (var entity in Model.EqVersion)
+            {
+                <option value="@entity.ValueCode">@entity.ValueData</option>
+            }*@
+                <option value="0" selected="selected">发货</option>
+                <option value="1">返修</option>
+            </select>
+
+        </div>
+    </div>
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-3 col-md-9">
+            <button class="btn btn-info" type="button" onclick="javascript:Save()">
+                <i class="icon-ok bigger-110"></i>
+                保存
+            </button>
+
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            <button class="btn" type="reset">
+                <i class="icon-undo bigger-110"></i>
+                重置
+            </button>
+        </div>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+        jQuery(function ($) {
+            $('#id-disable-check').on('click', function () {
+                var inp = $('#form-input-readonly').get(0);
+                if (inp.hasAttribute('disabled')) {
+                    inp.setAttribute('readonly', 'true');
+                    inp.removeAttribute('disabled');
+                    inp.value = "This text field is readonly!";
+                }
+                else {
+                    inp.setAttribute('disabled', 'disabled');
+                    inp.removeAttribute('readonly');
+                    inp.value = "This text field is disabled!";
+                }
+            });
+
+
+            $(".chosen-select").chosen();
+            $('#chosen-multiple-style').on('click', function (e) {
+                var target = $(e.target).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+
+            $('[data-rel=tooltip]').tooltip({ container: 'body' });
+            $('[data-rel=popover]').popover({ container: 'body' });
+
+            $('#id-input-file-1 , #id-input-file-2').ace_file_input({
+                no_file: 'No File ...',
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false //| true | large
+                //whitelist:'gif|png|jpg|jpeg'
+                //blacklist:'exe|php'
+                //onchange:''
+                //
+            });
+
+            $('#id-input-file-3').ace_file_input({
+                style: 'well',
+                btn_choose: 'Drop files here or click to choose',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'small'//large | fit
+                //,icon_remove:null//set null, to hide remove/reset button
+                /**,before_change:function(files, dropped) {
+                    //Check an example below
+                    //or examples/file-upload.html
+                    return true;
+                }*/
+                /**,before_remove : function() {
+                    return true;
+                }*/
+                ,
+                preview_error: function (filename, error_code) {
+                    //name of the file that failed
+                    //error_code values
+                    //1 = 'FILE_LOAD_FAILED',
+                    //2 = 'IMAGE_LOAD_FAILED',
+                    //3 = 'THUMBNAIL_FAILED'
+                    //alert(error_code);
+                }
+
+            }).on('change', function () {
+                //console.log($(this).data('ace_input_files'));
+                //console.log($(this).data('ace_input_method'));
+            });
+
+
+            //dynamically change allowed formats by changing before_change callback function
+            $('#id-file-format').removeAttr('checked').on('change', function () {
+                var before_change
+                var btn_choose
+                var no_icon
+                if (this.checked) {
+                    btn_choose = "Drop images here or click to choose";
+                    no_icon = "icon-picture";
+                    before_change = function (files, dropped) {
+                        var allowed_files = [];
+                        for (var i = 0 ; i < files.length; i++) {
+                            var file = files[i];
+                            if (typeof file === "string") {
+                                //IE8 and browsers that don't support File Object
+                                if (!(/\.(jpe?g|png|gif|bmp)$/i).test(file)) return false;
+                            }
+                            else {
+                                var type = $.trim(file.type);
+                                if ((type.length > 0 && !(/^image\/(jpe?g|png|gif|bmp)$/i).test(type))
+                                        || (type.length == 0 && !(/\.(jpe?g|png|gif|bmp)$/i).test(file.name))//for android's default browser which gives an empty string for file.type
+                                    ) continue;//not an image so don't keep this file
+                            }
+
+                            allowed_files.push(file);
+                        }
+                        if (allowed_files.length == 0) return false;
+
+                        return allowed_files;
+                    }
+                }
+                else {
+                    btn_choose = "Drop files here or click to choose";
+                    no_icon = "icon-cloud-upload";
+                    before_change = function (files, dropped) {
+                        return files;
+                    }
+                }
+                var file_input = $('#id-input-file-3');
+                file_input.ace_file_input('update_settings', { 'before_change': before_change, 'btn_choose': btn_choose, 'no_icon': no_icon })
+                file_input.ace_file_input('reset_input');
+            });
+
+
+
+
+            $('#spinner1').ace_spinner({ value: 0, min: 0, max: 200, step: 10, btn_up_class: 'btn-info', btn_down_class: 'btn-info' })
+            .on('change', function () {
+                //alert(this.value)
+            });
+            $('#spinner2').ace_spinner({ value: 0, min: 0, max: 10000, step: 100, touch_spinner: true, icon_up: 'icon-caret-up', icon_down: 'icon-caret-down' });
+            $('#spinner3').ace_spinner({ value: 0, min: -100, max: 100, step: 10, on_sides: true, icon_up: 'icon-plus smaller-75', icon_down: 'icon-minus smaller-75', btn_up_class: 'btn-success', btn_down_class: 'btn-danger' });
+
+            /////////
+            $('#modal-form input[type=file]').ace_file_input({
+                style: 'well',
+                btn_choose: 'Drop files here or click to choose',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'large'
+            })
+
+            //chosen plugin inside a modal will have a zero width because the select element is originally hidden
+            //and its width cannot be determined.
+            //so we set the width after modal is show
+            $('#modal-form').on('shown.bs.modal', function () {
+                $(this).find('.chosen-container').each(function () {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '200px');
+                });
+            })
+            /**
+            //or you can activate the chosen plugin after modal is shown
+            //this way select element becomes visible with dimensions and chosen works as expected
+            $('#modal-form').on('shown', function () {
+                $(this).find('.modal-chosen').chosen();
+            })
+            */
+
+        });
+
+        function Save() {
+
+            if ($.trim($("#txtBatchNum").val()) == "")
+            { swal("失败!", "批次号不能为空！", "error"); }
+            else if ($.trim($("#txtSerialNum").val()) == "")
+            { swal("失败!", "流水号不能为空！", "error"); }
+            else if ($.trim($("#txtExpressId").val()) == "")
+            { swal("失败!", "快递单号不能为空！", "error"); }
+            else if ($.trim($("#txtCustomer").val()) == "")
+            { swal("失败!", "客户不能为空！", "error"); }
+            else
+            {
+                swal({
+                    title: "系统提示?",
+                    text: "您确定要保存吗？",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定,保存!",
+                    closeOnConfirm: false
+                },
+             function () {
+                 swal("成功!", "正在保存.", "success");
+                 $.ajax({
+                     type: "Post",
+                     url: '../CompanyCustomerExpress/Insert',
+                     data: {
+                         CompanyCustomerExpressSerialNum: $("#txtSerialNum").val(),
+                         CompanyCustomerExpressId: $("#txtExpressId").val(),
+                         BatchNum: $("#txtBatchNum").val(),
+                         CompanyId: $("#txtCustomer").val(),
+                         EquipmentDeliveryType: $("#selectDeliveryType").val(),
+                     },
+                     success: function (data) {
+                         if (data.Success == true) {
+                             NotifySuccess('数据保存成功！', '系统消息');
+                             $("#txtSerialNum").val("");
+                             $("#txtExpressId").val("");
+                             $("#txtBatchNum").val("");
+                             $("#txtCustomer").val("");
+                         }
+                         else if (data.Success == false) {
+                             swal("", data.Error.Message, "error");
+                         }
+
+                         //$("#PartsType").html("");
+                         //$("#txtPartsId").html("");
+                     }, error: function () {
+                     }
+                 });
+             });
+            }
+        }
+</script>
+
+
+
+

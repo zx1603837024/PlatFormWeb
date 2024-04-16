@@ -1,0 +1,444 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("VideoSettingEdit");
+    ViewBag.ActiveMenu = "VideoSettingEdit";
+}
+
+@section styles
+{
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+}
+
+<style type="text/css">
+    .lay_line {
+        height: 55px;
+        border-bottom: 1px dotted #e8e8e8;
+    }
+
+    .lay_con {
+        padding: 15px 0 15px 50px;
+        line-height: 25px;
+    }
+
+    .lay_tit {
+        float: left;
+    }
+
+    .lay_val {
+        float: left;
+        margin-left: 10px;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<div id="lay_spbd" class="lay_box" style="display:none">
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">视频设备编号:</div>
+            <input class="lay_val" id="sbbh" type="text" disabled="false" value="">
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">视频设备类型:</div>
+            <input class="lay_val" id="sblx" type="text" disabled="false" value="">
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;停车场:</div>
+            <select id="parklist" class="lay_val" style="width:150px">
+            </select>
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泊位段:</div>
+            <select id="bwd" class="lay_val" style="width:150px">
+            </select>
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泊位号:</div>
+            <select id="bwh" class="lay_val" style="width:150px">
+            </select>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function getVideoURL(VedioEqNumber) {
+        var input = { "Sn": VedioEqNumber }
+        $.ajax({
+            type: "get",
+            url: "../ZsVideo/ProcessAuditStatus",
+            data: { input: JSON.stringify(input) },
+            dataType: "json",
+            success: function (data) {
+                if (data.errorcode == 0) {
+                    window.open(data.date.url); 
+                } else {
+                    swal({
+                    title: "远程访问失败，请重试！",
+                    timer: 1000,
+                    type:"error",
+                    showConfirmButton: false
+                });
+                }
+            },
+            error: function (data) {
+                swal({
+                    title: "远程访问失败，请重试！",
+                    timer: 1000,
+                    type:"error",
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+</script>
+
+@section scriptsgrid
+{
+function VideoURLFormatterFix(cellvalue, options, rowdata) {
+    var VedioEqNumber = rowdata.VedioEqNumber;
+    return '<span class="fa fa-television fa-lg pointer" style="color:#1890ff" onClick="getVideoURL(\''+VedioEqNumber+'\')"></span> ';
+}
+
+//主表
+jQuery(grid_selector).jqGrid({
+url: '../VideoConfig/SelectVideoEquipsDistinct',
+datatype: "json",
+ajaxSelectOptions: { type: "GET" },
+mtype: "post",
+postData:
+{
+'VedioEqType': '4'
+},
+height: 'auto',
+autowidth: true,
+shrinkToFit:false,
+colNames: ["视频设备编号", "视频设备类型","最后心跳时间", "是否在线", "是否启用", "启用时间", "停用时间", "备注", "远程访问"],
+colModel: [
+{ name: 'VedioEqNumber', index: 'VedioEqNumber',key: true,editable: false,search: true, searchoptions: { sopt: ['eq'] }
+},
+{ name: 'VedioEqType', index: 'VedioEqType', search: false,formatter: VedioEqType},
+{ name: 'BeatDatetime', index: 'BeatDatetime', search: false },
+{ name: 'IsOnlineValue', index: 'IsOnlineValue', width: 80, formatter: IsOnlineValue, stype: 'select', searchoptions: { value: { 0:
+'离线', 1: '在线'}, sopt: ['eq'] }},
+{ name: 'IsUse', index: 'IsUse', width: 80, editable: true,edittype: "select", editoptions: { value:
+"1:启用;0:停用" }, stype: 'select', searchoptions: { value: { 0:'停用', 1: '启用'}, sopt: ['eq'] }, formatter: IsUse},
+{ name: 'EnableTime', index: 'EnableTime', search: false },
+{ name: 'StopTime', index: 'StopTime', search: false },
+{ name: 'Remark', index: 'Remark', search: false, editable: true},
+{ name: 'VideoURL', index: 'VideoURL', width: 80, align: "center", sortable: false, editable: false, formatter:
+VideoURLFormatterFix,search: false , hidden: true },
+],
+viewrecords: true,
+rowNum: 10,
+rowList: [10, 20, 30],
+pager: pager_selector,
+altRows: true,
+sortname: 'VedioEqNumber',
+sortorder: "asc",
+toppager: false,
+editurl: "../VideoConfig/EditGWVideoEquips",
+multiselect: true,
+multiboxonly: true,
+subGrid: true,
+subGridOptions: {
+"plusicon" : "ui-icon-triangle-1-e",
+"minusicon" : "ui-icon-triangle-1-s",
+"openicon" : "ui-icon-arrowreturn-1-e"
+},
+subGridRowExpanded: function (subgrid_id, row_id) {
+var subgrid_table_id, pager_id;
+subgrid_table_id = subgrid_id + "_t";
+pager_id = "p_" + subgrid_table_id;
+var ret = jQuery("#grid-table").jqGrid('getRowData', row_id);
+$("#" + subgrid_id).html("<table id='" + subgrid_table_id + "' class='scroll'>"+
+"</table><div id='" + pager_id + "' class='scroll'></div>");
+jQuery("#" + subgrid_table_id).jqGrid(
+{
+url: "../VideoConfig/SelectVideoEquips",
+datatype: "json",
+postData:
+{
+'VedioEqNumber':ret.VedioEqNumber,
+'VedioEqType': '4'
+},
+colNames: ['ID','商户', '分公司', "区域", "停车场", "泊位段", "泊位ID","泊位号","停车状态"],
+colModel: [
+{ name: 'Id', index: 'Id',hidden: true, search: false },
+{ name: 'Name', index: 'Name', search: false },
+{ name: 'CompanyName', index: 'CompanyName', search: true, searchoptions: { sopt: ['eq'] }},
+{ name: 'RegionName', index: 'RegionName', search: true, searchoptions: { sopt: ['eq'] } },
+{ name: 'ParkName', index: 'ParkName', search: true, searchoptions: { sopt: ['eq'] } },
+{ name: 'BerthsecName', index: 'BerthsecName', search: true, searchoptions: { sopt: ['eq'] } },
+{ name: 'BerthId', index: 'BerthId', search: true, searchoptions: { sopt: ['eq'] } },
+{ name: 'BerthNumber', index: 'BerthNumber', search: true, searchoptions: { sopt: ['eq'] } },
+{ name: 'ParkStatus', index: 'ParkStatus', formatter: ParkStatus, search: false, searchoptions: { sopt: ['eq'] } }
+],
+sortname: 'BerthNumber',
+rowNum : 500,
+width: '100%',
+sortorder: "asc",
+height: '150'
+});
+},
+loadComplete: function () {
+var table = this;
+setTimeout(function () {
+styleCheckbox(table);
+updateActionIcons(table);
+updatePagerIcons(table);
+enableTooltips(table);
+}, 0);
+}
+});
+}
+
+@section scriptsbuttonbyself{
+//视频设备绑定
+jQuery(grid_selector).navButtonAdd(pager_selector,
+{
+buttonicon: "icon-plus-sign purple",
+title: "视频设备绑定",
+caption: "视频设备绑定",
+position: "last",
+onClickButton: function(){
+Spbd();
+}
+});
+jQuery(grid_selector).navButtonAdd(pager_selector,
+{
+buttonicon: "icon-ban-circle",
+title: "视频设备解绑",
+caption: "视频设备解绑",
+position: "last",
+onClickButton: function(){
+Spjb();
+}
+});
+
+}
+<script>
+    $(function () {
+        ParkShow();
+    });
+    function ParkShow() {
+        $.ajax({
+            type: "post",
+            url: "SelectParkInfoList",
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                var strVar = "";
+                if (data.result == "success") {
+                    for (i = 0; i < data.rows.length; i++) {
+                        strVar += "<option value=\"" + data.rows[i].Id + "\">" + data.rows[i].ParkName + "</option>";
+                    }
+                }
+                $("#parklist").html(strVar);
+                if (data.rows.length) {
+                    var ParkId = data.rows[0].Id;
+                    BwdShow(ParkId);
+                }
+            }
+        });
+    }
+    function BwdShow(ParkId) {
+        var input = { "ParkId": ParkId };
+        $.ajax({
+            type: "post",
+            url: "SelectBerthsecsInfoList",
+            data: { input: JSON.stringify(input) },
+            dataType: "json",
+            success: function (data) {
+                var strVar = "";
+                if (data.result == "success") {
+                    for (i = 0; i < data.rows.length; i++) {
+                        strVar += "<option value=\"" + data.rows[i].Id + "\">" + data.rows[i].BerthsecName + "</option>";
+                    }
+                }
+                $("#bwd").html(strVar);
+                if (data.rows.length) {
+                    var BerthsecId = data.rows[0].Id;
+                    BwhShow(BerthsecId);
+                }
+            }
+        });
+    }
+    function BwhShow(BerthsecId) {
+        var input = { "BerthsecId": BerthsecId };
+        $.ajax({
+            type: "get",
+            url: "SelectNoBerthsecsNumber",
+            data: { input: JSON.stringify(input) },
+            dataType: "json",
+            success: function (data) {
+                var strVar = "";
+                if (data.result == "success") {
+                    for (i = 0; i < data.rows.length; i++) {
+                        strVar += "<option value=\"" + data.rows[i].Id + "\">" + data.rows[i].BerthNumber + "</option>";
+                    }
+                }
+                $("#bwh").html(strVar);
+            }
+        });
+    }
+    function ParkStatus(cellvalue, options) {
+        switch (cellvalue) {
+            case 0:
+                return "<span class='badge badge-info'>未停</span>";
+                break;
+            case 1:
+                return "<span class='badge badge-danger'>在停</span>";
+                break;
+            default:
+                return "";
+        }
+    }
+    function VedioEqType(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "有线供电视频桩";
+                break;
+            case 2:
+                return "无源免布线视频桩";
+                break;
+            case 3:
+                return "路牙机";
+                break;
+            case 4:
+                return "高位视频";
+                break;
+            default:
+                return "";
+        }
+    }
+    function IsUse(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "<span class='badge badge-success'>启用</span>";
+                break;
+            default:
+                return "<span class='badge badge-danger'>停用</span>";
+        }
+    }
+    function IsOnlineValue(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "<span class='badge badge-success'>在线</span>";
+                break;
+            default:
+                return "<span class='badge badge-danger'>离线</span>";
+        }
+    }
+    //视频设备绑定
+    function Spbd() {
+        var id = jQuery("#grid-table").jqGrid('getGridParam', 'selrow');
+        if (id) {
+            var ret = jQuery("#grid-table").jqGrid('getRowData', id);
+            var VedioEqNumber = ret.VedioEqNumber;
+            var VedioEqType = ret.VedioEqType;
+            var IsUse = ret.IsUse;
+            var BeatDatetime = ret.BeatDatetime;
+            var IsOnlineValue = ret.IsOnlineValue;
+            var IsUval = 0;
+            var IsOnval = "";
+			if (IsUse.indexOf("启用") != -1) {
+                IsUval = 1;
+            }
+            if (IsUse.indexOf("停用") != -1) {
+                IsUval = 0;
+            }
+            if (IsOnlineValue.indexOf("在线") != -1) {
+                IsOnval = 1;
+            }
+            if (IsOnlineValue.indexOf("离线") != -1) {
+                IsOnval = 0;
+            }
+            $("#sbbh").val(VedioEqNumber);
+            $("#sblx").val(VedioEqType);
+            layer.open({
+                type: 1,
+                title: ['视频设备绑定'],
+                area: ['400px', '400px'],
+                btn: ['绑定', '取消'],
+                yes: function (index, layero) {
+                    if ($("#bwh").val()) {
+                        var input = { "VedioEqType": "4", "VedioEqNumber": VedioEqNumber, "Ids": $("#bwh").val(), "IsOnlineValue": IsOnval, "IsUse": IsUval, "BeatDatetime": BeatDatetime };
+                        $.ajax({
+                            type: "post",
+                            url: "BandVideoEquipsGW",
+                            data: { input: JSON.stringify(input) },
+                            dataType: "json",
+                            success: function (data) {
+                                layer.closeAll();
+                                if (data.result == "success") {
+                                    layer.alert('视频设备绑定成功', { icon: 1 }, function () { $("#grid-table").trigger("reloadGrid");layer.closeAll(); });
+                                } else {
+                                    layer.alert('视频设备绑定失败', { icon: 2 }, function () { layer.closeAll(); });
+                                }
+                            }
+                        });
+                    } else {
+                        layer.alert('请选择要绑定的泊位号', { icon: 2 });
+                    }
+                },
+                btn2: function (index, layero) {
+                    layer.closeAll();
+                },
+                shadeClose: true,
+                content: $("#lay_spbd")
+            });
+        } else {
+            layer.alert('请选择要绑定的视频设备', { icon: 2 });
+        }
+    }
+    //视频设备解绑
+    function Spjb() {
+        var id = $("tr .ui-state-highlight td:first").html();
+        if (id) {
+            layer.confirm('确定要解除绑定吗？', {
+                btn: ['确定', '取消']
+            }, function (index, layero) {
+                var input = { "oper": "del", "Id": id };
+                $.ajax({
+                    type: "post",
+                    url: "EditVideoEquips",
+                    data: { input: input },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.Success == 1) {
+                            layer.alert('视频设备解绑成功', { icon: 1 }, function () { $("#grid-table").trigger("reloadGrid");layer.closeAll(); });
+                        } else {
+                            layer.alert('视频设备解绑失败', { icon: 2 }, function () { layer.closeAll(); });
+                        }
+                    }
+                });
+            }, function (index) {
+                layer.closeAll();
+            });
+        } else {
+            layer.alert('请选择要解绑的视频设备', { icon: 2 });
+        }
+    }
+    $("#parklist").change(function () {
+        var ParkId = $(this).find("option:selected").val();
+        BwdShow(ParkId);
+    });
+    $("#bwd").change(function () {
+        var BerthsecId = $(this).find("option:selected").val();
+        BwhShow(BerthsecId);
+    });
+</script>

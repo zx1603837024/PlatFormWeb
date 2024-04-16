@@ -1,0 +1,170 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("CardSettlement");
+    ViewBag.ActiveMenu = "CardSettlement";
+}
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+@section scriptsgrid
+{
+    GetDictionaryValue('A10002');
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../ClearingSettlement/GetCardSettlementList',
+    datatype: "json",
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    ajaxSelectOptions: { type: "GET" , async: false},
+    ajaxGridOptions : {type:"POST",async: false},
+    colNames: ['操作','ID', 'Guid', '组包文件', '分公司id', '是否结算', '消费金额', '消费时间', '结算状态', '结算结果', '结算时间'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false, search: false,
+    formatter: 'actions', hidden: window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true},
+    { name: 'guid', index: 'guid', editable: true },
+    { name: 'Package', index: 'Package', editable: true },
+    { name: 'CompanyId', index: 'CompanyId', editable: true },
+    { name: 'IsActive', index: 'IsActive', editable: true },
+    { name: 'Money', index: 'Money', editable: false, formatter:ReturnMoney },
+    { name: 'PayDateStr', index: 'PayDateStr', editable: false },
+
+    { name: 'Status', index: 'Status', editable: true },
+    { name: 'ReturnResult', index: 'ReturnResult', editable: true },
+    { name: 'SettlementTimeStr', index: 'SettlementTimeStr', editable: true }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    //editurl: "../WhiteLists/ProcessWhiteLists",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+
+@section scriptsbuttonbyself{
+
+    function ReturnMoney(cellvalue, options)
+    {
+    return cellvalue * 0.01;
+    }
+
+    function ProcessIsActive(cellvalue, options)
+    {
+    for(var v in window.returnval)
+    {
+    if(window.returnval[v].ValueCode == cellvalue)
+    {
+    return window.returnval[v].ValueData;
+    }
+    }
+    }
+
+    if(window.field1){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "记录补传",
+    caption: "记录补传",
+    position: "last",
+    onClickButton: function () {
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length!=0)
+    {
+    Saveoper="edit";
+    //selectedId=ids[0];
+    swal({
+    title: "是否补传记录?",
+    type: "warning",
+    showCancelButton: true,
+    cancelButtonText: "取消",
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "确定",
+    closeOnConfirm: false },
+    function(){
+    $.ajax({
+    type: "Post",
+    url: "../ClearingSettlement/UpdateSettlementStatus",
+    data: {
+    Ids: ids
+    },
+    success: function (data) {
+    if(data=="OK")
+    {
+    swal("", "记录补传成功！", "success");
+    $("#grid-table").trigger("reloadGrid");
+    }
+    else
+    {
+    //alert('记录补传失败！');
+    }
+    }
+    });
+    });
+    }
+    else
+    {
+    swal("", "请选择记录...", "info");
+    }
+    }
+    });
+    }
+
+    if(window.field2){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "导出",
+    caption: "导出",
+    position: "last",
+    onClickButton: function () {
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+
+    swal({
+    title: "是否导出记录?",
+    type: "warning",
+    showCancelButton: true,
+    cancelButtonText: "取消",
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "确定",
+    closeOnConfirm: true },
+    function(){
+    window.location.href = "../StaticReport/ExportCardSettlement";
+    }
+    );
+
+    }
+    });
+    }
+}
+
+
+
+
+
+
+
+
+
+

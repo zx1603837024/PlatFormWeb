@@ -1,0 +1,555 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = "停车场管理";
+    ViewBag.ActiveMenu = "停车场管理";
+}
+<style>
+    #channelModal .modal-content .panel {
+        margin: 20px;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    td.tdIndex {
+        line-height: 2.3 !important;
+        text-align: center;
+    }
+</style>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form class="form-horizontal" role="form">
+            <div class="modal-content" style="width:800px;height:600px">
+                <div class="modal-header" style="padding:8px 15px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">坐标设置</h4>
+                </div>
+                <div class="modal-body" style="margin:20px 20px 1px 20px">
+                    <div class="content_wrap">
+                        <div class="form-group" style="display:none">
+                            <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> Id</label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="Id" value="" placeholder="Id" class="col-xs-10 col-sm-11" />
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 地址 </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="Address" value="" placeholder="停车场地址" class="col-xs-10 col-sm-11" />
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label no-padding-right"></label>
+                            <div class="col-sm-11" id="allmap" style="width:700px;height:350px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="Save()">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="channelModal" tabindex="-1" role="dialog" aria-labelledby="channelModalLabel"
+     data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content " style="width:700px;">
+            <div class="modal-header" style="padding:8px 15px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="channelModalLabel">停车场通道列表</h4>
+            </div>
+            <h4 style="height:10px;line-height:10px;text-align:center">停车场:<span name="parkName"></span></h4>
+            <div style="text-align:right;padding-right:10px;">
+                <button type="button" class="btn btn-link" onclick="javascript: channelEdit.addChannel();">添加通道</button>
+            </div>
+            <div style="width: 95%; margin-left: 2.5%;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 42px;">序号</th>
+                            <th>通道名称</th>
+                            <th>通道编码</th>
+                            <th style="width: 80px;">方向</th>
+                            <th>平台ID</th>
+                            <th style="width: 95px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="channelTbody">
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="channelBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="javascript:channelEdit.saveChannel()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+	url: '../ParkingLot/GetCurbPark',
+	datatype: "json",
+	ajaxSelectOptions: {
+		type: "GET"
+	},
+	mtype: "post",
+	height: 'auto',
+	autowidth: true,
+	shrinkToFit: false,
+	colNames: ['操作', 'ID', '区域名称', '停车场名称', '开始泊位号', '结束泊位号', '泊位数', '停车场平台ID', '创建时间', '创建用户', '最后修改时间', '最后修改用户'],
+	colModel: [{
+		name: 'myac',
+		index: '',
+		width: 80,
+		fixed: true,
+		sortable: true,
+		resize: false,
+		search: false,
+		formatter: 'actions',
+		hidden: window.rowedit,
+		formatoptions: {
+			keys: true,
+			delOptions: {
+				recreateForm: true,
+				beforeShowForm: beforeDeleteCallback
+			}
+		}
+	},
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true},
+    { name: 'RegionName', index: 'RegionName', search: true, sorttype: "int", editable: true, edittype: "select", editoptions: { dataUrl: '../Parks/GetRegionCombox/'+  (new Date()).getMilliseconds(), defaultValue: '1' }, stype:'select', searchoptions: { dataUrl:'../Parks/GetRegionCombox/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'ParkName', index: 'ParkName', editable: true },
+    { name: 'BeginNumber', index: 'BeginNumber', editable: true },
+    { name: 'EndNumber', index: 'EndNumber', editable: true },
+    { name: 'BerthCount', width: 80, index: 'BerthCount', editable: false },
+    { name: 'ZhiBoParkId',width:100, index:'ZhiBoParkId',  editable:true},
+    { name: 'CreationTime', index: 'CreationTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'CreatorUserName', width: 80, editable: false, index: 'CreatorUserName',search: false },
+    { name: 'LastModificationTime', index: 'LastModificationTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'LastModifierUserName', editable: false, index: 'LastModifierUserName',search: false }],
+
+	viewrecords: true,
+	rowNum: 10,
+	rowList: [10, 20, 30],
+	pager: pager_selector,
+	altRows: true,
+	sortname: 'Id',
+	sortorder: 'desc',
+	toppager: false,
+	editurl: "../Parks/ProcessPark",
+	multiselect: true,
+	//multikey: "ctrlKey",
+	multiboxonly: true,
+	loadComplete: function() {
+		var table = this;
+		setTimeout(function() {
+			styleCheckbox(table);
+			updateActionIcons(table);
+			updatePagerIcons(table);
+			enableTooltips(table);
+		},
+		0);
+	}
+});
+}
+
+@section scriptsbuttonbyself{
+    jQuery(grid_selector).navButtonAdd(pager_selector, {
+	buttonicon: "icon-plus-sign purple",
+	title: "停车场坐标设置",
+	caption: "停车场定位",
+	position: "last",
+	onClickButton: function() {
+		var ids = jQuery(grid_selector).jqGrid('getGridParam', 'selarrrow');
+		if (ids.length == 1) {
+			Saveoper = "edit";
+			selectedId = ids[0];
+			$.ajax({
+				type: "Post",
+				url: "../Parks/GetParkInfoById/",
+				data: {
+					Id: selectedId
+				},
+				success: function(data) {
+					window.X = data.X;
+					window.Y = data.Y;
+					$("#myModal").css("display", "block");
+					$("#myModal").modal('show');
+                    document.getElementById("Address").value = data.Address + " · " + data.ParkName;
+					mapIni(data.ParkName);
+				},
+				error: function(data) {
+
+					swal("", "获取经纬度数据失败，请稍后重试...", "error");
+				}
+			});
+		} else {
+			swal("", "请选择停车场...", "info");
+		}
+	}
+});
+jQuery(grid_selector).navButtonAdd(pager_selector, {
+	buttonicon: "icon-pencil blue",
+	title: "停车场通道设置",
+	caption: "停车场通道",
+	position: "last",
+	onClickButton: function() {
+		var ids = jQuery(grid_selector).jqGrid('getGridParam', 'selarrrow');
+		if (ids.length == 1) {
+			Saveoper = "edit";
+			selectedId = ids[0];
+			var rowData = $(grid_selector).jqGrid('getRowData', selectedId);
+			channelEdit.init(rowData);
+		} else {
+			swal("", "请选择停车场...", "info");
+		}
+	}
+});
+}
+
+@section scripts{
+    <link href="~/Content/element-ui/element-ui.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+    <script src="~/Content/element-ui/vue.min.js"></script>
+    <script src="~/Content/element-ui/element-ui.js"></script>
+    <script type="text/javascript">
+        window.X = "";
+        window.Y = "";
+
+        function Save() {
+            //console.log("window.X=" + window.X + ";window.Y=" + window.Y);
+            $.ajax({
+                type: "POST",
+                url: '../Parks/SaveParkAddress/',
+
+                data: {
+                    oper: Saveoper,
+                    id: selectedId,
+                    Address: $("#Address").val(),
+                    X: window.X,
+                    Y: window.Y
+                },
+                success: function (data) {
+                    if (data.Success == false) {
+                        swal("", data.Error.Message, "error");
+                    } else {
+                        $('#myModal').modal('hide');
+                        $("#grid-table").trigger("reloadGrid");
+                    }
+                    //window.location.href = "../Platform/Login";
+                }, error: function () {
+
+                }
+            });
+
+        }
+
+        function mapIni(parkName) {
+
+            var map = new BMap.Map("allmap");
+            map.enableScrollWheelZoom();
+            map.enableInertialDragging();
+            map.enableContinuousZoom()
+            var myIcongreen = new BMap.Icon("../assets/images/03.png", new BMap.Size(36, 36));
+            if (window.Y == null || window.Y == undefined) {
+                window.X = 116.331398;
+                window.Y = 39.897445;
+            }
+            else {
+                var mk = new BMap.Marker(new BMap.Point(window.X, window.Y), {
+                    enableDragging: true,
+                    raiseOnDrag: true,
+                    //icon: myIcongreen
+                });
+                map.addOverlay(mk);
+            }
+            var point = new BMap.Point(window.X, window.Y);
+            map.centerAndZoom(point, 12);
+            var geoc = new BMap.Geocoder();
+            var geolocation = new BMap.Geolocation();
+            //if (window.X.length > 0 && window.Y.length > 0) {
+            //    var mk = new BMap.Marker(new BMap.Point(window.X, window.Y), {
+            //        enableDragging: true,
+            //        raiseOnDrag: true,
+            //        icon: myIcongreen
+            //    });
+            //    map.addOverlay(mk);
+            //    map.panTo(new BMap.Point(window.X, window.Y));
+
+            //    mk.addEventListener('dragend', function (e) {
+            //        var pt = e.point;
+            //        geoc.getLocation(pt, function (rs) {
+            //            var addComp = rs.addressComponents;
+            //            $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+            //            window.X = e.point.lng;
+            //            window.Y = e.point.lat;
+            //        });
+            //    })
+            //    var pt = new BMap.Point(window.X, window.Y);
+            //    geoc.getLocation(pt, function (rs) {
+            //        var addComp = rs.addressComponents;
+            //        $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+            //    });
+            //    //城市列表
+            //    var size = new BMap.Size(10, 20);
+            //    map.addControl(new BMap.CityListControl({
+            //        anchor: BMAP_ANCHOR_TOP_RIGHT,
+            //        offset: size
+            //    }));
+            //    //城市列表
+            //}
+            //else {
+            //    //alert('fdsfdsfd');
+            //    geolocation.getCurrentPosition(function (r) {
+            //        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+            //            //城市列表
+            //            var size = new BMap.Size(10, 20);
+            //            map.addControl(new BMap.CityListControl({
+            //                anchor: BMAP_ANCHOR_TOP_RIGHT,
+            //                offset: size
+            //            }));
+            //            //城市列表
+            //            var mk = new BMap.Marker(r.point, {
+            //                enableDragging: true,
+            //                raiseOnDrag: true
+            //            });
+            //            map.addOverlay(mk);
+            //            map.panTo(r.point);
+            //            //城市列表
+            //            var size = new BMap.Size(10, 20);
+            //            map.addControl(new BMap.CityListControl({
+            //                anchor: BMAP_ANCHOR_TOP_RIGHT,
+            //                offset: size
+            //            }));
+            //            //城市列表
+            //            mk.addEventListener('dragend', function (e) {
+            //                var pt = e.point;
+            //                geoc.getLocation(pt, function (rs) {
+            //                    var addComp = rs.addressComponents;
+            //                    $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+
+
+            //                    window.X = e.point.lng
+            //                    window.Y = e.point.lat
+            //                });
+            //            })
+
+            //            var pt = r.point;
+            //            geoc.getLocation(pt, function (rs) {
+            //                var addComp = rs.addressComponents;
+            //                $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+            //                window.X = r.point.lng;
+            //                window.Y = r.point.lat;
+            //            });
+
+            //        }
+            //        else {
+            //            alert('failed' + this.getStatus());
+            //        }
+            //    }, { enableHighAccuracy: true });
+            //}
+
+            map.addEventListener("click", function (e) {//地图单击事件
+                var geocoder = new BMap.Geocoder();
+                var point = new BMap.Point(e.point.lng, e.point.lat);
+                window.X = e.point.lng;
+                window.Y = e.point.lat;
+                //console.log(e.point.lng + "----" + e.point.lat);
+                geocoder.getLocation(point, function (geocoderResult, LocationOptions) {
+                    //map.clearOverlays()
+                    //map.addControl(new BMap.NavigationControl());
+                    //var marker = new BMap.Marker(point);        // 创建标注
+                    //this.map.addOverlay(marker);
+                    //定位成功
+                    var address = geocoderResult.address;
+                    document.getElementById("Address").value = address + " · " + parkName;
+                    //layer.msg('定位成功');
+                    // $('#suggestId').val(geocoderResult.address);
+                });
+                //document.getElementById("lng").value = e.point.lng;
+                //document.getElementById("lat").value = e.point.lat;
+            });
+        }
+
+        var channelEdit = {
+            parkId: 0,
+            init: function (row) {
+                var _this = this;
+                this.parkId = row.Id;
+                $("#channelModal").find("span[name='parkName']").html(row.ParkName);
+                $("#channelTbody").empty();
+                $.ajax({
+                    type: "POST",
+                    url: '../ParkingLot/GetParkChannel',
+                    data: {
+                        parkId: row.Id
+                    },
+                    success: function (data) {
+                        let list = data.rows || [];
+                        list.forEach(function (item) {
+                            _this.addChannel(item);
+                        });
+                        if (list.length == 0) {
+                            _this.addChannel();
+                        }
+                        $("#channelModal").modal("show");
+                    }, error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            channelTrTemplate:`<tr class="channelForm">
+                            <td class='tdIndex rownum'></td>
+                            <td>
+                                <input type="hidden" name="Id">
+                                <input class="form-control" type="text" autocomplete="off" name="ChannelName">
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" autocomplete="off" name="ChannelCode">
+                            </td>
+                            <td >
+                                <select class="form-control" name="ChannelDirection">
+                                    <option value="1">进</option>
+                                    <option value="2">出</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" autocomplete="off" name="ZhiBoChannelId">
+                            </td>
+                            <td style="text-align:center;">
+                                <button type="button" class="btn btn-link deleteBtn">删除通道</button>
+                            </td>
+                        </tr>`,
+            channelTemplate: `<div class="panel panel-default">
+                                                <div class="panel-body">
+                                                    <form class="form-horizontal channelForm" role="form">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">通道名称</label>
+                                                            <div class="col-sm-4">
+                                                                <input type="hidden" name="Id">
+                                                                <input class="form-control" type="text" autocomplete="off" name="ChannelName">
+                                                            </div>
+                                                            <label class="col-sm-2 control-label">方向</label>
+                                                            <div class="col-sm-4">
+                                                                <select class="form-control" name="ChannelDirection">
+                                                                    <option value="1">进</option>
+                                                                    <option value="2">出</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-2 control-label">通道编码</label>
+                                                            <div class="col-sm-4">
+                                                                <input class="form-control" type="text" autocomplete="off" name="ChannelCode">
+                                                            </div>
+                                                            <label class="col-sm-2 control-label">对应平台ID</label>
+                                                            <div class="col-sm-4">
+                                                                <input class="form-control" type="text" autocomplete="off" name="ZhiBoChannelId">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12" style="text-align:right;">
+                                                                <button type="button" class="btn btn-link deleteBtn">删除通道</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>`,
+            addChannel: function (model) {
+                var rows = $("#channelTbody").find("tr.channelForm");
+                var template = $(this.channelTrTemplate);
+                if (model) {
+                    if (model.Id) {
+                        template.find("input[name='Id']").val(model.Id);
+                    }
+                    if (model.ChannelCode) {
+                        template.find("input[name='ChannelCode']").val(model.ChannelCode);
+                    }
+                    if (model.ChannelDirection) {
+                        template.find("select[name='ChannelDirection']").val(model.ChannelDirection);
+                    }
+                    if (model.ChannelName) {
+                        template.find("input[name='ChannelName']").val(model.ChannelName);
+                    }
+                    if (model.ZhiBoChannelId) {
+                        template.find("input[name='ZhiBoChannelId']").val(model.ZhiBoChannelId);
+                    }
+                }
+                console.log(rows.length);
+                template.find(".tdIndex").html((rows.length + 1).toString());
+                template.find(".deleteBtn").click(function () {
+                    template.remove();
+                    var newrows = $("#channelTbody").find("tr.channelForm");
+                    $.each(newrows, function (index, item) {
+                        $(item).find(".rownum").html(index + 1);//删除后序号重新赋值连续
+                    })
+                });//删除
+                $("#channelTbody").append(template);
+            },
+            saveChannel: function () {
+                var forms = $("#channelTbody").find("tr.channelForm");
+                var channels = [];
+                $.each(forms, function (index, item) {
+                    var obj = {
+                        Id: $(item).find("input[name='Id']").val(),
+                        ChannelCode: $(item).find("input[name='ChannelCode']").val(),
+                        ChannelDirection: $(item).find("select[name='ChannelDirection']").val(),
+                        ChannelName: $(item).find("input[name='ChannelName']").val(),
+                        ZhiBoChannelId: $(item).find("input[name='ZhiBoChannelId']").val(),
+                    };
+                    //至少填写了一项
+                    if (obj.ChannelName && obj.ChannelCode) {
+                        channels.push(obj);
+                    }
+                    else {
+                        swal("", `序号:${index + 1}:缺少通道名称或通道编码`, "info");
+                        return false;
+                    }
+                });
+                if (channels.length == forms.length) {
+                    $.ajax({
+                        type: "POST",
+                        url: '../ParkingLot/ModifyParkChannel',
+                        data: {
+                            parkId: this.parkId,
+                            Channels: channels
+                        },
+                        success: function (res) {
+                            if (res.Success) {
+                                $("#channelModal").modal("hide");
+                                $("#channelTbody").empty();
+                                Vue.prototype.$message.success("保存成功");
+                            }
+                            else {
+                                swal("", res.Error.Message, "info");
+                                return;
+                            }
+                        }, error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+}
+
+
+
+
+

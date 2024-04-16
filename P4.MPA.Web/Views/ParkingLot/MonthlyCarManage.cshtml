@@ -1,0 +1,291 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = "停车场包月管理";
+    ViewBag.ActiveMenu = "停车场包月管理";
+}
+<style>
+    select[readonly] {
+        background: #eee;
+        cursor: no-drop;
+    }
+
+    select[readonly] option {
+            display: none;
+    }
+</style>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新增包月</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="content_wrap">
+                        <form class="form-horizontal" role="form" id="feeFrom">
+                            <div class="panel panel-default" style="margin-top:10px;">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                     href="#collapseOne">
+                                    <h4 class="panel-title">
+                                        <a>  基本信息  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in">
+                                    <div class="panel-body">
+                                        <table border="0" align="center" style="min-width:100%;">
+                                            <tr>
+                                                <td align="right" height="30px" style="width:30%;">
+                                                    <span style="margin-left:25px">openId：</span>
+                                                </td>
+                                                <td align="left">
+                                                    <input type="text" id="OpenId" style="width:100%;" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" height="30px" style="width:30%;">
+                                                    <span style="margin-left:25px">停车场：</span>
+                                                </td>
+                                                <td align="left">
+                                                    <select name="ParkName" style="width: 100%;"></select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" height="30px" style="width:30%;">
+                                                    <span style="margin-left:25px">车辆类型：</span>
+                                                </td>
+                                                <td align="left">
+                                                    <select id="CarType" style="width: 100%;">
+                                                        <option value="1">小车</option>
+                                                        <option value="2">大车</option>
+                                                        <option value="3">摩托车</option>
+                                                        <option value="4">小型新能源车</option>
+                                                        <option value="5">大型新能源车</option>
+                                                        <option value="6">超大车</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" height="30px" style="width:30%;">
+                                                    <span style="margin-left:25px">车牌号：</span>
+                                                </td>
+                                                <td align="left">
+                                                    <input type="text" id="PlateNumber" style="width:100%;" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <!--gcj 包月时间可修改-->
+                                                <td align="right" height="30px" style="width:30%;">
+                                                    <span style="margin-left:25px">生效时间：</span>
+                                                </td>
+                                                <td align="left">
+                                                    <input type="text" id="BeginTime" style="width:100%" readonly />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" height="30px" style="width:30%;">
+                                                    <span style="margin-left:25px">过期时间：</span>
+                                                </td>
+                                                <td align="left">
+                                                    <input type="text" id="EndTime" style="width:100%" readonly />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer" align="center">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="Save()">确定</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            type: "Post",
+            url: '../ParkingLot/GetAllParkNameNoAuthority/' + (new Date()).getMilliseconds(),
+            data: {},
+            success: function (data) {
+                var template = $(data);
+                //设置ID
+                template.attr("id", "ParkName");
+                template.attr("style", "width:100%;");
+                $("select[name='ParkName']").parent().html(template);
+            }
+        });
+        $('#BeginTime').datetimepicker({ format: 'yyyy-mm-dd', minView: 2, autoclose: true, });
+        $('#EndTime').datetimepicker({ format: 'yyyy-mm-dd', minView: 2, autoclose: true });
+    })
+    var selectedId = 0;
+    function Save() {
+        $.ajax({
+            type: "Post",
+            url: "../ParkingLot/ProcessMonthlyCar",
+            data: {
+                oper: "add",
+                PlateNumber: $("#PlateNumber").val(),
+                BeginTime: $("#BeginTime").val(),
+                EndTime: $("#EndTime").val(),
+                ParkName: $("#ParkName").val(),
+                OpenId: $("#OpenId").val(),
+                carType: $("#CarType").val()
+            },
+            success: function (data) {
+                if (data.Success == false) {
+                    swal("", data.Error.Message, "error");
+                } else {
+                    $('#myModal').modal('hide');
+                    $("#PlateNumber").val("");
+                    $("#BeginTime").val("");
+                    $("#EndTime").val("");
+                    $("#OpenId").val("");
+                    $("#CarType").val("");
+                    $("#PlateNumber").val("");
+                    $("#ParkName").val("");
+                    $("#grid-table").trigger("reloadGrid");
+                    Saveoper = "";
+                }
+            }
+        });
+    }
+</script>
+
+@section scriptsgrid
+{
+    window.edit=true;
+    window.add=false;
+    window.delete=true;
+    window.search=true;
+    window.view=true;
+    jQuery(grid_selector).jqGrid({
+    url: "../ParkingLot/GetMonthlyList",
+    datatype: "json",
+    ajaxSelectOptions　: {type: "POST"},
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: ['操作', 'ID', '公司名称', '停车场','OpenId','车型', '车牌号', '生效日期', '结束日期'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false ,search: false,
+    formatter: 'actions', hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true },
+
+    { name: 'CompanyName', index: 'CompanyName', editable: true ,search:false ,edittype:"text",
+    editoptions:{  readonly:true }, width: 240},
+
+
+    { name:'ParkName',index:'ParkName',editable:true,edittype: "select",
+    editoptions: { readonly:true,dataUrl: '../ParkingLot/GetAllParkNameNoAuthority/'+(new Date()).getMilliseconds() },
+    stype:'select', searchoptions: { dataUrl:'../ParkingLot/GetAllParkNameNoAuthority/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne'], defaultValue: '2'},
+    search: true, required: true },
+
+    { name: 'OpenId', editable: true, index: 'OpenId',editoptions:{ readonly:true}, editrules:{required:true},width: 240},
+    { name: 'CarType', editable: true, index: 'CarType',editoptions:{ readonly:true}, editrules:{required:true},width: 120,formatter:CarType },
+    { name: 'PlateNumber', editable: false, index: 'PlateNumber',editrules:{required:true} , required: true,searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']}},
+
+    { name: 'BeginTime', index: 'BeginTime',search:true, sorttype: "date", editable: true, formatter: 'date',
+    formatoptions: { srcformat: 'Y-m-d', newformat: 'Y-m-d' }, unformat: pickDay,editoptions:{dataInit:dayPick},
+    editrules:{required:true}, search:true, stype:'text', searchoptions: {dataInit:dayPick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']} , required: true},
+    { name: 'EndTime', index: 'EndTime',search:true, sorttype: "date", editable: true, formatter: 'date',
+    formatoptions: { srcformat: 'Y-m-d', newformat: 'Y-m-d' }, unformat: pickDay,editoptions:{dataInit:dayPick},
+    editrules:{required:true}, search:true, stype:'text', searchoptions: {dataInit:dayPick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}, required: true },
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    //toppager: true,
+    editurl: "../ParkingLot/ProcessMonthlyCar",
+    multiselect: true,
+    subGrid: false,
+    pager: pager_selector,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+
+}
+
+@section scriptsbuttonbyself{
+    if(window.field1)
+    {
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "导出",
+    caption: "导出",
+    position: "last",
+    onClickButton: function () {
+    window.location.href = "../StaticReport/ExportMonth";
+    }
+    });
+    }
+
+    if(true)
+    {
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "新增包月",
+    caption: "新增包月",
+    position: "last",
+    onClickButton: function () {
+    Saveoper="edit";
+    $("#myModal").modal('show');
+    }
+    });
+    }
+
+
+    function ValueChange(cellvalue, options)
+    {
+    if(cellvalue==true)
+    return "<span class='badge badge-success'>开通</span>";
+    else
+    return "<span class='badge'>续费</span>";
+    }
+
+    if(window.field3)
+    {
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "导出明细",
+    caption: "导出明细",
+    position: "last",
+    onClickButton: function () {
+    window.location.href = "../StaticReport/ExportMonthDetail";
+    }
+    });
+    }
+}
+

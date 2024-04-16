@@ -1,0 +1,201 @@
+﻿@{
+    ViewBag.Title = L("EscapeRank");
+    ViewBag.ActiveMenu = "EscapeRank";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+@section scriptsgrid
+{
+    function PicFormatter(cellvalue, options, rowdata) {
+    return '<a href="../Business/ShowImage/'+ rowdata.Id  +'" target="_blank" id="colorbox"><img src="../Business/ShowImage/'+ rowdata.Id  +'" id="img' + rowdata.Id + '" style="width:50px;height:50px;" /></a>';
+    }
+    jQuery(grid_selector).jqGrid({
+    url: '../Business/GetEscapeRankList',
+    datatype: "json",
+    shrinkToFit:false,
+    ajaxSelectOptions: { type: "GET" },
+    height: 'auto',id:"guid",
+    autowidth: true,
+    colNames: ['操作',  '车牌号',  '总欠费金额',  '欠费次数',   '平均欠费金额'],
+    colModel: [
+    {
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false ,search: false,
+    formatter: 'actions',hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'PlateNumber', index: 'PlateNumber', key: true },
+    { name: 'Money', index: 'Money',editable: false },
+    { name: 'Times', index: 'Times',editable: false },
+    { name: 'Average', index: 'Average',editable: false }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    //editurl: "../Business/ProcessEscpeDetails",
+    //toppager: true,
+    multiselect: true,
+    pager: pager_selector,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    //autowidth: false,
+    // shrinkToFit:false,
+    userDataOnFooter : true,//汇总
+    footerrow:true,//汇总
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                            + "' class='scroll'></table><div id='"
+                            + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    url: "../Business/GetEscapeDetails/" + row_id,
+    datatype: "json",
+    colNames: ['操作', 'ID', '商户', '区域', '停车场', '泊位段', '泊位号', '车牌', '入场时间', '离场时间', '停车时长', '总应收', '预支付', '出场应收', '欠费金额', '入场收费员', '入场设备', '离场收费员', '离场设备','guid'],
+    colModel: [
+    {
+    name: 'myac', index: '', width: 80, fixed: true, sortable: false, resize: false ,search: false,
+    formatter: 'actions',hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", hidden: true },
+    { name: 'Tenant', editable: false, index: 'Tenant', hidden: window.TenantField },
+    { name: 'RegionName', index: 'RegionName', search: true, stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllRegionName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'ParkName', editable: true, index: 'ParkName',search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllParkName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'BerthsecName', index: 'BerthsecName',search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetBerthsecListSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'BerthNumber', editable: false, index: 'BerthNumber',  width: 100 },
+    { name: 'PlateNumber', editable: false, index: 'PlateNumber',searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']} },
+    { name: 'CarInTimeString', index: 'CarInTimeString', sorttype: "date", editable: false, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}},
+    { name: 'CarOutTimeString', index: 'CarOutTimeString', sorttype: "date", editable: false, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}},
+    { name: 'StopTimes', index: 'StopTimes' },
+    { name: 'Money', index: 'Money', width:180, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Prepaid', index: 'Prepaid', width:180, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Receivable', index: 'Receivable',width:180, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Arrearage', index: 'Arrearage',width:180, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>"  },
+    { name: 'InEmployeeName', index: 'InEmployeeName' },
+    { name: 'InDeviceCode', index: 'InDeviceCode' },
+    { name: 'OutEmployeeName', index: 'OutEmployeeName' },
+    { name: 'OutDeviceCode', index: 'OutDeviceCode' },
+    { name: 'guid', index: 'guid',editable: false, key: true, hidden: true }],
+    sortname: 'Id',
+    rowNum : 50,
+    //width: '350px',
+    sortorder: "asc",
+    height: 'auto',
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                            + "' class='scroll'></table><div id='"
+                            + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    url: "../Business/GetBusinessDetailsPictureList/" + row_id,
+    datatype: "json",
+    colNames: ['ID', '图片', '上传时间', '照片类型'],
+    colModel: [
+    { name: "Id", index: "Id", key: true, hidden: true },
+    { name: "BusinessDetailPictureUrl", index: "BusinessDetailPictureUrl",formatter: PicFormatter, width:100  },
+    { name: 'CreateTime', index: 'CreationTime', sorttype: "date", editable: false, formatter: 'date', formatoptions: { srcformat: 'Y-m-d  H:i:s', newformat: 'Y-m-d H:i:s' }, width:180 },
+    { name: 'PicTypeName', index: 'PicTypeName' }
+    ],
+    sortname: 'Id',
+    rowNum : 50,
+    //width: '350px',
+    sortorder: "asc",
+    height: 'auto'
+    });
+    },
+    });
+    },
+    loadComplete: function () {
+    var table = this;
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+
+@section scriptsbuttonbyself{
+    if(window.field1){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "导出数据",
+    caption: "导出数据",
+    position: "last",
+    onClickButton: function () {
+    Saveoper="edit";
+    swal({   title: "是否导出数据?",    type: "warning",   showCancelButton: true, cancelButtonText: "取消",  confirmButtonColor: "#DD6B55",   confirmButtonText: "确定", closeOnConfirm: false },function(){
+    swal("", "数据处理成功,等待生成文件！", "success");
+    window.location.href = "../StaticReport/ExportEscapeRank";
+    });
+    }
+    });
+    }
+
+    if(window.field2){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "设置黑名单",
+    caption: "设置黑名单",
+    position: "last",
+    onClickButton: function () {
+    Saveoper="edit";
+    swal({   title: "确定要将车牌设置黑名单?",    type: "warning",   showCancelButton: true, cancelButtonText: "取消",  confirmButtonColor: "#DD6B55",   confirmButtonText: "确定", closeOnConfirm: false },function(){
+    Savetype="oper";
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length > 0)
+    {
+    $.ajax({
+    type: "Post",
+    url: "/Business/ProcessEscapeBlackList?PlateNumber="+ ids,
+    success: function (data) {
+    if (data.Success == false) {
+    swal("", data.Error.Message, "error");
+    }
+    else
+    {
+    swal("", "黑名单设置成功！", "success");
+    }
+
+    }, error: function (data) {
+    swal("", "设置黑名单失败，请稍后重试...", "error");
+    }
+    });
+    }
+    });
+    }
+    });
+    }
+}
+

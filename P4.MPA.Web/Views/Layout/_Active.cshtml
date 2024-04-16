@@ -1,0 +1,28 @@
+﻿@using Abp.Collections.Extensions
+@model P4.Web.Models.Layout.TopActiveModel
+<ul class="breadcrumb">
+    <li>
+        <i class="icon-home home-icon"></i>
+        @Model.ActiveMenu
+    </li>
+
+    @*@foreach (var entity in Model.Shortcuts)
+    {
+        <li>
+            <i class="@entity.Icon"></i>
+            <a href="@entity.Url">@L(entity.Name)</a>
+        </li>
+    }*@
+</ul><!-- .路径导航栏目 -->
+
+
+
+<script type="text/javascript">
+    window.TenantField = @Model.TenantField;
+    window.CompanyStatus = "@Model.CompanyStatus";
+    window.language = "@Model.Language";
+    window.TenantId=  @(Model.TenantId == null ? 0 : Model.TenantId);
+    window.UserName = "@Model.UserName";
+    window.UserId = "@Model.UserId";
+    window.MenuType = "@Model.MenuType";
+</script>

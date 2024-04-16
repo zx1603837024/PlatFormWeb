@@ -1,0 +1,442 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("WorkgroupManagement");
+    ViewBag.ActiveMenu = "WorkgroupManagement";
+}
+
+@section styles{
+    <link href="~/assets/css/bootstrap-duallistbox.css" rel="stylesheet" />
+    <link href="~/assets/css/prettify.css" rel="stylesheet" />
+}
+
+<style type="text/css">
+    select {
+        width: 260px;
+    }
+
+    input {
+        width: 260px;
+    }
+</style>
+
+<script src="~/assets/js/jquery.bootstrap-duallistbox.js" charset="gb2312"></script>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<!--Tree Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:800px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">工作组</h4>
+            </div>
+            <div class="modal-body">
+                <div class="content_wrap">
+                    <div>
+                        <table style="width:780px">
+                            <tr style="margin-bottom:20px;">
+                                <td id="tenantTd"></td>
+                                <td id="companyTd"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    名&nbsp;&nbsp;&nbsp;&nbsp;称：<input type="text" width="260px" id="workgroupName" />
+                                </td>
+
+                                <td>
+                                    是否启用：<select id="isActive">
+                                        <option value="1">启用</option>
+                                        <option value="0">禁用</option>
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td id="workStatusTd">
+                                    班&nbsp;&nbsp;&nbsp;&nbsp;次：<select id="status" onchange="SelWorkStatus()">
+                                        <option value="1">早班</option>
+                                        <option value="2">中班</option>
+                                        <option value="3">晚班</option>
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <div class="panel panel-success" data-toggle="collapse" style="margin-top:10px;">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a>
+                                                    收费员
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse in">
+                                            <div class="panel-body">
+                                                <form id="employeeform" action="#" method="post">
+                                                    <select multiple="multiple" size="10" name="employee_select" class="employeeSelect"></select>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading" data-toggle="collapse">
+                                            <h4 class="panel-title">
+                                                <a>
+                                                    泊位段
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseTwo" class="panel-collapse in">
+                                            <div class="panel-body">
+                                                <form id="berthsecform" action="#" method="post">
+                                                    <select multiple="multiple" size="10" name="berthsec_select" class="bethsecSelect"></select>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button type="button" class="btn btn-primary" onclick="getCheckedNodes()">查看权限信息</button>*@
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="Save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SelWorkStatus() {
+        var ids = selectedId;
+        $.ajax({
+            type: "Post",
+            url: "../WorkGroups/GetWorkGroupById/",
+            dataType: 'json',
+            data: { id: ids, workStatus: $("#status").val() },
+
+            success: function (data) {
+                $("#tenantTd select").removeAttr("disabled");
+                $("#companyTd select").removeAttr("disabled");
+
+                $(".employeeSelect option").remove();
+                $(".bethsecSelect option").remove();
+
+
+                $.each(data.Employees, function (i, item) {
+                    if (item.isselected == "selected")
+                        employeeListbox.append("<option value=" + item.Id + " selected=" + item.isselected + ">" + item.TrueName + "(" + item.UserName + ")</option>");
+                    else
+                        employeeListbox.append("<option value=" + item.Id + ">" + item.TrueName + "(" + item.UserName + ")</option>");
+                });
+                employeeListbox.bootstrapDualListbox('refresh');
+
+                $.each(data.Berthsecs, function (i, item) {
+                    if (item.isselected == "selected")
+                        berthsecListbox.append("<option value=" + item.Id + " selected=" + item.isselected + ">" + item.BerthsecName + "</option>");
+                    else
+                        berthsecListbox.append("<option value=" + item.Id + ">" + item.BerthsecName + "</option>");
+                });
+                berthsecListbox.bootstrapDualListbox('refresh');
+
+            }, error: function (data) {
+                swal("", "获取收费员数据失败，请稍后重试...", "error");
+            }
+        });
+
+    }
+
+
+
+    var employeeListbox = $('.employeeSelect').bootstrapDualListbox();
+    var berthsecListbox = $('.bethsecSelect').bootstrapDualListbox();
+    //var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox();
+    $("#employeeform").submit(function () {
+        alert($('[name="employee_select"]').val());
+        return false;
+    });
+    $("#berthsecform").submit(function () {
+        alert($('[name="berthsec_select"]').val());
+        return false;
+    });
+
+    $("#myModal").on("hidden.bs.modal", function () {
+        //$(this).removeData("bs.modal");
+        $("#myModal input").each(function () {
+            if (this.type == "text") {
+                $(this).val("");
+            } else if (this.type == "checkbox") {
+                $(this).attr("checked", false);
+            }
+
+        });
+        $("#myModal select").each(function () {
+            $(this).val(1);
+        });
+        $("#myModal textarea").each(function () {
+            $(this).val("");
+        });
+
+        $(".employeeSelect option").remove();//user为要绑定的select，先清除数据
+        $(".bethsecSelect option").remove();//user为要绑定的select，先清除数据
+
+    });
+
+    //保存方法
+    function Save() {
+        $("#tenantTd select").removeAttr("disabled");
+        $("#companyTd select").removeAttr("disabled");
+        $.ajax({
+            type: "Post",
+            url: "../WorkGroups/ProcessWorkGroup/",
+            dataType: 'json',
+
+            data: {
+
+                Status: $("#status").val(),
+
+                Id: selectedId,
+                IsActive: $("#isActive").val() == "1" ? true : false,
+                TenantId: $("#tenantTd select").val(),
+                CompanyId: $("#companyTd select").val(),
+                WorkGroupName: $("#workgroupName").val(),
+                EmployeesString: $('[name="employee_select"]').val() == null ? null : $('[name="employee_select"]').val().join(","),
+                BerthSecsString: $('[name="berthsec_select"]').val() == null ? null : $('[name="berthsec_select"]').val().join(","),
+                oper: Saveoper
+            },
+            success: function (data) {
+                //swal("", "保存成功", "info");
+                //$('#myModal').modal('hide');
+                //$("#myModal").modal('close');
+
+                if (data.Success == false) {
+                    swal("", data.Error.Message, "error");
+                } else {
+                    $('#myModal').modal('hide');
+                    $("#grid-table").trigger("reloadGrid");
+                }
+
+            }
+        });
+    }
+
+</script>
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../WorkGroups/GetAllWorkGroupList',
+    datatype: "json",
+    ajaxSelectOptions: { type: "GET" },
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: ['ID', '商户','分公司', '工作组名称','上班类型', '用户','泊位段','是否启用','创建时间', '创建用户', '最后修改时间', '最后修改用户'],
+    colModel: [
+    { name: 'Id', index: 'Id', sorttype: "int", hidden: true, key: true},
+    { name: 'TenantName', index: 'TenantId',search:false, sorttype: "int", editable: true, edittype: "select", editoptions: { dataUrl: '../System/GetTenantsSelect', defaultValue: '1' }, hidden: window.TenantField },
+    { name: 'CompanyName', index: 'CompanyName', search:false, editable: true, edittype: "select", editoptions: { dataUrl: '../Company/GetCompanysSelect/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+    { name: 'WorkGroupName', index: 'WorkGroupName', editable: true },
+    {name:'Status',index:'Status',search:true,editable:true,formatter:WorkStatus,stype:'select',searchoptions:{dataUrl:'../Dictionarys/GetWorkStatus/'+(new Date()).getMilliseconds() , sopt:['eq', 'ne']}},
+    { name: 'EmployeesString',index:'EmployeesString',search:false, editable: true},
+    { name: 'BerthSecsString',index:'BerthSecsString',search:false, editable: true},
+    { name: 'IsActive', index: 'IsActive', search:true, editable: true, formatter:YesAndNo, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds() , sopt:['eq', 'ne']} },
+    { name: 'CreationTime', index: 'CreationTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'CreatorUserName', index: 'CreatorUserName',search:false },
+    { name: 'LastModificationTime', index: 'LastModificationTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'LastModifierUserName', index: 'LastModifierUserName',search:false },
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    editurl: "../WorkGroups/ProcessWorkGroup",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    @*subGrid : true,
+        subGridUrl : "../WorkGroups/SubGrid",
+        subGridModel : [
+                { name : [ 'No', '用户', '泊位段' ], width : [ 55, 300, 300 ]}
+            ],*@
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+
+    });
+}
+@section scriptsbuttonbyself{
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "添加",
+    caption: "添加",
+    position: "last",
+    onClickButton: function()
+    {
+    Saveoper="insert";
+    selectedId = 0;
+
+    $.ajax({
+    type: "Post",
+    url: "../WorkGroups/GetWorkGroupById/",
+    dataType: 'json',
+    data:{id:0,workStatus:$("#status").val()},
+
+    success: function (data) {
+    $("#tenantTd select").removeAttr("disabled");
+    $("#companyTd select").removeAttr("disabled");
+    $("#workStatusTd select").removeAttr("disabled");
+    $.each(data.Employees, function (i, item) {
+    if(item.isselected=="selected")
+    employeeListbox.append("<option value=" + item.Id + " selected="+item.isselected+">" + item.TrueName + "("+ item.UserName +")</option>");
+    else
+    employeeListbox.append("<option value=" + item.Id + ">"  + item.TrueName + "("+ item.UserName +")</option>");
+    });
+    employeeListbox.bootstrapDualListbox('refresh');
+
+    $.each(data.Berthsecs, function (i, item) {
+    if(item.isselected=="selected")
+    berthsecListbox.append("<option value=" + item.Id + " selected="+item.isselected+">" + item.BerthsecName + "</option>");
+    else
+    berthsecListbox.append("<option value=" + item.Id + ">"  + item.BerthsecName + "</option>");
+    });
+    berthsecListbox.bootstrapDualListbox('refresh');
+
+    $("#myModal").modal('show');                @*模态框*@
+
+    }, error: function (data) {
+
+    swal("", "获取收费员数据失败，请稍后重试...", "error");
+    }
+    });
+    }
+    });
+
+
+    /// add second custom button
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "ui-icon-pencil",
+    title: "修改",
+    caption: "修改",
+    position: "last",
+    onClickButton: function(){
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length==1)
+    {
+    Saveoper="modify";
+    selectedId=ids[0];
+    $.ajax({
+    type: "Post",
+    url: "../WorkGroups/GetWorkGroupById/",
+    dataType: 'json',
+    data:{
+    id:ids,
+    workStatus: 0
+    },
+    success: function (data) {
+    $("#tenantTd select").val(data.TenantId).attr("selected", true);
+    $("#companyTd select").val(data.CompanyId).attr("selected", true);
+    if(data.IsActive==true)
+    $("#isActive").val(1).attr("selected", true);
+    else
+    $("#isActive").val(0).attr("selected", true);
+
+    if(data.Status==1){
+    $("#status").val(1).attr("selected",true);
+    }else if(data.Status==2){
+    $("#status").val(2).attr("selected",true);
+    }else{
+    $("#status").val(3).attr("selected",true);
+    }
+
+    $("#workgroupName").val(data.WorkGroupName);
+    @*$("#tenantTd select").css("onfocus","this.defaultIndex=this.selectedIndex;");
+        $("#tenantTd select").css("onchange","this.selectedIndex=this.defaultIndex;");*@
+    $("#tenantTd select").attr("disabled","disabled");
+    $("#companyTd select").attr("disabled","disabled");
+
+    $("#status").attr("disabled","disabled");
+
+    $(".employeeSelect option").remove();
+    $(".bethsecSelect option").remove();
+
+    $.each(data.Employees, function (i, item) {
+    if(item.isselected=="selected")
+    employeeListbox.append("<option value=" + item.Id + " selected="+item.isselected+">" + item.TrueName + "("+ item.UserName +")</option>");
+    else
+    employeeListbox.append(" <option value=" + item.Id + ">"  + item.TrueName + "("+ item.UserName +")</option>");
+    });
+    employeeListbox.bootstrapDualListbox('refresh');
+
+    $.each(data.Berthsecs, function (i, item) {
+    if(item.isselected=="selected")
+    berthsecListbox.append("<option value=" + item.Id + " selected="+item.isselected+">" + item.BerthsecName + "</option>");
+    else
+    berthsecListbox.append(" <option value=" + item.Id + ">"  + item.BerthsecName + "</option>");
+
+    });
+    berthsecListbox.bootstrapDualListbox('refresh');
+
+    $("#myModal").modal('show');                    @*模态框*@
+
+    }, error: function (data) {
+    swal("", "获取收费员数据失败，请稍后重试...", "error");
+    }
+    });
+    }
+    else
+    {
+    swal("", "请选择工作组...", "info");
+    }
+    }
+    });
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('.chosen-select').chosen();
+        //$('#tenantIdInput_chosen').css('width', '150px');
+        $.ajax({
+            type: "Post",
+            url: "../System/GetTenantsSelect/",
+            success: function (data) {
+                $("#tenantTd").append("商&nbsp;&nbsp;&nbsp;&nbsp;户：" + data);
+                $("#tenantTd select").Id = "tenantId";
+            }
+        });
+
+
+        $.ajax({
+            type: "Post",
+            url: "../Company/GetCompanysSelect/",
+            success: function (data) {
+                $("#companyTd").append("分&nbsp;&nbsp;公&nbsp;&nbsp;司：" + data);
+                $("#companyTd select").Id = "companyId";
+            }
+        });
+    });
+</script>

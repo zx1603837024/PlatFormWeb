@@ -1,0 +1,350 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("VideoLYSettingEdit");
+    ViewBag.ActiveMenu = "VideoLYSettingEdit";
+}
+<style type="text/css">
+    .lay_line {
+        height: 55px;
+        border-bottom: 1px dotted #e8e8e8;
+    }
+
+    .lay_con {
+        padding: 15px 0 15px 50px;
+        line-height: 25px;
+    }
+
+    .lay_tit {
+        float: left;
+    }
+
+    .lay_val {
+        float: left;
+        margin-left: 10px;
+    }
+</style>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<div id="lay_spbd" class="lay_box" style="display:none">
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">视频设备编号:</div>
+            <input class="lay_val" id="sbbh" type="text" disabled="false" value="">
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">视频设备类型:</div>
+            <input class="lay_val" id="sblx" type="text" disabled="false" value="">
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;停车场:</div>
+            <select id="parklist" class="lay_val" style="width:150px">
+            </select>
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泊位段:</div>
+            <select id="bwd" class="lay_val" style="width:150px">
+            </select>
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泊位号:</div>
+            <select id="bwh" class="lay_val" style="width:150px">
+            </select>
+        </div>
+    </div>
+    <div class="lay_line">
+        <div class="lay_con">
+            <div class="lay_tit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;是否启用:</div>
+            <select id="sfqy" class="lay_val" style="width:150px">
+                <option value="1">是</option>
+                <option value="0">否</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../VideoConfig/SelectVideoEquips',
+    datatype: "json",
+    ajaxSelectOptions: { type: "GET" },
+    mtype: "post",
+    postData:
+    {
+    'VedioEqType': '3'
+    },
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: ['ID', '商户', '分公司', "区域", "停车场", "泊位段", "泊位号", "视频设备编号", "视频设备类型", "停车状态", "是否启用","创建时间"],
+    colModel: [
+    { name: 'Id', index: 'Id', key: true,hidden: true, editable: true, search: false },
+    { name: 'Name', index: 'Name', search: false },
+    { name: 'CompanyName', index: 'CompanyName', search: true, searchoptions: { sopt: ['eq'] } },
+    { name: 'RegionName', index: 'RegionName', search: true, searchoptions: { sopt: ['eq'] } },
+    { name: 'ParkName', index: 'ParkName', search: true, searchoptions: { sopt: ['eq'] } },
+    { name: 'BerthsecName', index: 'BerthsecName', search: true, searchoptions: { sopt: ['eq'] } },
+    { name: 'BerthNumber', index: 'BerthNumber', search: true, searchoptions: { sopt: ['eq'] } },
+    { name: 'VedioEqNumber', index: 'VedioEqNumber', editable: true, search: true, searchoptions: { sopt: ['eq'] } },
+    { name: 'VedioEqType', index: 'VedioEqType', editable: true, edittype: "select", editoptions: { value: "1:有线供电视频桩;2:无源免布线视频桩;3:路牙机;4:高位视频桩" }, formatter: VedioEqType, search: true, stype: 'select', searchoptions: { value: { 1: '有线供电视频桩', 2: '无源免布线视频桩', 3: '路牙机', 4: '高位视频桩' }, sopt: ['eq'] } },
+    { name: 'ParkStatus', index: 'ParkStatus', formatter: ParkStatus, search: false },
+    { name: 'IsUse', index: 'IsUse', editable: true, edittype: "select", editoptions: { value: "1:是;0:否" }, formatter: IsUse, search: true, stype: 'select', searchoptions: { value: { 0: '未启用', 1: '已启用' }, sopt: ['eq'] } },
+    { name: 'CreationTime', index: 'CreationTime', search: false }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'BerthNumber',
+    sortorder: "asc",
+    toppager: false,
+    editurl: "../VideoConfig/EditVideoEquips",
+    multiselect: true,
+    multiboxonly: true,
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+
+@section scriptsbuttonbyself{
+    //视频设备绑定
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "视频设备绑定",
+    caption: "视频设备绑定",
+    position: "last",
+    onClickButton: function(){
+    Spbd();
+    }
+    });
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-ban-circle",
+    title: "视频设备解绑",
+    caption: "视频设备解绑",
+    position: "last",
+    onClickButton: function(){
+    Spjb();
+    }
+    });
+
+}
+<script>
+    $(function () {
+        ParkShow();
+    });
+    function ParkShow() {
+        $.ajax({
+            type: "post",
+            url: "SelectParkInfoList",
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                var strVar = "";
+                if (data.result == "success") {
+                    for (i = 0; i < data.rows.length; i++) {
+                        strVar += "<option value=\"" + data.rows[i].Id + "\">" + data.rows[i].ParkName + "</option>";
+                    }
+                }
+                $("#parklist").html(strVar);
+                if (data.rows.length) {
+                    var ParkId = data.rows[0].Id;
+                    BwdShow(ParkId);
+                }
+            }
+        });
+    }
+    function BwdShow(ParkId) {
+        var input = { "ParkId": ParkId };
+        $.ajax({
+            type: "post",
+            url: "SelectBerthsecsInfoList",
+            data: { input: JSON.stringify(input) },
+            dataType: "json",
+            success: function (data) {
+                var strVar = "";
+                if (data.result == "success") {
+                    for (i = 0; i < data.rows.length; i++) {
+                        strVar += "<option value=\"" + data.rows[i].Id + "\">" + data.rows[i].BerthsecName + "</option>";
+                    }
+                }
+                $("#bwd").html(strVar);
+                if (data.rows.length) {
+                    var BerthsecId = data.rows[0].Id;
+                    BwhShow(BerthsecId);
+                }
+            }
+        });
+    }
+    function BwhShow(BerthsecId) {
+        var input = { "BerthsecId": BerthsecId };
+        $.ajax({
+            type: "get",
+            url: "SelectNoBerthsecsNumber",
+            data: { input: JSON.stringify(input) },
+            dataType: "json",
+            success: function (data) {
+                var strVar = "";
+                if (data.result == "success") {
+                    for (i = 0; i < data.rows.length; i++) {
+                        strVar += "<option value=\"" + data.rows[i].Id + "\">" + data.rows[i].BerthNumber + "</option>";
+                    }
+                }
+                $("#bwh").html(strVar);
+            }
+        });
+    }
+    function ParkStatus(cellvalue, options) {
+        switch (cellvalue) {
+            case 0:
+                return "<span class='badge badge-info'>未停</span>";
+                break;
+            case 1:
+                return "<span class='badge badge-danger'>在停</span>";
+                break;
+            default:
+                return "";
+        }
+    }
+    function VedioEqType(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "有线供电视频桩";
+                break;
+            case 2:
+                return "无源免布线视频桩";
+                break;
+            case 3:
+                return "路牙机";
+                break;
+            case 4:
+                return "高位视频";
+                break;
+            default:
+                return "";
+        }
+    }
+    function IsUse(cellvalue, options) {
+        switch (cellvalue) {
+            case 0:
+                return "<span class='badge badge-danger'>未启用</span>";
+                break;
+            case 1:
+                return "<span class='badge badge-success'>启用</span>";
+                break;
+            default:
+                return "";
+        }
+    }
+    //视频设备绑定
+    function Spbd() {
+        var id = jQuery("#grid-table").jqGrid('getGridParam', 'selrow');
+        if (id) {
+            var ret = jQuery("#grid-table").jqGrid('getRowData', id);
+            var BerthNumber = ret.BerthNumber;
+            if (!BerthNumber) {
+                var VedioEqNumber = ret.VedioEqNumber;
+                var VedioEqType = ret.VedioEqType;
+                var Id = ret.Id;
+                $("#sbbh").val(VedioEqNumber);
+                $("#sblx").val(VedioEqType);
+                layer.open({
+                    type: 1,
+                    title: ['视频设备绑定'],
+                    area: ['400px', '400px'],
+                    btn: ['绑定', '取消'],
+                    yes: function (index, layero) {
+                        var input = { "Id": Id, "IsUse": $("#sfqy").val(), "BerthId": $("#bwh").val() };
+                        $.ajax({
+                            type: "post",
+                            url: "UpdateVideoEquipsBand",
+                            data: { input: JSON.stringify(input) },
+                            dataType: "json",
+                            success: function (data) {
+                                layer.closeAll();
+                                if (data.result == "success") {
+                                    layer.alert('视频设备绑定成功', { icon: 1 }, function () { location.reload(); });
+                                } else {
+                                    layer.alert('视频设备绑定失败', { icon: 2 }, function () { layer.closeAll(); });
+                                }
+                            }
+                        });
+                    },
+                    btn2: function (index, layero) {
+                        layer.closeAll();
+                    },
+                    shadeClose: true,
+                    content: $("#lay_spbd")
+                });
+            } else {
+                layer.alert('此泊位号已被绑定', { icon: 2 });
+            }
+
+        } else {
+            layer.alert('请选择要绑定的视频设备', { icon: 2 });
+        }
+    }
+    //视频设备解绑
+    function Spjb() {
+        var id = jQuery("#grid-table").jqGrid('getGridParam', 'selrow');
+        if (id) {
+            var ret = jQuery("#grid-table").jqGrid('getRowData', id);
+            var BerthNumber = ret.BerthNumber;
+            var Id = ret.Id;
+            if (BerthNumber) {
+                layer.confirm('确定要解除绑定吗？', {
+                    btn: ['确定', '取消']
+                }, function (index, layero) {
+                    var input = { "Id": Id };
+                    $.ajax({
+                        type: "post",
+                        url: "UpdateVideoEquipsNull",
+                        data: { input: JSON.stringify(input) },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.result == "success") {
+                                layer.alert('视频设备解绑成功', { icon: 1 }, function () { location.reload(); });
+                            } else {
+                                layer.alert('视频设备解绑失败', { icon: 2 }, function () { layer.closeAll(); });
+                            }
+                        }
+                    });
+                }, function (index) {
+                    layer.closeAll();
+                });
+            } else {
+                layer.alert('此泊位号未被绑定', { icon: 2 });
+            }
+        } else {
+            layer.alert('请选择要解绑的视频设备', { icon: 2 });
+        }
+    }
+    $("#parklist").change(function () {
+        var ParkId = $(this).find("option:selected").val();
+        BwdShow(ParkId);
+    });
+    $("#bwd").change(function () {
+        var BerthsecId = $(this).find("option:selected").val();
+        BwhShow(BerthsecId);
+    });
+</script>
+

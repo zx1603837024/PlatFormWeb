@@ -1,0 +1,474 @@
+﻿@using P4.Web.Models
+@model LoginViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>互联网设备数据管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- basic styles -->
+    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css" />
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="../../assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!-- page specific plugin styles -->
+    <!-- fonts -->
+    <!--<link rel="stylesheet" href="https://fonts.css.network/css?family=Open+Sans:400,300" />-->
+    <!-- ace styles -->
+    <link rel="stylesheet" href="../../assets/css/ace.min.css" />
+    <link rel="stylesheet" href="../../assets/css/ace-rtl.min.css" />
+    <script src="~/assets/global/plugins/jquery-sweetalert/sweetalert-dev.js"></script>
+    <link rel="stylesheet" href="~/assets/global/plugins/jquery-sweetalert/sweetalert.css" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+</head>
+
+<body class="login-layout">
+    <div class="main-container">
+        <div class="main-content">
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1">
+                    <div class="login-container">
+                        <div class="center">
+                            <h1>
+                                <!--<img src="~/assets/avatars/fx.png" width="32px" height="32px" />-->
+                                @*<i class="icon-leaf green"></i>*@
+                                <span class="red">互联网设备数据管理平台</span>
+                                <!--<span class="white">管理平台</span>-->
+                            </h1>
+                            <h4 class="blue">&copy; @L("CompanyName") </h4>
+                        </div>
+                        <div class="space-6"></div>
+                        <div class="position-relative">
+                            <div id="login-box" class="login-box visible widget-box no-border">
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <h4 class="header blue lighter bigger">
+                                            <i class="icon-coffee green"></i>
+                                            请输入您的账户信息
+                                        </h4>
+
+                                        <div class="space-6"></div>
+
+                                        @using (Ajax.BeginForm("UserLogin", "Platform", new { ReturnUrl = ViewBag.ReturnUrl, TenancyName = Model.TenancyName }, new AjaxOptions { HttpMethod = "Post", OnSuccess = "tips", OnBegin = "return ValidateLog()" }))
+                                        {
+                                            <form>
+                                                <fieldset>
+
+                                                    <label class="block clearfix">
+                                                        <span class="block input-icon input-icon-right">
+                                                            @Html.TextBoxFor(m => m.id, new { @class = "form-control", @placeholder = "请输入商户代码", @id = "idInput" })
+                                                            @*<input type="text" id="EmailAddressInput" class="form-control" placeholder="Username" />*@
+                                                            <i class="icon-group"></i>
+                                                        </span>
+                                                    </label>
+
+                                                    <label class="block clearfix">
+                                                        <span class="block input-icon input-icon-right">
+                                                            @Html.TextBoxFor(m => m.UsernameOrEmailAddress, new { @class = "form-control", @placeholder = "请输入用户名", @id = "EmailAddressInput" })
+                                                            @*<input type="text" id="EmailAddressInput" class="form-control" placeholder="Username" />*@
+                                                            <i class="icon-user"></i>
+                                                        </span>
+                                                    </label>
+
+                                                    <label class="block clearfix">
+                                                        <span class="block input-icon input-icon-right">
+                                                            @Html.TextBoxFor(m => m.Password, new { @type = "password", @id = "PasswordInput", @class = "form-control", @placeholder = "请输入密码" })
+                                                            <i class="icon-lock"></i>
+                                                        </span>
+                                                    </label>
+
+                                                    <div class="space"></div>
+
+                                                    <div class="clearfix">
+                                                        <label class="inline">
+                                                            <input type="checkbox" name="RememberMe" id="RememberMeInput" class="ace" />
+                                                            <span class="lbl"> Remember Me</span>
+                                                        </label>
+                                                        <button type="submit" id="LoginButton" data-loading-text="Logining...." class="width-35 pull-right btn btn-sm btn-primary">
+                                                            <i class="icon-key"></i>
+                                                            登录
+                                                        </button>
+                                                    </div>
+                                                    <div class="space-4"></div>
+                                                </fieldset>
+                                            </form>
+
+                                            @*登录界面结束*@
+
+                                        }
+
+                                        <div class="social-or-login center">
+                                            <span class="bigger-110">企业愿景</span>
+                                        </div>
+                                        <div class="social-login center">
+                                            让停车生活更美好！<br />致力于停车管理规范化、智能化和人性化！
+                                        </div>
+                                    </div><!-- /widget-main -->
+
+                                    <div class="toolbar clearfix">
+                                        <div>
+                                            <a href="#" onclick="show_box('forgot-box'); return false;" class="forgot-password-link">
+                                                <i class="icon-arrow-left"></i>
+                                                忘记密码
+                                            </a>
+                                        </div>
+
+                                        <div>
+                                            <a href="#" onclick="show_box('signup-box'); return false;" class="user-signup-link">
+                                                申请试用
+                                                <i class="icon-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div><!-- /widget-body -->
+                            </div><!-- /login-box -->
+
+                            <div id="forgot-box" class="forgot-box widget-box no-border">
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <h4 class="header red lighter bigger">
+                                            <i class="icon-key"></i>
+                                            找回密码
+                                        </h4>
+
+                                        <div class="space-6"></div>
+                                        <p>
+                                            输入您账号关联的电子邮箱
+                                        </p>
+                                        <form>
+                                            <fieldset>
+                                                <label class="block clearfix">
+                                                    <span class="block input-icon input-icon-right">
+                                                        <input type="email" id="EmailAddress" class="form-control" placeholder="Email" />
+                                                        <input type="email" id="resetcode" class="form-control" placeholder="请输入邮件重置码" />
+                                                        <i class="icon-envelope"></i>
+                                                    </span>
+                                                </label>
+
+                                                <div class="clearfix">
+                                                    <button onclick="javascript: findPassword()" type="button" class="width-35 pull-right btn btn-sm btn-danger" id="send">
+                                                        <i class="icon-lightbulb"></i>
+                                                        发送!
+                                                    </button>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div><!-- /widget-main -->
+
+                                    <div class="toolbar center">
+                                        <a href="#" onclick="show_box('login-box'); return false;" class="back-to-login-link">
+                                            返回登录
+                                            <i class="icon-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div><!-- /widget-body -->
+                            </div><!-- /forgot-box -->
+
+                            <div id="signup-box" class="signup-box widget-box no-border">
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <h4 class="header green lighter bigger">
+                                            <i class="icon-group blue"></i>
+                                            申请试用平台
+                                        </h4>
+
+                                        <div class="space-6"></div>
+                                        <p> 欢迎您试用，请填写您的相关信息: </p>
+
+                                        <form>
+                                            <fieldset>
+                                                <label class="block clearfix">
+                                                    <span class="block input-icon input-icon-right">
+                                                        <input type="email" class="form-control" placeholder="您的邮箱" id="Email" />
+                                                        <i class="icon-envelope"></i>
+                                                    </span>
+                                                </label>
+
+                                                <label class="block clearfix">
+                                                    <span class="block input-icon input-icon-right">
+                                                        <input type="text" class="form-control" placeholder="您的姓名" id="TrueName" />
+                                                        <i class="icon-user"></i>
+                                                    </span>
+                                                </label>
+
+                                                <label class="block clearfix">
+                                                    <span class="block input-icon input-icon-right">
+                                                        <input type="text" class="form-control" placeholder="公司名称" id="CompanyName" />
+                                                        <i class="icon-user"></i>
+                                                    </span>
+                                                </label>
+
+                                                <label class="block clearfix">
+                                                    <span class="block input-icon input-icon-right">
+                                                        <input type="text" class="form-control" placeholder="联系电话" id="Telephone" />
+                                                        <i class="icon-user"></i>
+                                                    </span>
+                                                </label>
+
+                                                <label class="block clearfix">
+                                                    <span class="block input-icon input-icon-right">
+                                                        <input type="text" class="form-control" placeholder="业务所在城市" id="Address" />
+                                                        <i class="icon-user"></i>
+                                                    </span>
+                                                </label>
+                                                @*<label class="block clearfix">
+                                                        <span class="block input-icon input-icon-right">
+                                                            <input type="password" class="form-control" placeholder="Password" />
+                                                            <i class="icon-lock"></i>
+                                                        </span>
+                                                    </label>
+
+                                                    <label class="block clearfix">
+                                                        <span class="block input-icon input-icon-right">
+                                                            <input type="password" class="form-control" placeholder="Repeat password" />
+                                                            <i class="icon-retweet"></i>
+                                                        </span>
+                                                    </label>*@
+
+                                                <label class="block">
+                                                    <input type="checkbox" id ="checkTrue" class="ace" />
+                                                    <span class="lbl">
+                                                        接受                                                   
+                                                        <a href="javascript:;" onclick="Redirect()">用户协议</a>
+                                                    </span>
+                                                </label>
+
+                                                <div class="space-24"></div>
+
+                                                <div class="clearfix">
+                                                    <button type="reset" class="width-30 pull-left btn btn-sm">
+                                                        <i class="icon-refresh"></i>
+                                                        重填
+                                                    </button>
+
+                                                    <button type="button" class="width-65 pull-right btn btn-sm btn-success" onclick="javascript:Save()">
+                                                        申请
+                                                        <i class="icon-arrow-right icon-on-right"></i>
+                                                    </button>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+
+                                    <div class="toolbar center">
+                                        <a href="#" onclick="show_box('login-box'); return false;" class="back-to-login-link">
+                                            <i class="icon-arrow-left"></i>
+                                            返回到登录
+                                        </a>
+                                    </div>
+                                </div><!-- /widget-body -->
+                            </div><!-- /signup-box -->
+                        </div><!-- /position-relative -->
+                    </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div>
+    </div><!-- /.main-container -->
+    <!-- basic scripts -->
+    <!--[if !IE]> -->
+
+    <script src="~/Scripts/jquery-2.2.3.min.js"></script>
+
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='../../assets/js/jquery-2.0.3.min.js'>" + "<" + "/script>");
+    </script>
+
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+     window.jQuery || document.write("<script src='../../assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='../../assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+    </script>
+
+    <!-- inline scripts related to this page -->
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript">
+        $('#idInput').val(getCookie('tenant'));
+        function ValidateLog() {
+            if (document.getElementById('EmailAddressInput').value == "" || document.getElementById('EmailAddressInput').value.length == 0) {
+       
+                swal("", "用户名不能为空", "error");
+                document.getElementById('EmailAddressInput').focus();
+                return false;
+            }
+            if (document.getElementById('PasswordInput').vaule == "" || document.getElementById('PasswordInput').value.length == 0) {
+                swal("", "密码不能为空", "error");
+                document.getElementById('PasswordInput').focus();
+                return false;
+            }
+            swal({
+                title: "系统提示",
+                text: "正在登录平台....",
+                timer: 10000,
+                showConfirmButton: false
+            });
+        }
+        //登录回调函数
+        function tips(data) {
+            try {
+                var errorNum = data.split('_')[0];         
+                if (errorNum == "1") {
+                    swal("", "用户名或密码错误", "error");
+                } else if (errorNum == "2") {
+                    swal("", "未找到此商户: " + data.split('_')[1], "error");
+                    //alert("未找到此商户: " + data.split('_')[1]);
+                } else if (errorNum == "3") {
+                    swal("", "商户组织被锁定: " + data.split('_')[1], "error");
+                    //alert("商户组织被锁定: " + data.split('_')[1]);
+                } else if (errorNum == "4") {
+                    swal("", "用户被锁定: " + data.split('_')[1], "error");
+                    //alert("用户被锁定: " + data.split('_')[1]);
+                } else if (errorNum == "5") {
+                    swal("", "您的邮件地址未确认: " + data.split('_')[1], "error");
+                    //alert("您的邮件地址未确认: " + data.split('_')[1]);
+                } else if (errorNum == "6") {
+                    swal("", "未知错误的登录: " + data.split('_')[1], "error");
+                    //alert("未知错误的登录: " + data.split('_')[1]);
+                } else {
+                    
+                    $.ajax({
+                        type: "post",
+                        url: '../Metro/UpdateMenuType',
+                        data: { menuType: "Road" },
+                        dataType: 'json',
+                        success: function (data) {
+                            setCookie('tenant', $('#idInput').val(), 365);
+                            window.location.href = '../Platform/BridgeIndex';
+                        },
+                        error: function (data) {
+                            setCookie('tenant', $('#idInput').val(), 365);
+                            window.location.href = '../Platform/BridgeIndex';
+                        }
+                    }); 
+                    //location.href = data;
+                }
+            } catch (e) {
+                swal("", "异常错误", "error");
+                //alert('异常错误');
+            }
+        }
+        //设置cookies值
+        function setCookie(c_name, value, expiredays) {
+            var exdate = new Date()
+            exdate.setDate(exdate.getDate() + expiredays)
+            document.cookie = c_name + "=" + escape(value) +
+            ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+        }
+        //读取cookies
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=")
+                if (c_start != -1) {
+                    c_start = c_start + c_name.length + 1
+                    c_end = document.cookie.indexOf(";", c_start)
+                    if (c_end == -1) c_end = document.cookie.length
+                    return unescape(document.cookie.substring(c_start, c_end))
+                }
+            }
+            return "";
+        }
+        function show_box(id) {
+            jQuery('.widget-box.visible').removeClass('visible');
+            jQuery('#' + id).addClass('visible');
+            jQuery('#resetcode').addClass('hidden');
+        }
+        //找回密码
+        function findPassword() {
+            $.ajax({
+                type: "Post",
+                url: '/Platform/ResetPassword',
+                data: {
+                    EmailAddress: $('#EmailAddress').val(),
+                    Code: $('#resetcode').val()
+                },
+                success: function (data) {
+                    jQuery('#resetcode').removeClass('hidden');
+                    jQuery('#EmailAddress').addClass('hidden');
+                    if ($("#send").text() == "确认") {
+                        show_box('login-box');
+                    }
+                    $("#send").text("确认");
+                }, error: function () {
+
+                }
+            });
+        }
+        //打开用户协议
+        function Redirect() {
+            window.open('../UserAgreement/Index');
+        }
+        //保存
+        function Save() {
+             if (!$('#checkTrue').is(':checked')) {
+                 swal("", "请勾选用户协议", "error");
+                 return false;
+            }
+
+            var reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,5}$/; 
+            if (!reg.test(document.getElementById('Email').value)) {
+                swal("", "请输入正确的邮箱地址", "error");
+                return false
+                document.getElementById('Email').focus();
+            }
+
+            if (document.getElementById('TrueName').value.indexOf(" ") >= 0 || document.getElementById('TrueName').value.length == 0) {
+                swal("", "姓名不能有空格", "error");
+                document.getElementById('TrueName').focus();
+                return false;
+            }
+            if (document.getElementById('CompanyName').value.indexOf(" ") >= 0  || document.getElementById('CompanyName').value.length == 0) {
+                swal("", "公司不能有空格", "error");
+                document.getElementById('CompanyName').focus();
+                return false;
+            }
+            var phone = /^1[34578]\d{9}$/;
+            if (!phone.test(document.getElementById('Telephone').value)) {
+                swal("", "请输入正确的联系电话", "error");
+                return false
+                document.getElementById('Telephone').focus();
+            }
+            if (document.getElementById('Address').value.indexOf(" ") >= 0 || document.getElementById('Address').value.length == 0) {
+                swal("", "业务所在城市不能有空格", "error");
+                document.getElementById('Address').focus();
+                return false;
+            }
+            swal({
+                title: "系统提示?",
+                text: "您确定要提交吗？",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定,提交!",
+                closeOnConfirm: false
+            },
+             function () {
+                 swal("提交成功!", "您的申请已经提交成功，请耐心等待确认！", "success");
+                 $.ajax({
+                     type: "Post",
+                     url: '../Platform/SaveUserTrials',
+                     data: {
+                         Email: $("#Email").val(),
+                         TrueName: $("#TrueName").val(),
+                         CompanyName: $("#CompanyName").val(),
+                         Telephone: $("#Telephone").val(),
+                         Address: $("#Address").val()
+                     },
+                     success: function (data) {
+
+                     }, error: function () {
+
+                     }
+                 });
+             });
+        } 
+    </script>
+</body>
+</html>

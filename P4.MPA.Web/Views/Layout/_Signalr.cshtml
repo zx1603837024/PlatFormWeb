@@ -1,0 +1,51 @@
+﻿@using Abp.Collections.Extensions
+@model P4.Web.Models.Layout.SignalrModel
+
+@*signalr-begin*@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="../signalr/hubs"></script>
+@*signalr-end*@
+
+<script type="text/javascript">
+        $(function () {
+            var chat = $.connection.chat;
+            $.connection.hub.start().done(function () {
+                chat.server.userlogin(window.UserId + ' index' + window.TenantId);
+            });
+
+            //接收信息
+            chat.client.sendPrivateMessage = function (message,type) {
+                NotifySuccess(message, '系统消息');
+            }
+
+            chat.client.sendIndexMessage = function (berthsecName, berthsecid, employeeid, message, type) {
+                if (type == 1)//应收
+                {//Receivable
+                    var Receivable = parseFloat($("#Receivable").text());
+                    $('#Receivable').html(parseFloat(message) + Receivable);
+                    countUp(document.getElementById('Receivable'), document.getElementById('Receivable').innerHTML, Receivable, 4000, 2);
+                }
+                else if (type == 2) //实收
+                {//FactReceive
+                    var FactReceive = parseFloat($("#FactReceive").text());
+                    $('#FactReceive').html(parseFloat(message) + FactReceive);
+                    countUp(document.getElementById('FactReceive'), document.getElementById('FactReceive').innerHTML, FactReceive, 4000, 2);
+                }
+                else if (type == 3) //欠费
+                {//Arrearage
+                    var Arrearage = parseFloat($("#Arrearage").text());
+                    $('#Arrearage').html(parseFloat(message) + Arrearage);
+                    countUp(document.getElementById('Arrearage'), document.getElementById('Arrearage').innerHTML, Arrearage, 4000, 2);
+                } 
+                else if (type == 4) //欠费补缴
+                {//Repayment
+                    var Repayment = parseFloat($("#Repayment").text());
+                    $('#Repayment').html(parseFloat(message) + Repayment);
+                    countUp(document.getElementById('Repayment'), document.getElementById('Repayment').innerHTML, Repayment, 4000, 2);
+                }
+                else if (type == 5) {
+                    NotifySuccess(message, '系统消息');
+                }
+            }
+        });
+</script>

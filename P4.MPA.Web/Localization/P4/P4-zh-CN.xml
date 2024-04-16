@@ -1,0 +1,459 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="zh-CN">
+	<texts>
+		<text name="Login.Title" value="主页" />
+		<text name="Login.CompanyNameRed" value="停车管理"></text>
+		<text name="Login.CompanyNameWhite" value="智能科技"></text>
+		<text name="CompanyName" value="广东融正资讯科技有限公司"></text>
+		<text name="CompanyInfo" value="广东融正资讯科技有限公司"></text>
+		<text name="Version" value="V2.0"></text>
+
+
+		<text name="Control" value="控制台"></text>
+		<text name="SystemManagement" value="系统管理"></text>
+		<text name="SystemBaseData" value="基础数据"></text>
+		<text name="EnterpriseManagement" value="企业管理"></text>
+		<text name="DictionaryTypeManagement" value="字典类型管理"></text>
+		<text name="DictionaryValueManagement" value="字典数据管理"></text>
+		<text name="EditionManager" value="权限版本管理"></text>
+		<text name="SystemParamSetting" value="系统参数设置"></text>
+		<text name="TimeBucketParkReport" value="时间段停车场报表"></text>
+		<text name="TBucketBerthsecStaticR" value="时间段泊位段报表"></text>
+		<text name="DynamicAccountRecordsReport" value="账号消费详情"></text>
+		<text name="DynamicAccountOnlyMonth" value="账号消费详情(月)"></text>
+		<text name="WorkGroupReport" value="工作组报表"></text>
+		<text name="WorkGroupEmployees" value="员工工作组管理"></text>
+		<text name="MonthBerthsUse" value="车位使用及消费"></text>
+		<text name="MonthBerthsUserOnlyMonth" value="车位使用及消费(月)"></text>
+		<text name="SensorGraph" value="车检器在线率"></text>
+		<text name="SensorInfo" value="车检器信息"></text>
+
+		<text name="SystemNotice" value="系统通知设置"></text>
+		<text name="EnterpriseSetting" value="企业信息设置"></text>
+		<text name="OrganizationManagement" value="组织架构管理"></text>
+		<text name="UsersManagement" value="系统用户管理"></text>
+		<text name="RolesManagement" value="系统角色管理"></text>
+		<text name="RolesDataPermissionsManagement" value="角色数据权限管理"></text>
+		<text name="MenusManagement" value="系统菜单管理"></text>
+		<text name="RolesPermissionsManagement" value="角色权限管理"></text>
+		<text name="TenantsManagement" value="系统商户管理"></text>
+		<text name="CompanyManagement" value="分公司管理"></text>
+		<text name="CompanySetting" value="分公司信息设置"></text>
+		<text name="SystemSetting" value="系统设置"></text>
+
+
+
+		<text name="WorkflowDesignManagement" value="工作流设计"></text>
+		<text name="WorkflowsManagement" value="工作流管理"></text>
+		<text name="WorkflowSetting" value="工作流"></text>
+		<text name="PayManagement" value="支付管理"></text>
+		<text name="MoneCar" value="账户管理"></text>
+		<text name="CreditCardDetails" value="账户流水明细"></text>
+
+		<text name="BusinessManagement" value="业务管理"></text>
+		<text name="BusinessBaseData" value="基础数据"></text>
+		<text name="RatesManagement" value="费率管理"></text>
+		<text name="PrivilegeManagement" value="特权管理"></text>
+		<text name="MonthCarsManagement" value="包月车辆管理"></text>
+		<text name="RegionManagement" value="区域管理"></text>
+		<text name="ParkManagement" value="停车场管理"></text>
+		<text name="BerthsecManagement" value="泊位段管理"></text>
+		<text name="BerthManagement" value="地磁绑定"></text>
+		<text name="InspectorManagement" value="巡查员管理"></text>
+		<text name="InspectorsWorkGroup" value="巡查员工作组"></text>
+		<text name="WorkgroupManagement" value="收费员工作组"></text>
+		<text name="EmployeeManagement" value="收费员管理"></text>
+		<text name="SpecialCarManagement" value="特殊车辆管理"></text>
+		<text name="WhiteManagement" value="白名单管理"></text>
+		<text name="BlackManagement" value="黑名单管理"></text>
+		<text name="MonthCars" value="包月车辆"></text>
+		<text name="MonthAbnormaLCar" value="包月异常车辆"></text>
+		<text name="Sensors" value="车检器管理"></text>
+		<text name="Transmitters" value="传输器管理"></text>
+		<text name="PDAEquipment" value="PDA设备"></text>
+		<text name="CarInTicketManagement" value="车辆入场小票管理"></text>
+		<text name="CarOutTicketManagement" value="车辆出场小票管理"></text>
+		<text name="RepayPrintTicketManagement" value="欠费明细小票管理"></text>
+		<text name="RepayTicketManagement" value="追缴凭证小票管理"></text>
+		<text name="DayChargeTicketManagement" value="收费日报小票管理"></text>
+
+		<text name="PDAMaintenance" value="PDA维护"></text>
+		<text name="SmsRecordManagement" value="历史短信"></text>
+		<text name="SmsModelManagement" value="短信模板"></text>
+		<text name="EscapeNotice" value ="提醒规则"></text>
+		<text name="UserTrial" value="试用管理"></text>
+		<text name="DecisionAnalysis" value="决策分析"></text>
+		<text name="DevOpsDecision" value="运维决策"></text>
+		<text name="FeesDecision" value="收费决策"></text>
+		<text name="PeakPeriod" value="高峰预警"></text>
+		<text name="UtilizationHour" value="泊位段分析"></text>
+		<text name="SensorPOSContrast" value="地磁POS对照"></text>
+		<text name="ReportAnalysis" value="报表分析"></text>
+		<text name="DynamicReport" value="动态报表"></text>
+		<text name="ParkChargesDayReport" value="停车场报表"></text>
+		<text name="EmployeeChargesDayReport" value="收费员报表"></text>
+		<text name="ChargeRateDayReport" value="收费率报表"></text>
+		<text name="BerthsecChargesDayReport" value="泊位段报表"></text>
+		<text name="EmployeeBatchNoReport" value="收费员批次号报表"></text>
+		<text name="OwnReport" value="欠费报表"></text>
+		<text name="StaticReport" value="静态报表"></text>
+		<text name="BerthsecReport" value="泊位段报表"></text>
+		<text name="ParkReport" value="停车场报表"></text>
+		<text name="EmployeeReport" value="收费员报表"></text>
+		<text name="InspectorsReport" value="巡查员报表"></text>
+		<text name="OperatorsCompanyReport" value="公司报表"></text>
+
+		<text name="DataCenter" value="数据中心"></text>
+		<text name="EscapeDetails" value="逃逸明细"></text>
+		<text name="SubstantialOrder" value="大额订单"></text>
+		<text name="EscapeRank" value="欠费排名"></text>
+
+		<text name="PrintAdManager" value="打印广告管理"></text>
+
+		<text name="CommandCenter" value="指挥中心"></text>
+		<text name="GeomagnetismEquip" value="设备监控"></text>
+		<text name="InspectionMonitor" value="车检监控"></text>
+		<text name="BerthMonitor" value="泊位监控"></text>
+		<text name="TransmitterMonitor" value="基站管理"></text>
+		<text name="TransmitterMap" value="基站地图"></text>
+		<text name="ParkInfoMap" value="停车场地图"></text>
+		<text name="InspectorMap" value="巡查员地图"></text>
+		<text name="ManageTransmitter" value="基站分配"></text>
+		<text name="ParkManagementMap" value="停车场地图"></text>
+		<text name="EmployeeGps" value="收费员地图"></text>
+
+		<text name="Personneldispatch" value="人员调度"></text>
+		<text name="InspectorTasks" value="巡查任务分配"></text>
+		<text name="InspectorTaskFeedbacks" value="任务上报"></text>
+
+
+		<text name="SystemLog" value="系统日志"></text>
+		<text name="DataLog" value="数据日志"></text>
+		<text name="OperationLog" value="操作日志"></text>
+		<text name="AuditLog" value="审计日志"></text>
+		<text name="EmployeeLog" value="收费员日志"></text>
+
+		<text name="Insert" value="新增"></text>
+		<text name="Delete" value="删除"></text>
+		<text name="Update" value="更新"></text>
+		<text name="Info" value="查看详细"></text>
+		<text name="Search" value="搜索"></text>
+		<text name="Refresh" value="刷新"></text>
+
+
+		<text name="UsersManagement.Field1" value="功能权限"></text>
+		<text name="UsersManagement.Field2" value="数据权限"></text>
+		<text name="UsersManagement.Field3" value="初始密码"></text>
+		<text name="UsersManagement.Field4" value="主页"></text>
+		<text name="RolesManagement.Field1" value="功能权限"></text>
+		<text name="RolesManagement.Field2" value="数据权限"></text>
+		<text name="EscapeRank.Field1" value="导出"></text>
+		<text name="EscapeRank.Field2" value="设置黑名单"></text>
+		<text name="MonthCars.Field1" value="导出"></text>
+		<text name="MonthCars.Field2" value="续费"></text>
+		<text name="MonthCars.Field3" value="导出包月明细"></text>
+		<text name="MoneCar.Field1" value="充值"></text>
+		<text name="MoneCar.Field2" value="解除绑定"></text>
+		<text name="MoneCar.Field3" value="激活"></text>
+		<text name="BerthsecManagement.Field1" value="批量签退"></text>
+		<text name="WorkgroupManagement.Field1" value="新增工作组"></text>
+		<text name="WorkgroupManagement.Field2" value="修改工作组"></text>
+		<text name="InspectorsWorkGroup.Field1" value="新增工作组"></text>
+		<text name="InspectorsWorkGroup.Field2" value="修改工作组"></text>
+		<text name="EmployeeManagement.Field1" value="批量签退"></text>
+		<text name="EmployeeManagement.Field2" value="取消对账"></text>
+		<text name="BerthsecManagement.Field2" value="泊位分配"></text>
+		<text name="BerthsecManagement.Field3" value ="删除订单"></text>
+		<text name="EscapeDetails.Field1" value="导出明细"></text>
+		<text name="BusinessDetails.Field1" value="导出明细"></text>
+		<text name="BusinessDetails.Field2" value="恢复欠费"></text>
+		<text name="BusinessDetails.Field3" value="设置欠费"></text>
+		<text name="SubstantialOrder.Field1" value="导出明细"></text>
+		<text name="EditionManager.Field1" value="权限管理"></text>
+		<text name="RatesManagement.Field1" value="新增费率"></text>
+		<text name="RatesManagement.Field2" value="更新费率"></text>
+		<text name="BerthManagement.Field1" value="解绑地磁"></text>
+		<text name="BerthManagement.Field2" value="远程出场"></text>
+		<text name="BerthManagement.Field3" value="删除订单"></text>
+		<text name="TransmitterMonitor.Field1" value="新增"></text>
+		<text name="TransmitterMonitor.Field2" value="修改"></text>
+		<text name="CardSettlement.Field1" value="记录补传"></text>
+		<text name="App.Field1" value="锁定"></text>
+		<text name="UserOnline" value="在线用户信息"></text>
+		<text name="FAQManagement" value="常见问题"></text>
+		<text name="Tenants" value="企业数据"></text>
+		<text name="Roles" value="角色数据"></text>
+		<text name="Users" value="用户数据"></text>
+		<text name="UserLogins" value="用户登录数据"></text>
+		<text name="UserRoles" value="用户角色关系数据"></text>
+		<text name="Permissions" value="功能权限数据"></text>
+		<text name="RolePermissions" value="角色功能权限数据"></text>
+		<text name="UserPermissions" value="用户功能权限数据"></text>
+		<text name="DataPermissions" value="数据权限数据"></text>
+		<text name="UserDataPermissions" value="用户数据权限数据"></text>
+		<text name="RoleDataPermissions" value="角色数据权限数据"></text>
+
+		<text name="Settings" value="系统设置数据"></text>
+		<text name="AuditLogs" value="审计"></text>
+		<text name="Datalogs" value="数据日志"></text>
+		<text name="DataLogItems" value="数据日志明细"></text>
+		<text name="OperationLogs" value="操作日志"></text>
+		<text name="Menus" value="菜单数据"></text>
+		<text name="Messages" value="系统消息"></text>
+		<text name="Notices" value=""></text>
+		<text name="Tasks" value="任务"></text>
+		<text name="Icons" value="图标"></text>
+		<text name="Companys" value="分公司"></text>
+		<text name="OtherAccounts" value="账号管理"></text>
+		<text name="OtherPlateNumbers" value="账号车牌绑定"></text>
+		<text name="RechargeRuleManager" value="充值规则"></text>
+		<text name="Smss" value="短信历史记录"></text>
+		<text name="EquipmentVersions" value="设备版本"></text>
+		<text name="Parks" value="停车场"></text>
+		<text name="Regions" value="区域"></text>
+		<text name="Berths" value="泊位"></text>
+		<text name="DictionaryTypes" value="字典类型"></text>
+		<text name="DictionaryValues" value="字典数据"></text>
+		<text name="OperatorsCompanys" value="运营公司"></text>
+		<text name="BusinessDetails" value="收费明细"></text>
+		<text name="BusinessDetailPictures" value="取证图片"></text>
+		<text name="Organizations" value="组织架构"></text>
+		<text name="Employees" value="收费员"></text>
+		<text name="ScheduleManage" value="排班管理"></text>
+		<text name="EmployeeChecks" value="收费员签到、退"></text>
+		<text name="InspectorChecks" value="查询员签到、退"></text>
+		<text name="OperationPermissions" value="操作权限"></text>
+		<text name="UserTrials" value="用户申请试用"></text>
+		<text name="Inspectors" value="巡查员"></text>
+		<text name="Berthsecs" value="泊位段"></text>
+		<text name="Jobs" value="执行计划"></text>
+		<text name="MonthlyCars" value="包月车辆"></text>
+		<text name="MonthlyCarHistorys" value="包月收费记录"></text>
+		<text name="MonthlyCarAbnormals" value="包月车辆异常数据"></text>
+		<text name="Rates" value="费率"></text>
+		<text name="WhiteLists" value="白名单"></text>
+		<text name="BlackLists" value="黑名单"></text>
+		<text name="WorkGroups" value="工作组"></text>
+		<text name="WorkGroupUsers" value="工作组与用户关系"></text>
+		<text name="WorkGroupBerthsecs" value="工作组与泊位段"></text>
+		<text name="EquipmentMaintenances" value="设备维护记录"></text>
+
+		<text name="Equipments" value="设备管理"></text>
+		<text name="EquipmentBeats" value="设备心跳"></text>
+		<text name="EquipmentGps" value="设备GPS"></text>
+
+		<!--开始诱导屏-->
+		<text name="InducibleToADs" value="诱导广告栏数据"></text>
+		<text name="GuidanceSystem" value="诱导系统"></text>
+		<text name="InducibleMap" value="地图展示"></text>
+		<text name="Inducibles" value="诱导管理"></text>
+		<text name="InducibleToParks" value="诱导绑定停车场"></text>
+		<text name="RoadPublish" value="路况发布"></text>
+		<text name="PlaybillManager" value="节目单管理"></text>
+		<text name="InfoManager" value="信息管理"></text>
+		<text name="RoadManager" value="路段管理"></text>
+		<!--结束诱导屏-->
+
+		<text name="SpecialLists" value="特殊车辆"></text>
+		<text name="SensorBusinessDetails" value="车检器记录"></text>
+		<text name="SensorCautions" value="车检器电压"></text>
+		<text name="SensorLogs" value="车检器通讯记录"></text>
+		<text name="TransmitterCautions" value="基站电压"></text>
+		<text name="DeductionRecords" value="账号消费记录"></text>
+
+		<text name="BerthsecReports" value="泊位段报表"></text>
+		<text name="EmployeeReports" value="收费员报表"></text>
+		<text name="FacilityManagement" value="设备管理"></text>
+		<text name="BTSManagement" value="基站管理"></text>
+		<text name="InspectionManagement" value="车检器管理"></text>
+		<text name="PDAManagement" value="PDA管理"></text>
+		<text name="PDAConfigure" value="PDA配置"></text>
+		<text name="EquipmentVersion" value="PDA软件版本管理"></text>
+		<text name="InspectionConfiguration" value="车检器配置"></text>
+
+		<text name="InspectionCommLog" value="车检器通讯日志"></text>
+
+		<text name="InspectionStopData" value="车检器停车数据"></text>
+		<text name="InspectionSetting" value="车检器设置"></text>
+		<text name="BTSSetting" value="基站设置"></text>
+
+		<text name="BTSConfiguration" value="基站配置"></text>
+		<text name="BTSCommLog" value="基站通讯日志"></text>
+		<text name="AppManagement" value="APP管理"></text>
+		<!--<text name="WeixinConfig" value="微信公众号"></text>-->
+		<text name="MicroPublic" value="微信公众号"></text>
+		<text name="App" value="App"></text>
+
+		<text name="WeixinManager" value="微信管理"></text>
+
+		<text name="WeixinUser" value="微信关注用户"></text>
+		<text name="WeixinTUser" value="微信注册用户"></text>
+		<text name="WeixinMenu" value="微信菜单管理"></text>
+		<text name="WeixinMessage" value="微信消息管理"></text>
+		<text name="WeixinHistoryMsg" value="微信历史消息"></text>
+		<text name="WeixinOrders" value="微信支付流水"></text>
+		<text name="WeixinOrders.Field1" value="退款"></text>
+		<text name="WeixinMonthRule" value="车辆包月规则"></text>
+		<text name="WeixinRechargeRule" value="账号充值规则"></text>
+		<text name="IpassCardCode" value="错误对照码"></text>
+		<text name="WeixinIdea" value="后台私信"></text>
+		<text name="CouponManager" value="优惠劵方案"></text>
+		<text name="CouponDetail" value="优惠券发放"></text>
+		<text name="CouponDetail.Field1" value="导出"></text>
+		<text name="WeixinSendMsgModel" value="自动回复管理"></text>
+
+		<text name="FinancialManage" value="财务管理"></text>
+
+		<text name="ClearingSettlement" value="清分结算"></text>
+		<text name="WeixinSettlement" value="微信清分结算"></text>
+		<text name="CardSettlement" value="市民卡清分结算"></text>
+		<text name="AccountSettlement" value="账号清分结算"></text>
+		<text name="TenantSettlement" value="商户清分结算"></text>
+		<text name="CompanySettlement" value="分公司清分结算"></text>
+		<text name="AliPaySettlement" value="支付宝清分结算"></text>
+		<text name="AliPaySettlement.Field1" value="导出"></text>
+		<text name="TenantSettlement.Field1" value="导出"></text>
+		<text name="TenantSettlement.Field2" value="结算"></text>
+
+		<text name="WeixinSettlement.Field1" value="导出"></text>
+		<text name="CardSettlement.Field2" value="导出"></text>
+		<text name="AccountSettlement.Field1" value="导出"></text>
+
+		<text name="InspectorLocus" value="巡查员轨迹"></text>
+		<text name="CarStopLocus" value="停车轨迹"></text>
+		<text name="EmployeeLocus" value="收费员轨迹"></text>
+
+		<text name="ParameterSetting" value="参数设置"></text>
+		<text name="TestPage" value="测试界面"></text>
+		<text name="Welcome" value="欢迎光临"></text>
+		<text name="UserSettingManagement" value="设置"></text>
+		<text name="UserInbox" value="收件箱"></text>
+
+		<text name="WebTasks" value="任务列表"></text>
+		<text name="WebNotices" value="通知列表"></text>
+		<text name="WebMessages" value="消息列表"></text>
+
+		<text name="ProfileInfo" value="个人资料"></text>
+		<text name="Lock" value="锁定屏幕"></text>
+		<text name="Exit" value="退出"></text>
+		<text name="EquipmentsManagement" value="设备维护子系统"></text>
+		<text name="EquipmentsM" value="设备基础参数"></text>
+		<text name="EquipmentsEdit" value="设备数据录入"></text>
+		<text name="CompanyCustomerExpress" value="设备发货"></text>
+		<text name="CompanyCustomerExpressDetail" value="设备发货详情"></text>
+		<text name="ReworkFlowEdit" value="设备返修"></text>
+		<text name="CompanyCustomerExpressDetail.Field1" value="货到登记"></text>
+		<text name="EquipmentsM.Field1" value="返修"></text>
+		<text name="ReworkFlowDetail" value="设备返修详情"></text>
+		<text name="ReworkFlowDelivery" value="设备返修发货"></text>
+		<text name="CompanyCustomerExpressDetail.Field2" value="转发工厂"></text>
+		<text name="CompanyCustomerExpressDetail.Field3" value="公司确认收货"></text>
+		<text name="CompanyFactoryExpressDetail" value="公司工厂快递信息"></text>
+		<text name="CompanyFactoryExpress" value="公司工厂快递信息"></text>
+		<text name="CompanyFactoryExpress.Field1" value="工厂货到登记"></text>
+		<text name="ReworkFlowDetail.Field1" value="添加维修描述"></text>
+		<text name="CompanyFactoryExpress.Field2" value="维修完成发回公司"></text>
+		<text name="CompanyFactoryExpress.Field3" value="公司确认收货"></text>
+
+		<text name="EmployeeDailyReportBalance" value="财务平账"></text>
+
+		<!--道闸停车场-->
+		<text name="ParkingIndex" value="控制台"></text>
+		<text name="MapShow" value="地图展示"></text>
+		<text name="YardManagement" value="车场管理"></text>
+		<text name="OperationsManagement" value="运营管理"></text>
+		<text name="FinancialManagement" value="财务管理"></text>
+		<text name="YardToMonitor" value="车场监控"></text>
+		<text name="VehicleManagement" value="车辆管理"></text>
+		<text name="ParkingInformation" value="停车场信息"></text>
+		<text name="EntryAndExitInformation" value="出入口信息"></text>
+		<text name="IllegalOpenSignoInformation" value="异常开闸信息"></text>
+		<text name="TollCollectorManagement" value="收费员管理"></text>
+		<text name="EmployeeSigns" value="收费员签到/签退"></text>
+		<text name="MonthlyVehicle" value="包月车辆"></text>
+		<text name="WhiteList" value="白名单"></text>
+		<text name="BlackList" value="黑名单"></text>
+
+		<!--排班管理-->
+		<text name="SchedulingSystem" value="排班系统"></text>
+		<text name="HolidaysManager" value="法定假日管理"></text>
+		<text name="LeaveAdministration" value="请假管理"></text>
+		<text name="SchedulePreferences" value="排班偏好"></text>
+		<text name="EmployeeCheck" value="收费员考勤"></text>
+		<text name="ScheduleAdjustment" value="排班调整"></text>
+		<text name="WorkScheme" value="上班计划"></text>
+
+		<!--排班管理-->
+		<text name="VideoEqManagement" value="高位摄像管理"></text>
+		<text name="VideoEqManagementStopData" value="有效订单"></text>
+		<text name="VideoEqProcessData" value="待审核订单"></text>
+		<text name="VideoEqInvalidData" value="无效订单"></text>
+		<text name="VideoSetting" value="高位视频"></text>
+		<text name="VideoSettingEdit" value="高位视频绑定"></text>
+		<text name="VideoEqManagementFaultData" value="报警数据"></text>
+		<text name="VideoGraph" value="高位摄像在线率"></text>
+
+		<text name="PatrolCarManagement" value="巡检车管理"></text>
+		<text name="VideoEqManagementStopData_s" value="巡检车停车数据"></text>
+		<text name="CarVideoSetting" value="巡检车信息"></text>
+		<text name="VideoEqManagementFaultData_s" value="巡检车异常数据"></text>
+
+
+		<text name="VideoPileManagement" value="视频桩管理"></text>
+		<text name="VideoPileManagementStopData" value="视频桩停车数据"></text>
+		<text name="VideoPileSetting" value="视频桩"></text>
+		<text name="VideoPileSettingEdit" value="视频桩绑定绑定"></text>
+		<text name="VideoPileFaultData" value="视频桩异常数据"></text>
+		<text name="VideoPileGraph" value="视频桩在线率"></text>
+
+		<text name="VideoRoadRollManagement" value="路牙机管理管理"></text>
+		<text name="VideoRRManagementStopData" value="路牙机停车数据"></text>
+		<text name="VideoRoadRollSetting" value="路牙机信息"></text>
+		<text name="VideoRoadRollSettingEdit" value="路牙机绑定"></text>
+		<text name="VideoRRFaultData" value="路牙机异常数据"></text>
+		<text name="VideoRoadRollGraph" value="路牙机在线率"></text>
+
+		<text name="VideoSPSetting" value="视频桩"></text>
+		<text name="VideoLYSetting" value="路牙机"></text>
+		<text name="VideoSPGraph" value="视频桩在线率"></text>
+		<text name="VideoSPSettingEdit" value="视频桩绑定"></text>
+		<text name="VideoLYSettingEdit" value="路牙机绑定"></text>
+
+		<text name="AdvancedFeaturesManager" value="高级功能"></text>
+		<text name="DailyCare" value="日常维护"></text>
+		<text name="ArrearageDetails" value="欠费追缴"></text>
+		<text name="BerthsManagementAll" value="泊位管理"></text>
+		<text name="CarVideoEdit" value="巡检车绑定"></text>
+		<text name="CarVideoGraph" value="巡检车在线率"></text>
+
+		<text name="PayLevelSettingData" value="支付优先级设置"></text>
+		<text name="ParamConfig" value="参数配置"></text>
+
+
+		<text name="VideoEqData" value="设备订单管理"></text>
+		<text name="GwData" value="高位视频订单"></text>
+		<text name="SpzData" value="视频桩订单"></text>
+		<text name="LyjData" value="路牙机订单"></text>
+		<text name="GwTimingPic" value="定时抓拍"></text>
+		<text name="YdpManage" value="诱导屏"></text>
+		<text name="FirestYdp" value="一级诱导屏"></text>
+		<text name="SecondYdp" value="二级诱导屏"></text>
+		<text name="ThirdYdp" value="三级诱导屏"></text>
+		<text name="TccManage" value="停车场"></text>
+		<text name="VideoSpEbInvalidDetails" value="有效订单"></text>
+		<text name="VideoSpEbProcessDetails" value="待审核订单"></text>
+		<text name="VideoSpEbValidDetails" value="无效订单"></text>
+		<text name="VideoSpEquipFaults" value="报警数据"></text>
+		<text name="AlarmData" value="报警数据"></text>
+		<text name="BindCar" value="巡检车绑定"></text>
+		<text name="PatrolCarIndex" value="巡检车"></text>
+		<text name="ValidOrder" value="有效数据"></text>
+		<text name="InvalidOrder" value="无效数据"></text>
+		<text name="ExamineOrder" value="待审核订单"></text>
+		<text name="PatrolCarOrder" value="巡检车订单"></text>
+		<text name="CustomerOpinion" value="意见反馈"></text>
+		<text name="OverTimeOrder" value="超时订单"></text>
+
+		
+	</texts>
+</localizationDictionary>

@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8B6EB539-9ADA-44CC-A741-22F4271D6430}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>F2.SystemWork</RootNamespace>
+    <AssemblyName>F2.SystemWork</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IBatisNet.Common">
+      <HintPath>..\packages\IBatisNet.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="IBatisNet.DataMapper">
+      <HintPath>..\packages\IBatisNet.DataMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Daos\OpinionDao.cs" />
+    <Compile Include="Daos\CouponsDao.cs" />
+    <Compile Include="Daos\CarVideoDao.cs" />
+    <Compile Include="Daos\TUserDao.cs" />
+    <Compile Include="Daos\VideoDao.cs" />
+    <Compile Include="Models\ArrearageParamModel.cs" />
+    <Compile Include="Models\CarVideoParamModel.cs" />
+    <Compile Include="Models\CaptureQuery.cs" />
+    <Compile Include="Models\BerthsecView.cs" />
+    <Compile Include="Models\TUserQuery.cs" />
+    <Compile Include="Models\PatrolCarModel.cs" />
+    <Compile Include="Models\VideoQuery.cs" />
+    <Compile Include="Models\VideoBerthModel.cs" />
+    <Compile Include="Models\VideoEquipsModel.cs" />
+    <Compile Include="Models\ParamModel.cs" />
+    <Compile Include="Models\VideoEqBusinessDetailModel.cs" />
+    <Compile Include="Models\VideoGraphModel.cs" />
+    <Compile Include="Models\VideoGraphParamModel.cs" />
+    <Compile Include="Models\VideoGWModel.cs" />
+    <Compile Include="Models\VideoSettingModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\AlarmDataQuery.cs" />
+    <Compile Include="Query\CouponsDetailQuery.cs" />
+    <Compile Include="Query\OpinionHandleQuery.cs" />
+    <Compile Include="Query\OpinionListQuery.cs" />
+    <Compile Include="Query\GrantCouponsQuery.cs" />
+    <Compile Include="Query\InsertPlanQuery.cs" />
+    <Compile Include="Query\DeletePatrolBerhsQuery.cs" />
+    <Compile Include="Query\CouponsQueryList.cs" />
+    <Compile Include="Query\PatrolBerthsQuery.cs" />
+    <Compile Include="Query\BindingCarQuery.cs" />
+    <Compile Include="Query\PartolListQuery.cs" />
+    <Compile Include="Services\CarVideoService.cs" />
+    <Compile Include="Services\CommonService.cs" />
+    <Compile Include="Services\impl\OpinionServiceImpl.cs" />
+    <Compile Include="Services\OpinionService.cs" />
+    <Compile Include="Services\impl\CouponsServiceImpl.cs" />
+    <Compile Include="Services\impl\PatrolCarServiceImpl.cs" />
+    <Compile Include="Services\CouponsService.cs" />
+    <Compile Include="Services\PatrolCarService.cs" />
+    <Compile Include="Services\VideoService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\P4.Application\F2.Application.csproj">
+      <Project>{EDF5D964-4C0F-4F19-B674-58A38A5E5401}</Project>
+      <Name>F2.Application</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

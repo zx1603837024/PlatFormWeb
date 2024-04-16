@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="en">
+  <texts>
+    <text name="Login.Title" value="Page" />
+    <text name="Login.CompanyNameRed" value="NJ FxIntel"></text>
+    <text name="Login.CompanyNameWhite" value="Stop Car"></text>
+    <text name="CompanyName" value="FxIntel.info"></text>
+    <text name="CompanyInfo" value="FxIntel.info"></text>
+    <text name="Version" value="V2.0"></text>
+
+    <text name="Control" value="Control"></text>
+    <text name="SystemManagement" value="SystemManagement"></text>
+    <text name="SystemBaseData" value="SystemBaseData"></text>
+    <text name="EnterpriseManagement" value="EnterpriseManagement"></text>
+    <text name="DictionaryTypeManagement" value="DictionaryTypeManagement"></text>
+    <text name="DictionaryValueManagement" value="DictionaryValueManagement"></text>
+    <text name="SystemParamSetting" value="SystemParamSetting"></text>
+    <text name="TimeBucketParkReport" value="TimeBucketParkReport"></text>
+    <text name="TBucketBerthsecStaticR" value="TBucketBerthsecStaticR"></text>
+    <text name="DynamicAccountRecordsReport" value="DynamicAccountRecordsReport"></text>
+    <text name="DynamicAccountOnlyMonth" value="DynamicAccountOnlyMonth"></text>
+    <text name="WorkGroupReport" value="WorkGroupReport"></text>
+    <text name="MonthBerthsUse" value="MonthBerthsUse"></text>
+    <text name="MonthBerthsUserOnlyMonth" value="MonthBerthsUserOnlyMonth"></text>
+    <text name="SensorGraph" value="SensorGraph"></text>
+    
+    <text name="SystemNotice" value="SystemNotice"></text>
+    <text name="EnterpriseSetting" value="EnterpriseSetting"></text>
+    <text name="OrganizationManagement" value="OrganizationManagement"></text>
+    <text name="UsersManagement" value="UsersManagement"></text>
+    <text name="RolesManagement" value="RolesManagement"></text>
+    <text name="RolesDataPermissionsManagement" value="RolesDataPermissionsManagement"></text>
+    <text name="MenusManagement" value="MenusManagement"></text>
+    <text name="RolesPermissionsManagement" value="RolesPermissionsManagement"></text>
+    <text name="TenantsManagement" value="TenantsManagement"></text>
+    <text name="CompanyManagement" value="CompanyManagement"></text>
+    <text name="CompanySetting" value="CompanySetting"></text>
+    <text name="SystemSetting" value="SystemSetting"></text>
+    <text name="WorkflowDesignManagement" value="WorkflowDesignManagement"></text>
+    <text name="WorkflowsManagement" value="WorkflowsManagement"></text>
+    <text name="WorkflowSetting" value="WorkflowSetting"></text>
+
+    <text name="PayManagement" value="PayManagement"></text>
+    <text name="MoneCar" value="MoneCar"></text>
+    <text name="CreditCardDetails" value="CreditCardDetails"></text>
+
+    <text name="InducibleToADs" value="InducibleToAD"></text>
+    <text name="SpecialLists" value="SpecialLists"></text>
+
+
+    <text name="BusinessManagement" value="BusinessManagement"></text>
+    <text name="BusinessBaseData" value="BusinessBaseData"></text>
+    <text name="RatesManagement" value="RatesManagement"></text>
+    <text name="PrivilegeManagement" value="PrivilegeManagement"></text>
+    <text name="MonthCarsManagement" value="MonthCarsManagement"></text>
+    <text name="RegionManagement" value="RegionManagement"></text>
+    <text name="ParkManagement" value="ParkManagement"></text>
+    <text name="BerthsecManagement" value="BerthsecManagement"></text>
+    <text name="BerthManagement" value="BerthManagement"></text>
+    <text name="InspectorManagement" value="InspectorManagement"></text>
+    <text name="WorkgroupManagement" value="WorkgroupManagement"></text>
+    <text name="EmployeeManagement" value="EmployeeManagement"></text>
+    <text name="ScheduleManage" value="排班管理"></text>
+    <text name="SpecialCarManagement" value="SpecialCarManagement"></text>
+    <text name="WhiteManagement" value="WhiteManagement"></text>
+    <text name="BlackManagement" value="BlackManagement"></text>
+    <text name="MonthCars" value="MonthCars"></text>
+    <text name="MonthAbnormaLCar" value="MonthAbnormaLCar"></text>
+    <text name="Sensors" value="SensorsMananger"></text>
+    <text name="Transmitters" value="Transmitters"></text>
+    <text name="PDAEquipment" value="PDAEquipment"></text>
+    <text name="PDAConfigure" value="PDA配置"></text>
+    <text name="MonthCars.Field1" value="导出"></text>
+    <text name="EquipmentVersion" value="PDA软件版本管理"></text>
+    <text name="PDAMaintenance" value="PDAMaintenance"></text>
+    <text name="SmsRecordManagement" value="SmsRecordManagement"></text>
+    <text name="EquipmentMaintenances" value="EquipmentMaintenances"></text>
+
+    <text name="EmployeeGps" value="收费员地图"></text>
+
+    <text name="SystemLog" value="SystemLog"></text>
+    <text name="DataLog" value="DataLog"></text>
+    <text name="OperationLog" value="OperationLog"></text>
+    <text name="AuditLog" value="AuditLog"></text>
+    <text name="EmployeeLog" value="EmployeeLog"></text>
+
+    <text name="ReportAnalysis" value="ReportAnalysis"></text>
+    <text name="DynamicReport" value="DynamicReport"></text>
+    <text name="ParkChargesDayReport" value="ParkChargesDayReport"></text>
+    <text name="EmployeeChargesDayReport" value="EmployeeChargesDayReport"></text>
+	  <text name="ChargeRateDayReport" value="ChargeRateDayReport"></text>
+    <text name="StaticReport" value="StaticReport"></text>
+    <text name="BerthsecReport" value="BerthsecReport"></text>
+    <text name="ParkReport" value="ParkReport"></text>
+    <text name="EmployeeReport" value="EmployeeReport"></text>
+    <text name="OperatorsCompanyReport" value="OperatorsCompanyReport"></text>
+
+    <text name="FacilityManagement" value="FacilityManagement"></text>
+    <text name="BTSManagement" value="BTSManagement"></text>
+    <text name="InspectionManagement" value="InspectionManagement"></text>
+    <text name="PDAManagement" value="PDAManagement"></text>
+    <text name="InspectionConfiguration" value="InspectionConfiguration"></text>
+    <text name="InspectionCommLog" value="InspectionCommLog"></text>
+
+    <text name="InspectionStopData" value="InspectionStopData"></text>
+    <text name="InspectionSetting" value="InspectionSetting"></text>
+    <text name="BTSSetting" value="BTSSetting"></text>
+    <text name="ManageTransmitter" value="ManageTransmitter"></text>
+
+    <text name="ParkManagementMap" value="ParkManagementMap"></text>
+
+    <text name="Personneldispatch" value="Personneldispatch"></text>
+    <text name="InspectorTasks" value="InspectorTasks"></text>
+    <text name="InspectorTaskFeedbacks" value="InspectorTaskFeedbacks"></text>
+
+
+    <text name="BTSConfiguration" value="BTSConfiguration"></text>
+    <text name="BTSCommLog" value="BTSCommLog"></text>
+    <text name="AppManagement" value="AppManagement"></text>
+    <text name="MicroPublic" value="MicroPublic"></text>
+    <text name="App" value="App"></text>
+
+    <text name="GuidanceSystem" value="GuidanceSystem"></text>
+    <text name="InducibleMap" value="InducibleMap"></text>
+    <text name="ParameterSetting" value="ParameterSetting"></text>
+
+
+    <text name="DataCenter" value="DataCenter"></text>
+    <text name="EscapeDetails" value="EscapeDetails"></text>
+    <text name="CommandCenter" value="指挥中心"></text>
+    <text name="SubstantialOrder" value="大额订单"></text>
+    <text name="EscapeRank" value="欠费排名"></text>
+
+    <text name="Insert" value="Insert"></text>
+    <text name="Delete" value="Delete"></text>
+    <text name="Update" value="Update"></text>
+    <text name="Info" value="ViewInfo"></text>
+    <text name="Search" value="Search"></text>
+    <text name="Refresh" value="Refresh"></text>
+
+    <text name="UsersManagement.Field1" value="功能权限"></text>
+    <text name="UsersManagement.Field2" value="数据权限"></text>
+    <text name="RolesManagement.Field1" value="功能权限"></text>
+    <text name="RolesManagement.Field2" value="数据权限"></text>
+
+    <text name="EscapeRank.Field1" value="导出"></text>
+    
+    <text name="MoneCar.Field1" value="充值"></text>
+    <text name="MoneCar.Field2" value="解除绑定"></text>
+    <text name="MoneCar.Field3" value="激活"></text>
+    <text name="BerthsecManagement.Field1" value="批量签退"></text>
+    <text name="WorkgroupManagement.Field1" value="增加费率"></text>
+    <text name="WorkgroupManagement.Field2" value="修改费率"></text>
+    <text name="EmployeeManagement.Field1" value="批量签退"></text>
+    <text name="UsersManagement.Field3" value="初始化密码"></text>
+    <text name="BerthsecManagement.Field2" value="泊位分配"></text>
+    <text name="EscapeDetails.Field1" value="导出明细"></text>
+    <text name="BusinessDetails.Field1" value="导出明细"></text>
+    <text name="BusinessDetails.Field2" value="恢复欠费"></text>
+    <text name="EditionManager.Field1" value="权限管理"></text>
+    <text name="RatesManagement.Field1" value="新增费率"></text>
+    <text name="RatesManagement.Field2" value="更新费率"></text>
+    <text name="BerthManagement.Field1" value="解绑地磁"></text>
+    <text name="TransmitterMonitor.Field1" value="新增"></text>
+    <text name="TransmitterMonitor.Field2" value="修改"></text>
+    <text name="CardSettlement.Field1" value="记录补传"></text>
+    <text name="App.Field1" value="锁定"></text>
+
+    <text name="FAQManagement" value="FAQ"></text>
+    <text name="TransmitterMonitor" value="TransmitterMonitor"></text>
+    <text name="BerthMonitor" value="BerthMonitor"></text>
+    <text name="TransmitterMap" value="TransmitterMap"></text>
+    <text name="ParkInfoMap" value="ParkInfoMap"></text>
+    <text name="Tenants" value=""></text>
+    <text name="Roles" value=""></text>
+    <text name="Users" value=""></text>
+    <text name="UserLogins" value=""></text>
+    <text name="UserRoles" value=""></text>
+    <text name="Permissions" value=""></text>
+    <text name="RolePermissions" value=""></text>
+    <text name="UserPermissions" value=""></text>
+    <text name="DataPermissions" value=""></text>
+    <text name="UserDataPermissions" value=""></text>
+    <text name="RoleDataPermissions" value=""></text>
+    <text name="Settings" value=""></text>
+    <text name="AuditLogs" value=""></text>
+    <text name="Datalogs" value=""></text>
+    <text name="DataLogItems" value=""></text>
+    <text name="OperationLogs" value=""></text>
+    <text name="Menus" value=""></text>
+    <text name="Messages" value=""></text>
+    <text name="Notices" value=""></text>
+    <text name="Tasks" value=""></text>
+    <text name="Icons" value=""></text>
+    <text name="Companys" value=""></text>
+    <text name="OtherAccounts" value=""></text>
+
+    <text name="RechargeRuleManager" value="充值规则"></text>
+    
+    <text name="OtherPlateNumbers" value=""></text>
+    <text name="Smss" value=""></text>
+    <text name="Parks" value=""></text>
+    <text name="Regions" value=""></text>
+    <text name="Berths" value=""></text>
+    <text name="DictionaryTypes" value=""></text>
+    <text name="DictionaryValues" value=""></text>
+    <text name="OperatorsCompanys" value=""></text>
+    <text name="BusinessDetails" value=""></text>
+    <text name="Organizations" value=""></text>
+    <text name="Employees" value=""></text>
+    <text name="EmployeeChecks" value=""></text>
+    <text name="InspectorChecks" value=""></text>
+    <text name="OperationPermissions" value=""></text>
+    <text name="UserTrials" value=""></text>
+    <text name="Inspectors" value=""></text>
+    <text name="Berthsecs" value=""></text>
+    <text name="Jobs" value=""></text>
+    <text name="MonthlyCars" value=""></text>
+    <text name="MonthlyCarHistorys" value=""></text>
+    <text name="MonthlyCarAbnormals" value=""></text>
+    <text name="Rates" value=""></text>
+    <text name="WhiteLists" value=""></text>
+    <text name="BlackLists" value=""></text>
+    <text name="WorkGroups" value=""></text>
+    <text name="WorkGroupEmployees" value=""></text>
+    <text name="WorkGroupBerthsecs" value=""></text>
+    <text name="Inducibles" values="Inducibles"></text>
+    <text name="InducibleToParks" values="InducibleToParks"></text>
+    <text name="GeomagnetismEquip" value="GeomagnetismEquip"></text>
+    <text name="TestPage" value="TestPage"></text>
+    <text name="InspectionMonitor" value="InspectionMonitor"></text>
+    <text name="Welcome" value="Welcome"></text>
+    <text name="UserSettingManagement" value="Setting"></text>
+    <text name="ProfileInfo" value="ProfileInfo"></text>
+    <text name="UserInbox" value="UserInbox"></text>
+    <text name="UserTrial" value="试用管理"></text>
+
+
+    <text name="InspectorLocus" value="巡查员轨迹"></text>
+    <text name="CarStopLocus" value="停车轨迹"></text>
+    <text name="EmployeeLocus" value="收费员轨迹"></text>
+
+
+    <text name="WeixinManager" value="微信管理"></text>
+    <text name="WeixinConfig" value="微信公众号"></text>
+    <text name="WeixinUser" value="微信关注用户"></text>
+    <text name="WeixinTUser" value="微信注册用户"></text>
+    <text name="WeixinMenu" value="微信菜单管理"></text>
+    <text name="WeixinMessage" value="微信消息管理"></text>
+    <text name="WeixinHistoryMsg" value="微信历史消息"></text>
+    <text name="WeixinOrders" value="微信支付流水"></text>
+    <text name="WeixinMonthRule" value="车辆包月规则"></text>
+    <text name="WeixinRechargeRule" value="账号充值规则"></text>
+    <text name="IpassCardCode" value="错误对照码"></text>
+    
+    <text name="DecisionAnalysis" value="决策分析"></text>
+    <text name="DevOpsDecision" value="运维决策"></text>
+    <text name="FeesDecision" value="收费决策"></text>
+    <text name="UtilizationHour" value="泊位段分析"></text>
+	  
+	<text name="EmployeeDailyReportBalance" value="财务平账"></text>
+
+    <!--道闸停车场-->
+    <text name="ParkingIndex" value="控制台"></text>
+    
+    <text name="WebTasks" value="Tasks"></text>
+    <text name="WebNotices" value="Notices"></text>
+    <text name="WebMessages" value="Messages"></text>
+    
+    <text name="Lock" value="Lock Screan"></text>
+    <text name="Exit" value="Exit"></text>
+
+	<text name="VideoSetting" value="VideoSetting"></text>
+	<text name="VideoSettingEdit" value="VideoSettingEdit"></text>
+	<text name="VideoGraph" value="VideoGraph"></text>
+
+	<text name="VideoSPSetting" value="VideoSPSetting"></text>
+	<text name="VideoLYSetting" value="VideoLYSetting"></text>
+	<text name="VideoSPGraph" value="VideoSPGraph"></text>
+	<text name="VideoSPSettingEdit" value="VideoSPSettingEdit"></text>
+	<text name="VideoLYSettingEdit" value="VideoLYSettingEdit"></text>
+
+	<text name="AdvancedFeaturesManager" value="AdvancedFeaturesManager"></text>
+	<text name="DailyCare" value="DailyCare"></text>
+	<text name="ArrearageDetails" value="ArrearageDetails"></text>
+  </texts>
+</localizationDictionary>

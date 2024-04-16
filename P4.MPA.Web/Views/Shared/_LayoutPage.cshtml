@@ -1,0 +1,622 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - 互联网设备数据管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- basic styles -->
+    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/css/font-awesome.min.css" />
+
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="../../assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!-- page specific plugin styles -->
+    <!-- fonts -->
+
+    <link rel="stylesheet" href="~/assets/font/fontawesome-webfont.woff" />
+
+    <link rel="stylesheet" href="~/assets/css/jquery-ui-1.10.3.full.min.css" />
+
+
+    <link href="~/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/ui.jqgrid.css" />
+
+
+    <!--<link rel="stylesheet" href="https://fonts.css.network/css?family=Open+Sans:400,300" />-->
+    <!-- ace styles -->
+    @RenderSection("styles", required: false)
+
+    <link rel="stylesheet" href="~/assets/css/ace.min.css" />
+    <link rel="stylesheet" href="~/assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="~/assets/css/ace-skins.min.css" />
+
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="../../assets/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+    <style type="text/css">
+        .main-content {
+            margin-left: 0;
+        }
+    </style>
+    <script src="~/assets/js/ace-extra.min.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="../../assets/js/html5shiv.js"></script>
+    <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="../../assets/js/jquery-2.0.3.min.js"></script>
+
+    @*右下角提示栏-begin*@
+    <script src="~/assets/global/plugins/bootstrap-toastr/toastr.js" type="text/javascript"></script>
+    <script src="~/assets/global/plugins/bootstrap-toastr/p4.toastr.js" type="text/javascript"></script>
+    <link href="~/assets/global/plugins/bootstrap-toastr/toastr.css" rel="stylesheet" />
+    @*右下角提示栏-end*@
+
+
+    @*提示框-begin*@
+    <script src="~/assets/global/plugins/jquery-sweetalert/sweetalert-dev.js"></script>
+    <link rel="stylesheet" href="~/assets/global/plugins/jquery-sweetalert/sweetalert.css" />
+    @*提示框-end*@
+
+    <script type="text/javascript">
+        window.add = false;
+        window.edit = false;
+        window.delete = false;
+        window.search = false;
+        window.refresh = false;
+        window.view = false;
+        window.rowedit = true;
+        window.field1 = false;
+        window.field2 = false;
+        window.field3 = false;
+        window.field4 = false;
+        @ViewBag.TenantField
+        @ViewBag.Permissions
+        if (window.edit == true && window.delete == true) {
+            window.rowedit = false;
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="main-container" id="main-container">
+        <div class="main-container-inner">
+            <div class="main-content">
+
+                <div class="breadcrumbs" id="breadcrumbs">
+                    <script type="text/javascript">
+                        try { ace.settings.check('breadcrumbs', 'fixed') } catch (e) { }
+                    </script>
+
+                    @Html.Action("Active", "Layout", new { activeMenu = ViewBag.ActiveMenu })
+
+                    <div class="nav-search" id="nav-search">
+                        <form class="form-search">
+                            <span class="input-icon">
+                                <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                                <i class="icon-search nav-search-icon"></i>
+                            </span>
+                        </form>
+                    </div><!-- 导航搜索栏 -->
+                </div>
+
+
+                <div class="page-content">
+                    @*<div class="page-header">
+                            <h1>
+                                @L(ViewBag.ActiveMenu)
+                                <small>
+                                    <i class="icon-double-angle-right"></i>
+                                    @L(ViewBag.ActiveMenu)
+                                </small>
+                            </h1>
+                        </div>*@<!-- /.页面-头部功能说明 -->
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!-- PAGE CONTENT BEGINS -->
+                            @*<div class="alert alert-info">
+                                    <i class="icon-hand-right"></i>
+
+                                    单次提醒功能
+                                    <button class="close" data-dismiss="alert">
+                                        <i class="icon-remove"></i>
+                                    </button>
+                                </div>*@
+                            @RenderBody()
+                            <!-- PAGE CONTENT ENDS -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.page-content -->
+
+
+
+
+            </div><!-- /内容数据 -->
+
+        </div><!-- /.main-container-inner -->
+    </div><!-- /.main-container -->
+    <!-- basic scripts -->
+    <!--[if !IE]> -->
+
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='../../assets/js/jquery-2.0.3.min.js'>" + "<" + "script>");
+    </script>
+    @Html.Action("ProfileSetting", "Layout")
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+     window.jQuery || document.write("<script src='../../assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+    </script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='../../assets/js/jquery.mobile.custom.min.js'>" + "<" + "script>");
+    </script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/typeahead-bs2.min.js"></script>
+
+    <!-- page specific plugin scripts -->
+    <!--[if lte IE 8]>
+      <script src="../../assets/js/excanvas.min.js"></script>
+    <![endif]-->
+    @RenderSection("scriptsindex", required: false)
+
+    <!-- ace scripts -->
+
+    <script src="../../assets/js/ace-elements.min.js"></script>
+    <script src="../../assets/js/ace.min.js"></script>
+
+
+    <!-- inline scripts related to this page(jqgrid) -->
+    <script src="~/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" charset="gb2312"></script>
+    <script src="~/assets/js/jqGrid/jquery.jqGrid.min.js"></script>
+    <script src="~/assets/js/jqGrid/i18n/grid.locale-zh-CN.js"></script>
+    <script src="~/assets/js/layer/3.1.1/layer.js"></script>
+
+    @Html.Action("Signalr", "Layout")
+
+    <!-- inline scripts related to this page(grid) -->
+    @RenderSection("scripts", required: false)
+
+    <script>
+        //jQuery(function ($) {
+        //    var bind = function () {
+        //        $(".nav.nav-list").find("a[href]").unbind();
+        //        $(".nav.nav-list").find("a[href]").click(function () {
+        //            event.preventDefault();
+        //            var dom = $(this);
+        //            var href = dom.attr("href");
+        //            if (href) {
+        //                $("body").load(href, {}, function (res) {
+        //                    $("body").children().remove();
+        //                    $("body").html(res);
+        //                    setTimeout(function () {
+        //                        bind();
+        //                    }, 1000);
+        //                });
+        //            }
+        //        })
+        //    };
+        //    bind();
+        //});
+    </script>
+
+    <script type="text/javascript" id="jqGridScript">
+    jQuery(function ($) {
+        var grid_selector = "#grid-table";
+        var pager_selector = "#grid-pager";
+
+        function GetDictionaryValue(TypeCode)
+        {
+             $.ajax({
+                         type: "Post",
+                         url: '../Dictionarys/GetDictionartValueList',
+                         async:false,
+                         data: {
+                             TypeCode: TypeCode
+                         }, success: function (data) {
+                            window.returnval = eval(data);
+                         }, error: function () {
+                            return 'Error';
+                         }
+            });
+        }
+
+        function TimeStamp()
+        {
+            return new Date().getTime();
+        }
+
+        function GetDictionaryValue(TypeCode) {
+            $.ajax({
+                type: "Post",
+                url: '../Dictionarys/GetDictionartValueList',
+                async: false,
+                data: {
+                    TypeCode: TypeCode
+                }, success: function (data) {
+                    window.returnval = eval(data);
+                }, error: function () {
+                    return 'Error';
+                }
+            });
+        }
+
+
+        //grid代码片段
+        @RenderSection("scriptsgrid", required: false)
+        //grid数据格式化(是,否)
+        function YesAndNo(cellvalue, options)
+        {
+            //if (cellvalue == true)
+            //    return "<span class='badge badge-success'>是</span>";
+            //else
+            //    return "<span class='badge badge-warning'>否</span>";
+
+            if (cellvalue == true)
+                return "是";
+            else
+                return "否";
+        }
+
+        //上班类型
+        function WorkStatus(cellvalue, options) {
+            if (cellvalue == 1)
+                return "早班";
+            else if (cellvalue == 2)
+                return "中班";
+            else
+            return "晚班";
+        }
+        //进出
+        function ChannnelDirection(cellvalue, options) {
+            if (cellvalue == "1")
+                return "进";
+            else
+                return "出";
+        }
+
+        function PlateNumber(cellvalue, options) {
+            var reg = /^([京津晋冀蒙辽吉黑沪苏浙皖闽赣鲁豫鄂湘粤桂琼渝川贵云藏陕甘青宁新][ABCDEFGHJKLMNPQRSTUVWXY][1-9DF][1-9ABCDEFGHJKLMNPQRSTUVWXYZ]\d{3}[1-9DF]|[京津晋冀蒙辽吉黑沪苏浙皖闽赣鲁豫鄂湘粤桂琼渝川贵云藏陕甘青宁新][ABCDEFGHJKLMNPQRSTUVWXY][\dABCDEFGHJKLNMxPQRSTUVWXYZ]{5})$/;
+            if (reg.test(cellvalue)) {
+                return cellvalue;
+            }
+            else {
+                return "临停车";
+            }
+        }
+
+        function CarType(cellvalue, options) {
+            if (cellvalue == "1") {
+                return "小车"
+            }
+            if (cellvalue == "2") {
+                return "大车"
+            }
+            if (cellvalue == "3") {
+                return "摩托车"
+            }
+            if (cellvalue == "4") {
+                return "小型新能源车"
+            }
+            if (cellvalue == "5") {
+                return "大型新能源车"
+            }
+            if (cellvalue == "6") {
+                return "超大车"
+            }
+            return "";
+        }
+
+        //(有,无)
+        function HaveAndNo(cellvalue, options)
+        {
+            if (cellvalue == true)
+                return "有";
+            else
+                return "无";
+        }
+        //(男,女)
+        function ManAndWomen(cellvalue, options) {
+            if (cellvalue == true)
+                return "男";
+            else
+                return "女";
+        }
+
+        $(window).on('resize.jqGrid', function () {
+            $(grid_selector).jqGrid('setGridWidth', $(".page-content").width());
+            //$(grid_selector).jqGrid('setGridHeight', $(".page-content").height() - 400);
+        });
+
+
+        function aceSwitch(cellvalue, options, cell) {
+            setTimeout(function () {
+                $(cell).find('input[type=checkbox]')
+                        .wrap('<label class="inline" />')
+                    .addClass('ace ace-switch ace-switch-5')
+                    .after('<span class="lbl"></span>');
+            }, 0);
+        }
+
+        //enable datepicker
+        function pickDate(cellvalue, options, cell) {
+            setTimeout(function () {
+                $(cell).find('input[type=text]')
+                        .datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true });
+            }, 0);
+        }
+
+        function pickDay(cellvalue, options, cell) {
+            setTimeout(function () {
+                $(cell).find('input[type=text]')
+                    .datetimepicker({ format: 'yyyy-mm-dd',minView:2, autoclose: true });
+            }, 0);
+        }
+
+        function dayPick(elem) {
+            jQuery(elem).datetimepicker({ format: 'yyyy-mm-dd', minView: 2, autoclose: true  });
+        }
+
+        function datePick(elem)
+        {
+            jQuery(elem).datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true });
+        }
+
+        //navButtons
+        jQuery(grid_selector).jqGrid('navGrid', pager_selector,
+            { 	//navbar options
+                edit: window.edit,
+                editicon: 'icon-pencil blue',
+                add: window.add,
+                addicon: 'icon-plus-sign purple',
+                del: window.delete,
+                delicon: 'icon-trash red',
+                search: window.search,
+                searchicon: 'icon-search orange',
+                refresh: window.refresh,
+                refreshicon: 'icon-refresh green',
+                view: window.view,
+                viewicon: 'icon-zoom-in grey'
+            },
+            {
+                //edit record form
+                closeAfterEdit: true,
+                //reloadAfterSubmit: false //是否重新加载表格
+                recreateForm: true,
+                beforeShowForm: function (e) {
+                    var form = $(e[0]);
+                    form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />');
+                    style_edit_form(form);
+                },
+                afterSubmit: function (response, postdata) {//处理ajax返回值
+                    var temp = eval("(" + response.responseText + ")");
+                    if (temp.Success == true) {
+                        return [true, ''];
+                    }
+                    else {
+
+                        return [false, temp.Error.Message];
+                    }
+                }
+            },
+            {
+                //new record form
+                closeAfterAdd: true,
+                recreateForm: true,
+                viewPagerButtons: false,
+                beforeShowForm: function (e) {
+                    var form = $(e[0]);
+                    form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />')
+                    style_edit_form(form);
+                },
+
+                afterSubmit: function (response, postdata) { //处理ajax返回值
+                    var temp = eval("(" + response.responseText + ")");
+                    if (temp.Success == true) {
+                        return [true, ''];
+                    }
+                    else {
+
+                        return [false, temp.Error.Message];
+                    }
+                }
+            },
+            {
+                //delete record form
+                recreateForm: true,
+                beforeShowForm: function (e) {
+                    var form = $(e[0]);
+                    if (form.data('styled')) return false;
+
+                    form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />')
+                    style_delete_form(form);
+
+                    form.data('styled', true);
+                },
+                afterSubmit: function (response, postdata) {//处理ajax返回值
+
+                    var temp = eval("(" + response.responseText + ")");
+                    if (temp.Success == true) {
+                        //alert('123');
+                        return [true, ''];
+                    }
+                    else {
+                       // alert('456');
+                        return [false, temp.Error.Message];
+                    }
+                }
+            },
+             {
+                 //search form
+                 recreateForm: true,
+                 afterShowSearch: function (e) {
+                     var form = $(e[0]);
+                     form.closest('.ui-jqdialog').find('.ui-jqdialog-title').wrap('<div class="widget-header" />')
+                     style_search_form(form);
+                 },
+                 afterRedraw: function () {
+                     style_search_filters($(this));
+                 },
+                 multipleSearch: true
+                 /*
+                 multipleGroup:true,//复杂查询
+                 showQuery: true    //显示查询
+                 */
+             },{
+                //view record form
+                recreateForm: true,
+                beforeShowForm: function (e) {
+                    var form = $(e[0]);
+                    form.closest('.ui-jqdialog').find('.ui-jqdialog-title').wrap('<div class="widget-header" />')
+                }
+            }
+        )
+
+          //grid代码片段
+        @RenderSection("scriptsbuttonbyself", required: false)
+
+
+        function style_edit_form(form) {
+
+            form.find('input[name=BeginTime]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true })
+                .end().find('input[name=stock]')
+                      .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+            form.find('input[name=EndTime]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true })
+               .end().find('input[name=stock]')
+                     .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+
+            form.find('input[name=InTime]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true })
+               .end().find('input[name=stock]')
+                     .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+
+            form.find('input[name=CarInTimeString]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true })
+             .end().find('input[name=stock]')
+                   .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+            form.find('input[name=gmt_payment]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true })
+                         .end().find('input[name=stock]')
+                               .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+
+
+            form.find('input[name=Birthday]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true })
+               .end().find('input[name=stock]')
+                     .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+            form.find('input[name=CreationTime]').datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, todayBtn: true})
+             .end().find('input[name=stock]')
+                   .addClass('ace ace-switch ace-switch-5').wrap('<label class="inline" />').after('<span class="lbl"></span>');
+
+            //update buttons classes
+            var buttons = form.next().find('.EditButton .fm-button');
+            buttons.addClass('btn btn-sm').find('[class*="-icon"]').remove();//ui-icon, s-icon
+            buttons.eq(0).addClass('btn-primary').prepend('<i class="icon-ok"></i>');
+            buttons.eq(1).prepend('<i class="icon-remove"></i>')
+
+            buttons = form.next().find('.navButton a');
+            buttons.find('.ui-icon').remove();
+            buttons.eq(0).append('<i class="icon-chevron-left"></i>');
+            buttons.eq(1).append('<i class="icon-chevron-right"></i>');
+        }
+
+        function style_delete_form(form) {
+            var buttons = form.next().find('.EditButton .fm-button');
+            buttons.addClass('btn btn-sm').find('[class*="-icon"]').remove();//ui-icon, s-icon
+            buttons.eq(0).addClass('btn-danger').prepend('<i class="icon-trash"></i>');
+            buttons.eq(1).prepend('<i class="icon-remove"></i>')
+        }
+
+        function style_search_filters(form) {
+            form.find('.delete-rule').val('X');
+            form.find('.add-rule').addClass('btn btn-xs btn-primary');
+            form.find('.add-group').addClass('btn btn-xs btn-success');
+            form.find('.delete-group').addClass('btn btn-xs btn-danger');
+        }
+        function style_search_form(form) {
+            var dialog = form.closest('.ui-jqdialog');
+            var buttons = dialog.find('.EditTable');
+            buttons.find('.EditButton a[id*="_reset"]').addClass('btn btn-sm btn-info').find('.ui-icon').attr('class', 'icon-retweet');
+            buttons.find('.EditButton a[id*="_query"]').addClass('btn btn-sm btn-inverse').find('.ui-icon').attr('class', 'icon-comment-alt');
+            buttons.find('.EditButton a[id*="_search"]').addClass('btn btn-sm btn-purple').find('.ui-icon').attr('class', 'icon-search');
+        }
+
+        function beforeDeleteCallback(e) {
+            var form = $(e[0]);
+            if (form.data('styled')) return false;
+            form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />')
+            style_delete_form(form);
+            form.data('styled', true);
+        }
+
+        function beforeEditCallback(e) {
+            var form = $(e[0]);
+            form.closest('.ui-jqdialog').find('.ui-jqdialog-titlebar').wrapInner('<div class="widget-header" />')
+            style_edit_form(form);
+        }
+
+        function styleCheckbox(table) {
+            $(table).find('input:checkbox').addClass('ace')
+            .wrap('<label />')
+            .after('<span class="lbl align-top" />')
+            $('.ui-jqgrid-labels th[id*="_cb"]:first-child')
+            .find('input.cbox[type=checkbox]').addClass('ace')
+            .wrap('<label />').after('<span class="lbl align-top" />');
+        }
+
+
+        //unlike navButtons icons, action icons in rows seem to be hard-coded
+        //you can change them like this in here if you want
+        function updateActionIcons(table) {
+
+            var replacement =
+            {
+                'ui-icon-pencil': 'icon-pencil blue',
+                'ui-icon-trash': 'icon-trash red',
+                'ui-icon-disk': 'icon-ok green',
+                'ui-icon-cancel': 'icon-remove red'
+            };
+            $(table).find('.ui-pg-div span.ui-icon').each(function () {
+                var icon = $(this);
+                var $class = $.trim(icon.attr('class').replace('ui-icon', ''));
+                if ($class in replacement) icon.attr('class', 'ui-icon ' + replacement[$class]);
+            });
+        }
+
+        //replace icons with FontAwesome icons like above
+        function updatePagerIcons(table) {
+            var replacement =
+            {
+                'ui-icon-seek-first': 'icon-double-angle-left bigger-140',
+                'ui-icon-seek-prev': 'icon-angle-left bigger-140',
+                'ui-icon-seek-next': 'icon-angle-right bigger-140',
+                'ui-icon-seek-end': 'icon-double-angle-right bigger-140'
+            };
+            $('.ui-pg-table:not(.navtable) > tbody > tr > .ui-pg-button > .ui-icon').each(function () {
+                var icon = $(this);
+                var $class = $.trim(icon.attr('class').replace('ui-icon', ''));
+
+                if ($class in replacement) icon.attr('class', 'ui-icon ' + replacement[$class]);
+            })
+        }
+
+        function enableTooltips(table) {
+            $('.navtable .ui-pg-button').tooltip({ container: 'body' });
+            $(table).find('.ui-pg-div').tooltip({ container: 'body' });
+        }
+    });
+    </script>
+    <div style="display:none">
+    </div>
+</body>
+</html>

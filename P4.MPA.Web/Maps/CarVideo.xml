@@ -1,0 +1,825 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="Ibatis" xmlns="http://ibatis.apache.org/mapping" xmlns:xls="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		
+	</alias>
+	<statements>
+		<select id="SelectVideoCarDistinct" parameterClass="Hashtable" resultClass="Hashtable">
+			SELECT DISTINCT VideoCarNumber,VedioEqType,CONVERT(VARCHAR(20),BeatDatetime,120) as BeatDatetime,IsOnlineValue,IsUse FROM AbpVideoCars where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="VideoCarNumber">
+					VideoCarNumber = #VideoCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VedioEqType">
+					VedioEqType in ($VedioEqType$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsOnlineValue">
+					IsOnlineValue = #IsOnlineValue#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsUse">
+					IsUse = #IsUse#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="order by">
+				<isParameterPresent>
+					<isNotEmpty property="OrderString">
+						$OrderString$
+					</isNotEmpty>
+					<isNotEmpty property="OrderType">
+						$OrderType$
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<isParameterPresent>
+				<isNotEmpty property="End">
+					offset #Start# rows fetch next #End# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="SelectVideoCarDistinctCount" parameterClass="Hashtable" resultClass="int">
+			SELECT count(DISTINCT VideoCarNumber) FROM AbpVideoCars where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="VideoCarNumber">
+					VideoCarNumber = #VideoCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VedioEqType">
+					VedioEqType in ($VedioEqType$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsOnlineValue">
+					IsOnlineValue = #IsOnlineValue#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsUse">
+					IsUse = #IsUse#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+
+		<select id="SelectVideoCarList" parameterClass="Hashtable" resultClass="Hashtable">
+			select a.Id,a.BerthNumber,a.VideoCarNumber,a.VedioEqType,CONVERT(VARCHAR(20),a.BeatDatetime,120) as BeatDatetime,CONVERT(VARCHAR(20),a.CreationTime,120) as CreationTime,a.ParkStatus,a.IsOnlineValue,a.IsUse,b.Name,b.TenancyName,c.RegionName,d.ParkName,e.BerthsecName,f.CompanyName from AbpVideoCars a LEFT JOIN AbpTenants b on a.TenantId=b.Id LEFT JOIN AbpRegions c ON a.RegionId=c.Id LEFT JOIN AbpParks d on a.ParkId=d.Id LEFT JOIN AbpBerthsecs e on a.BerthsecId=e.Id LEFT JOIN AbpOperatorsCompany f on a.CompanyId=f.Id where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="CompanyName">
+					f.CompanyName = #CompanyName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="TenancyName">
+					b.TenancyName = #TenancyName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="RegionName">
+					c.RegionName = #RegionName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkName">
+					d.ParkName = #ParkName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecName">
+					e.BerthsecName = #BerthsecName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthNumber">
+					a.BerthNumber = #BerthNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VideoCarNumber">
+					a.VideoCarNumber = #VideoCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VedioEqType">
+					a.VedioEqType in ($VedioEqType$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsUse">
+					a.IsUse = #IsUse#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsOnlineValue">
+					a.IsOnlineValue = #IsOnlineValue#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="order by">
+				<isParameterPresent>
+					<isNotEmpty property="OrderString">
+						$OrderString$
+					</isNotEmpty>
+					<isNotEmpty property="OrderType">
+						$OrderType$
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<isParameterPresent>
+				<isNotEmpty property="End">
+					offset #Start# rows fetch next #End# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="SelectVideoCarCount" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpVideoEquips a LEFT JOIN AbpTenants b on a.TenantId=b.Id LEFT JOIN AbpRegions c ON a.RegionId=c.Id LEFT JOIN AbpParks d on a.ParkId=d.Id LEFT JOIN AbpBerthsecs e on a.BerthsecId=e.Id LEFT JOIN AbpOperatorsCompany f on a.CompanyId=f.Id where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="CompanyName">
+					f.CompanyName = #CompanyName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="TenancyName">
+					b.TenancyName = #TenancyName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="RegionName">
+					c.RegionName = #RegionName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkName">
+					d.ParkName = #ParkName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecName">
+					e.BerthsecName = #BerthsecName#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthNumber">
+					a.BerthNumber = #BerthNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VideoCarNumber">
+					a.VideoCarNumber = #VideoCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VedioEqType">
+					a.VedioEqType in ($VedioEqType$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsUse">
+					a.IsUse = #IsUse#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="IsOnlineValue">
+					a.IsOnlineValue = #IsOnlineValue#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		
+		<select id="SelectBerthsecsNumberCar" parameterClass="Hashtable" resultClass="Hashtable">
+			select Id,TenantId,BerthNumber,RegionId,ParkId,BerthsecId,CompanyId from AbpBerths where Id in ($Ids$)
+		</select>
+		
+		<insert id="InsertAbpVideoCars" parameterClass="Hashtable">
+			insert into AbpVideoCars (TenantId,CompanyId,RegionId,ParkId,BerthsecId,BerthNumber,VideoCarNumber,CreationTime,VedioEqType,IsUse,BerthId,BeatDatetime,IsOnlineValue) values $Value$
+		</insert>
+
+		<insert id="InsertVideoCarsBatch" parameterClass="Hashtable">
+			insert into AbpVideoCars (VideoCarNumber,VedioEqType,CreationTime) values $Value$
+		</insert>
+		
+		<delete id="DeleteVideoCarsByNumber" parameterClass="Hashtable">
+			delete AbpVideoCars where VideoCarNumber = #VideoCarNumber#
+		</delete>
+
+		<delete id="DeleteVideoCars" parameterClass="Hashtable">
+			delete AbpVideoCars where Id = #Id#
+		</delete>
+
+		<update id="UpdateVideoCars" parameterClass="Hashtable">
+			update AbpVideoCars set VideoCarNumber=#VideoCarNumber#,VedioEqType=#VedioEqType#,IsUse=#IsUse# where Id=#Id#
+		</update>
+
+		<select id="SelectVideoCarHeartBeatList" parameterClass="Hashtable" resultClass="Hashtable">
+			select tmp1.Id,tmp1.VideoCarNumber,tmp1.OfflineCount,tmp1.OnlineRate,CONVERT(VARCHAR(20),tmp1.CreationTime,120) as CreationTime,tmp2.BerthNumber,tmp2.VedioEqType,tmp2.ParkName,tmp2.BerthsecName from AbpVideoCarsHeartBit tmp1,(select a.VideoCarNumber,a.BerthNumber,a.VedioEqType,d.ParkName,e.BerthsecName from AbpVideoCars a LEFT JOIN AbpParks d on a.ParkId=d.Id LEFT JOIN AbpBerthsecs e on a.BerthsecId=e.Id) tmp2 where tmp1.VideoCarNumber=tmp2.VideoCarNumber and tmp1.OfflineCount is not null
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					tmp1.CreationTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					tmp1.CreationTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VedioEqNumber">
+					tmp1.VideoCarNumber=#VideoCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VedioEqType">
+					tmp2.VedioEqType in ($VedioEqType$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="order by">
+				<isParameterPresent>
+					<isNotEmpty property="OrderString">
+						$OrderString$
+					</isNotEmpty>
+					<isNotEmpty property="OrderType">
+						$OrderType$
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<isParameterPresent>
+				<isNotEmpty property="End">
+					offset #Start# rows fetch next #End# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="SelectVideoCarHeartBeatCount" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpVideoCarsHeartBit tmp1,(select a.VideoCarNumber from AbpVideoCars a LEFT JOIN AbpParks d on a.ParkId=d.Id LEFT JOIN AbpBerthsecs e on a.BerthsecId=e.Id) tmp2 where tmp1.VideoCarNumber=tmp2.VideoCarNumber and tmp1.OfflineCount is not null
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					CreationTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					CreationTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="VideoCarNumber">
+					VideoCarNumber=#VideoCarNumber#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<select id="SelectAbpParamConfig" parameterClass="Hashtable" resultClass="Hashtable">
+			select Id,Url,IsPost,IsClean,Trust,OrderOverTime from AbpParamConfig
+		</select>
+		<insert id="InsertAbpParamConfig" parameterClass="Hashtable">
+			insert into AbpParamConfig (Url,IsPost,IsClean,Trust,OrderOverTime) values (#Url#,#IsPost#,#IsClean#,#Trust#,#OrderOverTime#)
+		</insert>
+		<update id="UpdateAbpParamConfig" parameterClass="Hashtable">
+			update AbpParamConfig set Url=#Url#,IsPost=#IsPost#,IsClean=#IsClean#,Trust=#Trust#,OrderOverTime=#OrderOverTime# where Id=#Id#
+		</update>
+
+		<select id="GetAllDetail" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpVideoEquipBusinessDetail where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					CreationTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					CreationTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					ParkId=#ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					BerthsecId=#BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<select id="GetAllBerth" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpBerths where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					CreationTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					CreationTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					ParkId=#ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					BerthsecId=#BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<select id="GetAllEquipment" parameterClass="Hashtable" resultClass="int">
+			select count(DISTINCT VedioEqNumber) from AbpVideoEquips where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					CreationTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					CreationTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					ParkId=#ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					BerthsecId=#BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<select id="GetAllAlert" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpVideoEquipFaults where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					CreationTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					CreationTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					ParkId=#ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					BerthsecId=#BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<select id="GetDetailGroup" parameterClass="Hashtable" resultClass="Hashtable">
+			select count(*) Num,CreationTime from (select Id,ParkId,BerthsecId,AuditStatus,CONVERT(VARCHAR(10),CreationTime,120) as CreationTime from AbpVideoEquipBusinessDetail) a where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="CreationTime">
+					a.CreationTime in ($CreationTime$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					a.ParkId=#ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					a.BerthsecId=#BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="AuditStatus">
+					a.AuditStatus=#AuditStatus#
+				</isNotEmpty>
+			</dynamic>
+			GROUP BY a.CreationTime ORDER BY a.CreationTime ASC
+		</select>
+
+		<delete id="DeleteAbpSettingById" parameterClass="Hashtable">
+			delete from AbpSettings where UserId=#UserId#
+		</delete>
+
+		<insert id="InsertAbpSetting" parameterClass="Hashtable">
+			insert into AbpSettings (TenantId,UserId,Name,Value,Mark,LastModificationTime,LastModifierUserId,CreationTime,CreatorUserId) values (1,#UserId#,'SystemPromptBox','toast-bottom-right','提示框显示',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'OperationLog','True','是否启用操作日志',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'LoginPush','True','登录推送',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'Multiuser','True','是否启用多用户',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'OperationPush','True','是否启用操作推送',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'Language','zh-CN','语言',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'navbar','True','固定导航栏',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'sidebar','false','固定滚动条',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'breadcrumbs','false','固定路劲栏',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'container','false','切换窄屏',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'rtl','True','菜单切换左边',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'skin','skin-2','皮肤',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'sidebarcollapsed','false','菜单是否折叠',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'Shortcuts','../Metro/MetroIndex','快捷菜单',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'MenuType','Road','菜单类型',#now#,#UserId#,#now#,#UserId#),(1,#UserId#,'sysIndex',#now#,'索引',#now#,#UserId#,#now#,#UserId#)
+		</insert>
+		
+		
+		
+		<select id="getPatrolCarList" parameterClass="Hashtable" resultClass="Hashtable">
+			select
+			Id,
+			PatrolCarNumber,
+			CONVERT(VARCHAR(20),CreationTime,120) as CreationTime,
+			CONVERT(VARCHAR(20),BeatDatetime,120) as BeatDatetime,
+			IsOnlineValue,
+			IsUse,
+			PatrolType,
+			CONVERT(VARCHAR(20),EnableTime,120) as EnableTime,
+			CONVERT(VARCHAR(20),StopTime,120) as StopTime,
+			Remark
+			from AbpPatrolCars where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					PatrolCarNumber  in ($PatrolCarNumber$)
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="Id">
+					Id  = #Id#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="Ids">
+					Id  in ($Ids$)
+				</isNotEmpty>
+			</dynamic>
+			order by CreationTime asc
+			<isParameterPresent>
+				<isNotEmpty property="start">
+					offset #start# rows fetch next #rows# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="getPatrolCarListSize" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpPatrolCars where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					PatrolCarNumber  in (#PatrolCarNumber#)
+				</isNotEmpty>
+			</dynamic>
+		</select>
+
+		<insert id="InsertPatrolCar" parameterClass="Hashtable">
+			insert into AbpPatrolCars (PatrolCarNumber,CreationTime,IsUse,PatrolType,EnableTime) values $Value$
+		</insert>
+
+		<insert id="bindingCar" parameterClass="Hashtable">
+			insert into AbpPatrolCarBerths
+			(PatrolCarNumber,BerthsId,CreateTime)
+			values
+			(#PatrolCarNumber#,#BerthsId#,#CreateTime#)
+		</insert>
+
+		<select id="getBindingList" parameterClass="Hashtable" resultClass="Hashtable">
+			select * from AbpPatrolCarBerths where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					PatrolCarNumber  = #PatrolCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsId">
+					BerthsId  = #BerthsId#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		
+		
+		<delete id="deletPatrolCar" parameterClass="Hashtable">
+			delete AbpPatrolCars where PatrolCarNumber = #PatrolCarNumber#
+		</delete>
+
+		<delete id="deletPatrolBerths" parameterClass="Hashtable">
+			delete AbpPatrolCarBerths where 
+			PatrolCarNumber = #PatrolCarNumber# 
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsId">
+					BerthsId  = #BerthsId#
+				</isNotEmpty>
+			</dynamic>
+		</delete>
+		
+
+
+		<update id="updatePatrolCar" parameterClass="Hashtable">
+			update AbpPatrolCars
+			set PatrolCarNumber = #PatrolCarNumber#
+			<isNotEmpty property="PatrolType">
+				,PatrolType=#PatrolType#
+			</isNotEmpty>
+			<isNotEmpty property="Remark">
+				,Remark=#Remark#
+			</isNotEmpty>
+			<isNotEmpty property="EnableTime">
+				,EnableTime=#EnableTime#
+			</isNotEmpty>
+			<isNotEmpty property="StopTime">
+				,StopTime=#StopTime#
+			</isNotEmpty>
+			<isNotEmpty property="IsUse">
+				,IsUse=#IsUse#
+			</isNotEmpty>
+			<isNotEmpty property="IsUse">
+				<isEqual  property="IsUse" compareValue="1" >
+					,StopTime=null
+				</isEqual >
+			</isNotEmpty>
+			
+			where PatrolCarNumber=#PatrolCarNumber_s#
+		</update>
+		
+		
+		<update id="updatePatrolBerth" parameterClass="Hashtable">
+			update AbpPatrolCarBerths set PatrolCarNumber=#PatrolCarNumber#
+			where PatrolCarNumber=#PatrolCarNumber_s#
+		</update>
+
+		<select id="getPatrolBerthsList" parameterClass="Hashtable" resultClass="Hashtable">
+			select
+			pc.PatrolCarNumber,
+			CONVERT(VARCHAR(20),pc.CreationTime,120) as CreationTime,
+			CONVERT(VARCHAR(20),pc.BeatDatetime,120) as BeatDatetime,
+			CONVERT(VARCHAR(20),pc.EnableTime,120) as EnableTime,
+			CONVERT(VARCHAR(20),pc.StopTime,120) as StopTime,
+			pc.Remark,
+			te.TenancyName as TenancyName,
+			ar.RegionName as RegionName,
+			ap.ParkName as ParkName,
+			pc.IsOnlineValue as IsOnlineValue,
+			ac.CompanyName as CompanyName,
+			ab.BerthNumber as BerthNumber,
+			ab.BerthStatus as BerthStatus,
+			abs.BerthsecName as BerthsecName,
+			pcb.BerthsId as BerthsId,
+			te.Name as Name
+			from AbpPatrolCarBerths pcb
+			left join  AbpPatrolCars  pc on pcb.PatrolCarNumber=pc.PatrolCarNumber
+			left join AbpBerths ab on ab.Id=pcb.BerthsId
+			left join  AbpBerthsecs abs on abs.Id= ab.BerthsecId
+			left join AbpRegions ar on ar.Id = ab.RegionId
+			left join AbpParks ap on ap.Id = ab.ParkId
+			left join AbpOperatorsCompany ac on ac.Id=ab.CompanyId
+			left join AbpTenants te on te.Id=ab.TenantId
+			where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					pcb.PatrolCarNumber  = #PatrolCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsId">
+					pcb.BerthsId  = #BerthsId#
+				</isNotEmpty>
+			</dynamic>
+
+			order by pc.CreationTime asc
+			<isParameterPresent>
+				<isNotEmpty property="start">
+					offset #start# rows fetch next #rows# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+
+		
+		<select id="getPatrolBerthsListSize" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpPatrolCarBerths where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					PatrolCarNumber  = #PatrolCarNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsId">
+					BerthsId  = #BerthsId#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<select id="GetPatrolCarBusinessDetail" parameterClass="Hashtable" resultClass="Hashtable">
+			select tmp1.Id,tmp1.BerthNumber,tmp1.PatrolCarNumber,tmp1.guid,tmp1.Receivable,tmp1.CarInTime,tmp1.CarOutTime,tmp1.PlateNumber,tmp1.StopTime,tmp1.OssPathURL,tmp1.OutOssPathURL,tmp1.DetailOssPathURL,tmp1.FixOssPathURL,tmp1.Confidence,tmp1.BConfidence,tmp1.PatrolType,CONVERT(VARCHAR(20),tmp1.CreationTime,120) as CreationTime,tmp2.RegionId,tmp2.RegionName,tmp2.ParkId,tmp2.ParkName,tmp2.BerthsecId,tmp2.BerthsecName,tmp2.BerthId from AbpPatrolCarBusinessDetail tmp1,(select a.BerthNumber,a.Id BerthId,b.Id ParkId,b.ParkName,c.Id BerthsecId,c.BerthsecName,d.Id RegionId,d.RegionName,f.PatrolCarNumber from AbpBerths a LEFT JOIN AbpParks b on a.ParkId=b.Id LEFT JOIN AbpBerthsecs c on a.BerthsecId=c.Id LEFT JOIN AbpRegions d on a.RegionId=d.Id LEFT JOIN AbpPatrolCarBerths f on a.Id=f.BerthsId where f.PatrolCarNumber is not null) tmp2 where tmp1.BerthId=tmp2.BerthId
+			<dynamic prepend="and">
+				<isNotEmpty property="PlateNumber">
+					tmp1.PlateNumber like '%$PlateNumber$%'
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="RegionId">
+					tmp2.RegionId = #RegionId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					tmp2.ParkId = #ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					tmp2.BerthsecId = #BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthNumber">
+					tmp2.BerthNumber = #BerthNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					tmp1.PatrolCarNumber like '%PatrolCarNumber%'
+					tmp1.PatrolCarNumber like '%$PatrolCarNumber$%'
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="AuditStatus">
+					tmp1.AuditStatus = #AuditStatus#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					tmp1.CarInTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					tmp1.CarInTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="order by">
+				<isParameterPresent>
+					<isNotEmpty property="OrderString">
+						$OrderString$
+					</isNotEmpty>
+					<isNotEmpty property="OrderType">
+						$OrderType$
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<isParameterPresent>
+				<isNotEmpty property="End">
+					offset #Start# rows fetch next #End# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="GetPatrolCarBusinessDetailCount" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpPatrolCarBusinessDetail tmp1,(select a.BerthNumber,a.Id BerthId,b.Id ParkId,b.ParkName,c.Id BerthsecId,c.BerthsecName,d.Id RegionId,d.RegionName,f.PatrolCarNumber from AbpBerths a LEFT JOIN AbpParks b on a.ParkId=b.Id LEFT JOIN AbpBerthsecs c on a.BerthsecId=c.Id LEFT JOIN AbpRegions d on a.RegionId=d.Id LEFT JOIN AbpPatrolCarBerths f on a.Id=f.BerthsId where f.PatrolCarNumber is not null) tmp2 where tmp1.BerthId=tmp2.BerthId
+			<dynamic prepend="and">
+				<isNotEmpty property="PlateNumber">
+					tmp1.PlateNumber like '%$PlateNumber$%'
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="RegionId">
+					tmp2.RegionId = #RegionId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					tmp2.ParkId = #ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					tmp2.BerthsecId = #BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthNumber">
+					tmp2.BerthNumber = #BerthNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					tmp1.PatrolCarNumber like '%PatrolCarNumber%'
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="AuditStatus">
+					tmp1.AuditStatus = #AuditStatus#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					tmp1.CarInTime&gt;=#StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					tmp1.CarInTime&lt;=#EndTime#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		<update id="UPatrolCarBusinessDetailAuditStatus" parameterClass="Hashtable">
+			update AbpPatrolCarBusinessDetail set AuditStatus=#AuditStatus# where Id in ($Ids$)
+		</update>
+
+		<update id="UPatrolCarBusinessDetail" parameterClass="Hashtable">
+			update AbpPatrolCarBusinessDetail set PlateNumber=#PlateNumber# where Id = #id#
+		</update>
+
+
+		<select id="getAlarmDataList" parameterClass="Hashtable" resultClass="Hashtable">
+			select
+			pcf.Id,
+			pcf.TenantId,
+			pcf.CompanyId,
+			pcf.RegionId,
+			pcf.PatrolCarNumber,
+			pcf.Status,
+			pcf.Remark,
+			pcf.OssPathURL,
+			pcf.BerthNumber,
+			pcf.BerthsecId as  BerthsecId,
+			apc.PatrolType as PatrolType,
+			abcs.BerthsecName as BerthsecName,
+			apcb.BerthsId as BerthsId,
+
+			CONVERT(VARCHAR(20),pcf.CreationTime,120) as CreationTime,
+			ar.RegionName as RegionName,
+			ap.ParkName as ParkName,
+			ac.CompanyName as CompanyName,
+			te.TenancyName as TenancyName,
+			te.Name as Name
+
+			from AbpPatrolCarFault pcf
+			left join AbpPatrolCars apc on apc.PatrolCarNumber=pcf.PatrolCarNumber
+			left join AbpPatrolCarBerths apcb on apcb.PatrolCarNumber = pcf.PatrolCarNumber
+			left join AbpBerthsecs abcs on abcs.Id = pcf.BerthsecId
+			left join AbpRegions ar on ar.Id = pcf.RegionId
+			left join AbpParks ap on ap.Id = pcf.ParkId
+			left join AbpOperatorsCompany ac on ac.Id=pcf.CompanyId
+			left join AbpTenants te on te.Id=pcf.TenantId
+			where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					pcf.PatrolCarNumber  = #PatrolCarNumber#
+				</isNotEmpty>
+			</dynamic>
+
+			<dynamic prepend="and">
+				<isNotEmpty property="RegionId">
+					pcf.RegionId  = #RegionId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					pcf.ParkId  = #ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					pcf.BerthsecId  = #BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthNumber">
+					pcf.BerthNumber  = #BerthNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					pcf.CreationTime  >= #StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					#EndTime# >= pcf.CreationTime  
+				</isNotEmpty>
+			</dynamic>
+			order by CreationTime asc
+			<isParameterPresent>
+				<isNotEmpty property="start">
+					offset #start# rows fetch next #rows# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="getAlarmDataListSize" parameterClass="Hashtable" resultClass="int">
+			select count(*) from AbpPatrolCarFault where 1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="PatrolCarNumber">
+					PatrolCarNumber  = #PatrolCarNumber#
+				</isNotEmpty>
+			</dynamic>
+
+			<dynamic prepend="and">
+				<isNotEmpty property="RegionId">
+					RegionId  = #RegionId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="ParkId">
+					ParkId  = #ParkId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthsecId">
+					BerthsecId  = #BerthsecId#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="BerthNumber">
+					BerthNumber  = #BerthNumber#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					CreationTime  >= #StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					#EndTime# >= CreationTime
+				</isNotEmpty>
+			</dynamic>
+		</select>
+
+	</statements>
+
+</sqlMap>

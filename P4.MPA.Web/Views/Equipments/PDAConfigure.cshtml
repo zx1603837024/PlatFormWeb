@@ -1,0 +1,628 @@
+﻿@using P4.Web.Models
+@model PDAConfigModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("PDAConfigure");
+    ViewBag.ActiveMenu = "PDAConfigure";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="alert alert-info">
+    <i class="icon-hand-right"></i>
+    配置PDA终端操作流程及配置参数
+    <button class="close" data-dismiss="alert">
+        <i class="icon-remove"></i>
+    </button>
+</div>
+
+
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3">状态设置</label>
+        <div class="controls col-xs-12 col-sm-9">
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDAInCarEscape" @(Model.PDAInCarEscape == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;进场追缴</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDAOutCarEscape" @(Model.PDAOutCarEscape == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;出场追缴</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDABindUser" @(Model.PDABindUser == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;设备绑定用户</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDAUpgrate" @(Model.PDAUpgrate == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;设备自动升级</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDAInCarPhotoFlag" @(Model.PDAInCarPhotoFlag == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;进场拍照</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <select class="width-50 chosen-select" id="PDAInCarPhotoNum" name="PDAInCarPhotoNum" data-placeholder="进场拍照张数">
+                        @foreach (var entity in Model.Number)
+                        {
+                            if (entity == Model.PDAInCarPhotoNum)
+                            {
+                                <option value="@entity" selected="selected">@entity</option>
+                            }
+                            else
+                            {
+                                <option value="@entity">@entity</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="space-4"></div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDAOutCarPhotoFlag" @(Model.PDAOutCarPhotoFlag == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;出场拍照</span>
+                    </label>
+                </div>
+
+                <div class="col-xs-3">
+                    <select class="width-50 chosen-select" id="PDAOutCarPhotoNum" name="PDAOutCarPhotoNum" data-placeholder="出场拍照张数">
+                        @foreach (var entity in Model.Number)
+                        {
+                            if (entity == Model.PDAOutCarPhotoNum)
+                            {
+                                <option value="@entity" selected="selected">@entity</option>
+                            }
+                            else
+                            {
+                                <option value="@entity">@entity</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="space-4"></div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDAPrepaidFlag" @(Model.PDAPrepaidFlag == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;是否预付金额</span>
+                    </label>
+                </div>
+
+                <div class="col-xs-3">
+                    <input type="text" id="PDAPrepaid" value=@Model.PDAPrepaid class="with-40" placeholder="预付金额" />
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PeriodPaid" @(Model.PeriodPaid == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用时段预付</span>
+                    </label>
+                </div>
+
+                <div class="col-xs-3">
+                    <input type="text" id="PeriodTime" value=@Model.PeriodTime class="with-40" placeholder="预付时段" />至
+                </div>
+                <div class="col-xs-3">
+                    <input type="text" id="PeriodTime1" value=@Model.PeriodTime1 class="with-40" placeholder="预付时段1" />
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="Sensorbind" @(Model.Sensorbind == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用地磁关联</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="SensorTimer" @(Model.SensorTimer == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用地磁计费</span>
+                    </label>
+                </div>
+            </div>
+
+
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="EscapePrint" @(Model.EscapePrint == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;逃逸打印小票</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="EscapeXingCode" @(Model.EscapeXingCode == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;逃逸打印二维码</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="CashPay" @(Model.CashPay == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用现金支付</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+
+                        <input type="text" id="CashPayDiscount" value=@Model.CashPayDiscount class="with-40" placeholder="现金支付折扣" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="CCBAggregatePay" @(Model.CCBAggregatePay == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用建行聚合支付</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="WeixinPay" @(Model.WeixinPay == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用微信支付</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+
+                        <input type="text" id="WeixinDiscount" value=@Model.WeixinDiscount class="with-40" placeholder="微信折扣" />
+                    </label>
+                </div>
+            </div>
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="IPassCardPay" @(Model.IPassCardPay == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用刷卡支付</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+
+                        <input type="text" id="IPassCardDiscount" value=@Model.IPassCardDiscount class="with-40" placeholder="刷卡折扣" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="AccountPay" @(Model.AccountPay == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用账号支付</span>
+                    </label>
+                </div>
+                <div class="col-xs-3">
+                    <label>
+
+                        <input type="text" id="AccountDiscount" value=@Model.AccountDiscount class="with-40" placeholder="账号折扣" />
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="AliPay" @(Model.AliPay == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用支付宝支付</span>
+                    </label>
+                </div>
+
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="VideoRecognition" @(Model.VideoRecognition == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用视频识别</span>
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PDASyncData" @(Model.PDASyncData == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;启用PDA数据同步</span>
+                    </label>
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="PrivilegeCarReceipt" @(Model.PrivilegeCarReceipt == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;特殊车辆是否打印小票</span>
+                    </label>
+                </div>
+
+                <div class="col-xs-3">
+                    <label>
+                        <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="ElectronicFence" @(Model.ElectronicFence == true ? "checked='checked'" : "") />
+                        <span class="lbl">&nbsp;&nbsp;电子围栏</span>
+                        <input type="text" id="ElectronicFenceOffset" value=@Model.ElectronicFenceOffset class="with-40" placeholder="偏移距离" />
+                    </label>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 车牌号 </label>
+        <div class="col-sm-9">
+            <select class="width-20 chosen-select" id="PDARegion" name="PDARegion" data-placeholder="区域">
+                @foreach (var entity in Model.PlateNumber)
+                {
+                    if (entity == Model.PDARegion)
+                    {
+                        <option value="@entity" selected="selected">@entity</option>
+                    }
+                    else
+                    {
+                        <option value="@entity">@entity</option>
+                    }
+                }
+            </select>
+            <input type="text" id="PDAChar" value=@Model.PDAChar class="with-40" placeholder="车牌" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 早班地磁配置 </label>
+        <div class="col-sm-9">
+            <input type="text" id="SensorMorningDelay" value=@Model.SensorMorningDelay class="with-20" placeholder="地磁延时" />
+            <input type="text" id="SensorMorningBegin" value=@Model.SensorMorningBegin class="with-20" placeholder="开始时间" />
+            <input type="text" id="SensorMorningEnd" value=@Model.SensorMorningEnd class="with-20" placeholder="结束时间" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 晚班地磁配置 </label>
+        <div class="col-sm-9">
+            <input type="text" id="SensorNightDelay" value=@Model.SensorNightDelay class="with-40" placeholder="地磁延时" />
+            <input type="text" id="SensorNightBegin" value=@Model.SensorNightBegin class="with-40" placeholder="开始时间" />
+            <input type="text" id="SensorNightEnd" value=@Model.SensorNightEnd class="with-40" placeholder="结束时间" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 高级登录密码 </label>
+
+            <div class="col-sm-9">
+                <input type="text" id="SupLogin" value="@Model.Password1" placeholder="高级登录密码" class="col-xs-10 col-sm-5" />
+            </div>
+        </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 在线支付路径 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="OnlinePayUrl" value="@Model.OnlinePayUrl" placeholder="在线支付路径" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 发卡管理密码 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="CardNoPassword" value="@Model.Password2" placeholder="发卡管理密码" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 收费汇总密码 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="ChargePassword" value="@Model.Password3" placeholder="收费汇总密码" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 签退密码 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="CheckOutPassword" value="@Model.Password4" placeholder="签退密码" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 退出软件 </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="SparePassword" value="@Model.Password5" placeholder="退出软件密码" class="col-xs-10 col-sm-5" />
+        </div>
+    </div>
+
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-3 col-md-9">
+            <button class="btn btn-info" type="button" onclick="javascript:Save()">
+                <i class="icon-ok bigger-110"></i>
+                保存
+            </button>
+        </div>
+    </div>
+</form>
+
+@section scripts{
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('#id-disable-check').on('click', function () {
+                var inp = $('#form-input-readonly').get(0);
+                if (inp.hasAttribute('disabled')) {
+                    inp.setAttribute('readonly', 'true');
+                    inp.removeAttribute('disabled');
+                    inp.value = "This text field is readonly!";
+                }
+                else {
+                    inp.setAttribute('disabled', 'disabled');
+                    inp.removeAttribute('readonly');
+                    inp.value = "This text field is disabled!";
+                }
+            });
+
+
+            $(".chosen-select").chosen();
+            $('#chosen-multiple-style').on('click', function (e) {
+                var target = $(e.target).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+
+            $('[data-rel=tooltip]').tooltip({ container: 'body' });
+            $('[data-rel=popover]').popover({ container: 'body' });
+
+            $('#id-input-file-1 , #id-input-file-2').ace_file_input({
+                no_file: 'No File ...',
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false //| true | large
+                //whitelist:'gif|png|jpg|jpeg'
+                //blacklist:'exe|php'
+                //onchange:''
+                //
+            });
+
+            $('#id-input-file-3').ace_file_input({
+                style: 'well',
+                btn_choose: 'Drop files here or click to choose',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'small'//large | fit
+                //,icon_remove:null//set null, to hide remove/reset button
+                /**,before_change:function(files, dropped) {
+                    //Check an example below
+                    //or examples/file-upload.html
+                    return true;
+                }*/
+                /**,before_remove : function() {
+                    return true;
+                }*/
+                ,
+                preview_error: function (filename, error_code) {
+                    //name of the file that failed
+                    //error_code values
+                    //1 = 'FILE_LOAD_FAILED',
+                    //2 = 'IMAGE_LOAD_FAILED',
+                    //3 = 'THUMBNAIL_FAILED'
+                    //alert(error_code);
+                }
+
+            }).on('change', function () {
+                //console.log($(this).data('ace_input_files'));
+                //console.log($(this).data('ace_input_method'));
+            });
+
+
+            //dynamically change allowed formats by changing before_change callback function
+            $('#id-file-format').removeAttr('checked').on('change', function () {
+                var before_change
+                var btn_choose
+                var no_icon
+                if (this.checked) {
+                    btn_choose = "Drop images here or click to choose";
+                    no_icon = "icon-picture";
+                    before_change = function (files, dropped) {
+                        var allowed_files = [];
+                        for (var i = 0 ; i < files.length; i++) {
+                            var file = files[i];
+                            if (typeof file === "string") {
+                                //IE8 and browsers that don't support File Object
+                                if (!(/\.(jpe?g|png|gif|bmp)$/i).test(file)) return false;
+                            }
+                            else {
+                                var type = $.trim(file.type);
+                                if ((type.length > 0 && !(/^image\/(jpe?g|png|gif|bmp)$/i).test(type))
+                                        || (type.length == 0 && !(/\.(jpe?g|png|gif|bmp)$/i).test(file.name))//for android's default browser which gives an empty string for file.type
+                                    ) continue;//not an image so don't keep this file
+                            }
+
+                            allowed_files.push(file);
+                        }
+                        if (allowed_files.length == 0) return false;
+
+                        return allowed_files;
+                    }
+                }
+                else {
+                    btn_choose = "Drop files here or click to choose";
+                    no_icon = "icon-cloud-upload";
+                    before_change = function (files, dropped) {
+                        return files;
+                    }
+                }
+                var file_input = $('#id-input-file-3');
+                file_input.ace_file_input('update_settings', { 'before_change': before_change, 'btn_choose': btn_choose, 'no_icon': no_icon })
+                file_input.ace_file_input('reset_input');
+            });
+
+
+
+
+            $('#spinner1').ace_spinner({ value: 0, min: 0, max: 200, step: 10, btn_up_class: 'btn-info', btn_down_class: 'btn-info' })
+            .on('change', function () {
+                //alert(this.value)
+            });
+            $('#spinner2').ace_spinner({ value: 0, min: 0, max: 10000, step: 100, touch_spinner: true, icon_up: 'icon-caret-up', icon_down: 'icon-caret-down' });
+            $('#spinner3').ace_spinner({ value: 0, min: -100, max: 100, step: 10, on_sides: true, icon_up: 'icon-plus smaller-75', icon_down: 'icon-minus smaller-75', btn_up_class: 'btn-success', btn_down_class: 'btn-danger' });
+
+            /////////
+            $('#modal-form input[type=file]').ace_file_input({
+                style: 'well',
+                btn_choose: 'Drop files here or click to choose',
+                btn_change: null,
+                no_icon: 'icon-cloud-upload',
+                droppable: true,
+                thumbnail: 'large'
+            })
+
+            //chosen plugin inside a modal will have a zero width because the select element is originally hidden
+            //and its width cannot be determined.
+            //so we set the width after modal is show
+            $('#modal-form').on('shown.bs.modal', function () {
+                $(this).find('.chosen-container').each(function () {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '200px');
+                });
+            })
+            /**
+            //or you can activate the chosen plugin after modal is shown
+            //this way select element becomes visible with dimensions and chosen works as expected
+            $('#modal-form').on('shown', function () {
+                $(this).find('.modal-chosen').chosen();
+            })
+            */
+
+        });
+
+        function Save() {
+            swal({
+                title: "系统提示?",
+                text: "您确定要保存吗？",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定,保存!",
+                closeOnConfirm: "取消"
+            },
+             function () {
+                 swal("成功!", "正在保存.", "success");
+                 $.ajax({
+                     type: "Post",
+                     url: '../Equipments/SavePDAConfigure',
+                     data: {
+                         PDAChar: $("#PDAChar").val(),
+                         PDAInCarEscape: $('#PDAInCarEscape').is(':checked'),
+                         PDAInCarPhotoFlag: $('#PDAInCarPhotoFlag').is(':checked'),
+                         CCBAggregatePay: $('#CCBAggregatePay').is(':checked'),
+                         WeixinPay: $('#WeixinPay').is(':checked'),
+                         AliPay: $('#AliPay').is(':checked'),
+                         VideoRecognition: $('#VideoRecognition').is(':checked'),
+                         PDAInCarPhotoNum: $("#PDAInCarPhotoNum").val(),
+                         PDAOutCarEscape: $('#PDAOutCarEscape').is(':checked'),
+                         PDAOutCarPhotoFlag: $('#PDAOutCarPhotoFlag').is(':checked'),
+                         PDAOutCarPhotoNum: $("#PDAOutCarPhotoNum").val(),
+                         PDAPrepaidFlag: $('#PDAPrepaidFlag').is(':checked'),
+                         PDARegion: $("#PDARegion").val(),
+                         PDAPrepaid: $("#PDAPrepaid").val(),
+                         WeixinDiscount: $("#WeixinDiscount").val(),
+                         PDABindUser: $('#PDABindUser').is(':checked'),
+                         PDAUpgrate: $('#PDAUpgrate').is(':checked'),
+                         IPassCardPay: $('#IPassCardPay').is(':checked'),
+                         IPassCardDiscount: $('#IPassCardDiscount').val(),
+
+                         CashPay: $('#CashPay').is(':checked'),
+                         CashPayDiscount: $('#CashPayDiscount').val(),
+                         OnlinePayUrl: $('#OnlinePayUrl').val(),
+
+                         AccountPay: $('#AccountPay').is(':checked'),
+                         PrivilegeCarReceipt: $('#PrivilegeCarReceipt').is(':checked'),
+                         AccountDiscount: $('#AccountDiscount').val(),
+
+                         Sensorbind: $('#Sensorbind').is(':checked'),
+                         SensorTimer: $('#SensorTimer').is(':checked'),
+
+                         PeriodPaid: $('#PeriodPaid').is(':checked'),
+                         PeriodTime: $("#PeriodTime").val(),
+                         PeriodTime1: $("#PeriodTime1").val(),
+                         ElectronicFenceOffset: $("#ElectronicFenceOffset").val(),
+                         EscapePrint: $('#EscapePrint').is(':checked'),
+                         EscapeXingCode: $('#EscapeXingCode').is(':checked'),
+
+                         SensorMorningDelay: $("#SensorMorningDelay").val(),
+                         SensorMorningBegin: $("#SensorMorningBegin").val(),
+                         SensorMorningEnd: $("#SensorMorningEnd").val(),
+                         SensorNightDelay: $("#SensorNightDelay").val(),
+                         SensorNightBegin: $("#SensorNightBegin").val(),
+                         SensorNightEnd: $("#SensorNightEnd").val(),
+
+                         PDASyncData: $('#PDASyncData').is(':checked'),
+                         ElectronicFence: $('#ElectronicFence').is(':checked'),
+
+                         Password1: $("#SupLogin").val(),
+                         Password2: $("#CardNoPassword").val(),
+                         Password3: $("#ChargePassword").val(),
+                         Password4: $("#CheckOutPassword").val(),
+                         Password5: $("#SparePassword").val()
+                     },
+                     success: function (data) {
+                         NotifySuccess('数据保存成功！', '系统消息');
+                     }, error: function () {
+
+                     }
+                 });
+             });
+        }
+    </script>
+}
+
+
+
+
+
+

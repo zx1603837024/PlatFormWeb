@@ -1,0 +1,189 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("EquipmentsM");
+    ViewBag.ActiveMenu = "EquipmentsM";
+}
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+
+@section scriptsgrid
+    {
+    //下拉框转换值
+    GetDictionaryValue("A10017,A10021");
+    jQuery(grid_selector).jqGrid({
+    url: '../EquipmentsM/GetEquipmentsMList',
+    datatype: "json",
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit: false,
+    colNames: ['操作','ID', '设备编号', '设备名称', '设备型号', '创建时间','批次号', '生产工厂'],
+    colModel: [
+    {
+    name: 'myac', index: '', width: 80, fixed: true, sortable: false, resize: false,
+    formatter: 'actions',hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    //editformbutton:true, editOptions:{recreateForm: true, beforeShowForm:beforeEditCallback}
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", hidden: true, key: true},
+    { name: 'EqId', index: 'EqId', editable: false },
+    { name: 'EqName', index: 'EqName',editable: true},
+    { name: 'EqVersion', index: 'EqVersion',search:true , edittype:"select", editable: true, editoptions:{ dataUrl: '../EquipmentsM/GetEqVersionType/'+(new Date()).getMilliseconds(), defaultValue: '1' },
+            stype:'select', searchoptions: { dataUrl:'../EquipmentsM/GetEqVersionType/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']},formatter:ProcessIsActive},
+    { name: 'CreationTime', index: 'CreationTime', sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'BatchNum', index: 'BatchNum', editable: true },
+    { name: 'EqFactory', index: 'EqFactory', editable: true },
+    ],
+
+
+
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    //toppager: true,
+    editurl: "../EquipmentsM/ProcessEquipmentsM",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+
+
+     subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+        var subgrid_table_id, pager_id;
+        subgrid_table_id = subgrid_id + "_t";
+        pager_id = "p_" + subgrid_table_id;
+        $("#" + subgrid_id).html(
+        "<table id='" + subgrid_table_id
+                        + "' class='scroll'></table><div id='"
+                        + pager_id + "' class='scroll'></div>");
+        jQuery("#" + subgrid_table_id).jqGrid(
+        {
+            url: "../EquipmentsM/GetEquipmentDetailCorrelation/" + row_id,
+            datatype: "json",
+            shrinkToFit:false,
+            autowidth: true,
+             colNames: [ '操作','ID',  '设备编号', '配件类型', '配件编号'],
+            colModel: [
+                {
+                name: 'myac', index: '', width: 80, fixed: true, sortable: false, resize: false,
+                formatter: 'actions',hidden:window.rowedit,
+                formatoptions: {
+                keys: true,
+                delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+                //editformbutton:true, editOptions:{recreateForm: true, beforeShowForm:beforeEditCallback}
+                }
+                },
+                { name: 'Id', index: 'Id',  key: true,   hidden: true },
+                { name: 'EqId', index: 'EqId',  editable: false },
+                { name: 'PartsType', index: 'PartsType',search:true , edittype:"select", editable: true, editoptions:{ dataUrl: '../EquipmentsM/GetPartsType/'+(new Date()).getMilliseconds(), defaultValue: '1' },
+            stype:'select', searchoptions: { dataUrl:'../EquipmentsM/GetPartsType/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']},formatter:ProcessIsActiveDetail },
+                { name: 'PartsId', index: 'PartsId',  editable: true },
+            ],
+            sortname: 'Id',
+            width: '280',
+            sortorder: "asc",
+            editurl: "../EquipmentsM/ProcessEquipmentDetail",
+            height: '100%'
+        });
+    },
+
+
+
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+
+@section scriptsbuttonbyself{
+    function ProcessIsActive(cellvalue, options)
+    {
+    //alert("123");
+        for(var v in window.returnval)
+        {
+            if(window.returnval[v].ValueCode == cellvalue && window.returnval[v].TypeCode=="A10017")
+            {
+                return window.returnval[v].ValueData;
+            }
+        }
+        return cellvalue;
+    }
+
+    function ProcessIsActiveDetail(cellvalue, options)
+    {
+        for(var v in window.returnval)
+        {
+            if(window.returnval[v].ValueCode == cellvalue && window.returnval[v].TypeCode=="A10021")
+            {
+                return window.returnval[v].ValueData;
+            }
+        }
+    return cellvalue;
+    }
+
+
+
+
+    @*if(window.field1)
+    {
+        jQuery(grid_selector).navButtonAdd(pager_selector,
+        {
+            buttonicon: "icon-plus-sign purple",
+            title: "返修",
+            caption: "返修",
+            position: "last",
+            onClickButton: function () {
+                var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+                if (ids.length==1)
+                {
+                    Saveoper="edit";
+                    selectedId=ids[0];
+                    $.ajax({
+                    type: "Post",
+                    url: "../ReworkFlow/ReworkFlowEdit",
+                    data: {
+                        id: selectedId
+                    },
+                    success: function (data) {
+                          if (data.Success == true)
+                            {
+                            swal("成功!", "已确认收货！", "success");
+                               //重新加载数据
+                              $("#grid-table").trigger("reloadGrid");
+                            }
+                         else if (data.Success == false) {
+                             swal("", data.Error.Message, "error");
+                         }
+                    }
+
+                    });
+                }
+                else
+                {
+                    swal("", "请选择设备...", "info");
+                }
+            }
+        });
+    }*@
+    }
+
+
+
+
+
+

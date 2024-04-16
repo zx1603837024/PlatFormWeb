@@ -1,0 +1,49 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "权限异常管理";
+    ViewBag.ActiveMenu = "PermissionErrorManagement";
+}
+
+<div class="error-container">
+    <div class="well">
+        <h1 class="grey lighter smaller">
+            <span class="blue bigger-125">
+                <i class="icon-sitemap"></i>
+                404
+            </span>
+            访问的权限未找到
+        </h1>
+
+        <hr />
+        <h3 class="lighter smaller">我们检测到您并拥有此访问权限，请联系管理员！</h3>
+
+        <div>
+            <form class="form-search">
+                <span class="input-icon align-middle">
+                    <i class="icon-search"></i>
+
+                    <input type="text" class="search-query" placeholder="填写报错内容..." />
+                </span>
+                <button class="btn btn-sm" onclick="return false;">提交!</button>
+            </form>
+
+            <div class="space"></div>
+        </div>
+
+        <hr />
+        <div class="space"></div>
+
+        <div class="center">
+            <a href="~/Platform/Logout" class="btn btn-grey">
+                <i class="icon-arrow-left"></i>
+                返回登录界面
+            </a>
+
+            <a href="#" class="btn btn-primary">
+                <i class="icon-dashboard"></i>
+                报错
+            </a>
+        </div>
+    </div>
+</div><!-- PAGE CONTENT ENDS -->
+

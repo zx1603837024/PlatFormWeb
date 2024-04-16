@@ -1,0 +1,68 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.ActiveMenu = "TenantsManagement";
+    ViewBag.Title = L("TenantsManagement");
+}
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+@section scriptsgrid
+{
+            jQuery(grid_selector).jqGrid({
+                url: '../System/GetTenants',
+                datatype: "json",
+                mtype: "post",
+                height: 'auto',
+                autowidth: true,
+                colNames: ['操作', 'ID', '企业名称', '商户名称', '商户代码', '版本名称', '联系人', '二级域名', '地址', '是否启用'],
+                colModel: [
+                    {
+                        name: 'myac', index: '', width: 80, fixed: true, sortable: false, resize: false ,search: false,
+                        formatter: 'actions',hidden:window.rowedit,
+                        formatoptions: {
+                            keys: true,
+                            delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+                            //editformbutton:true, editOptions:{recreateForm: true, beforeShowForm:beforeEditCallback}
+                        }
+                    },
+                    { name: 'Id', index: 'Id', sorttype: "int" , key: true, hidden:true },
+                    { name: 'HQ', index: 'HQ', editable: true , required: true},
+                    { name: 'TenancyName', index: 'TenancyName', editable: true , required: true},
+                    { name: 'Name', index: 'Name', editable: true, required: true },
+                    { name: 'EditionName', index: 'EditionName',search:false, sorttype: "int", editable: true, edittype: "select", editoptions: { dataUrl: '../Edition/GetAllEdition/'+(new Date()).getMilliseconds(), defaultValue: '0' } },
+                    { name: 'Contacts', index: 'Contacts', editable: true , required: true},
+                    { name: 'DomainName', index: 'DomainName', editable: true , required: true},
+                    { name: 'Address', index: 'Address'},
+                    { name: 'IsActive', index: 'IsActive', editable: true, edittype: "select", editoptions: { value: "true:是;false:否" } }
+                ],
+                viewrecords: true,
+                rowNum: 10,
+                rowList: [10, 20, 30],
+                pager: pager_selector,
+                altRows: true,
+                sortname: 'Id',
+                //toppager: true,
+                editurl: "../System/ProcessTenants",
+                multiselect: true,
+                //multikey: "ctrlKey",
+                multiboxonly: true,
+                loadComplete: function () {
+                    var table = this;
+                    setTimeout(function () {
+                        styleCheckbox(table);
+                        updateActionIcons(table);
+                        updatePagerIcons(table);
+                        enableTooltips(table);
+                    }, 0);
+                },
+                caption: "@ViewBag.Title",
+                autowidth: true
+            });
+}
+
+
+
+
+
+

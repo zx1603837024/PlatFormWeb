@@ -1,0 +1,475 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("EmployeeBatchNoReport");
+    ViewBag.ActiveMenu = "EmployeeBatchNoReport";
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+    <script src="~/assets/js/jquery-migrate-1.1.0.js"></script>
+    <script src="~/assets/js/jquery.jqprint-0.3.js"></script>
+}
+
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td align="right">请输入收费员批次号：</td>
+            <td style="width:16%;">
+                <input id="BatchNo" type="text" style="width:150px;" />
+            </td>
+
+            <td colspan="2" style="text-align: center;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+            <td width="200px"></td>
+        </tr>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+        <div class="widget-box transparent invoice-box">
+            <div class="widget-header widget-header-large">
+                <h3 class="grey lighter pull-left position-relative">
+                    收费员批次号报表
+                </h3>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main padding-24">
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="row">
+                                <div class="col-xs-11 label label-lg label-info arrowed-in arrowed-right">
+                                    <b>账目信息</b>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <ul class="list-unstyled spaced">
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    停车总数：<span id="CarInCount">0</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    取车总数：<span id="CarOutCount">0</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    在线支付：<span id="OnlinePaySum">0.00</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    现金追缴：
+                                                    <span id="CashRecPaySum">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    预付费总额：<span id="PrepaySum">0.00</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    追缴总额：<span id="RecPaySum">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    应收总额：<span id="ShouldPaySum">0.00</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    实收总额：<span id="RealPaySum">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    欠费总额：<span id="OwePaySum">0.00</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    出场收费总额：<span id="OutPaySum">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    预付现金总额：<span id="CashPrePay">0.00</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    现金总额：<span id="CashPaySum">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+
+                                    <li>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="50%">
+                                                    &nbsp;&nbsp;<i class="icon-caret-right blue"></i>
+                                                    在线补缴：<span id="OnlineRecPaySum">0.00</span>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="icon-caret-right blue"></i>
+                                                    追缴笔数：<span id="RecoverCount">0</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="row">
+                                <div class="col-xs-11 label label-lg label-success arrowed-in arrowed-right">
+                                    <b>收费员明细</b>
+                                </div>
+                            </div>
+                            <div>
+                                <ul class="list-unstyled  spaced">
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        姓名：<span id="TrueName"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        批次号：<span id="CheckInBatchNo"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        设备号：<span id="DeviceCode"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        签到时间：<span id="CheckInTime"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        签退时间：<span id="CheckOutTime"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        泊位段：<span id="BerthsecName"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        数据是否异常：<span id="IsNormal"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        是否对账：<span id="IsRepeal"></span>
+                                    </li>
+                                    <li>
+                                        <i class="icon-caret-right green"></i>
+                                        备注：<span id="Remark"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="grid-pager"></div>
+<table id="grid-table"></table>
+
+<script src="~/assets/js/jquery-2.0.3.min.js"></script>
+
+<script type="text/javascript">
+    $('#myButton').on('click', function () {
+        $.ajax({
+            type: "post",
+            async: false,
+            url: '../EmployeeBatchNoReport/GetReconciliationModel',
+            data: { 'BatchNo': $('#BatchNo').val() },
+            dataType: 'json',
+            success: function (result) {
+                var item = JSON.parse(result);
+                $("#CarInCount").html(item.CarInCount);
+                $("#CarOutCount").html(item.CarOutCount);
+                $("#PrepaySum").html(parseFloat(item.PrepaySum).toFixed(2));
+                $("#OutPaySum").html(parseFloat(item.OutPaySum).toFixed(2));
+                $("#ShouldPaySum").html(parseFloat(item.ShouldPaySum).toFixed(2));
+                $("#RealPaySum").html(parseFloat(item.RealPaySum).toFixed(2));
+                $("#OwePaySum").html(parseFloat(item.OwePaySum).toFixed(2));
+                $("#RecPaySum").html(parseFloat(item.RecPaySum).toFixed(2));
+                $("#CashPrePay").html(parseFloat(item.CashPrePay).toFixed(2));
+                $("#CashPaySum").html(parseFloat(item.CashPaySum).toFixed(2));
+                $("#OnlinePaySum").html(parseFloat(item.OnlinePaySum).toFixed(2));
+                $("#CashRecPaySum").html(parseFloat(item.CashRecPaySum).toFixed(2));
+                $("#OnlineRecPaySum").html(parseFloat(item.OnlineRecPaySum).toFixed(2));
+                $("#RecoverCount").html(item.RecoverCount);
+                $("#TrueName").html(item.TrueName);
+                $("#DeviceCode").html(item.DeviceCode);
+                $("#CheckInTime").html(item.strInTime);
+                $("#CheckOutTime").html(item.strOutTime);
+                $("#CheckInBatchNo").html(item.BatchNo);
+                $("#BerthsecName").html(item.BerthsecName);
+                $("#Remark").html(item.Remark);
+                if (item.IsRepeal == true) {
+                    $("#IsRepeal").html("是");
+                } else {
+                    $("#IsRepeal").html("否");
+                }
+                if (item.IsNormal == true) {
+                    $("#IsNormal").html("正常");
+                } else {
+                    $("#IsNormal").html("异常");
+                }
+                NotifyInfo('数据加载完成！');
+            }
+        });
+
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            ajaxGridOptions: { type: "POST", async: false },
+            url: '../EmployeeBatchNoReport/GetEmployeeBatchNoDynamicReport',
+            datatype: 'json',
+            postData: {
+                'BatchNo': $('#BatchNo').val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+</script>
+
+@section scriptsgrid
+{
+    function PicFormatter(cellvalue, options, rowdata) {
+    return '<a href="../Business/ShowImage/'+ rowdata.Id  +'" target="_blank" id="colorbox"><img src="../Business/ShowImage/'+ rowdata.Id  +'" id="img' + rowdata.Id + '" style="width:50px;height:50px;" /></a>';
+    }
+
+    jQuery(grid_selector).jqGrid({
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: '../EmployeeBatchNoReport/GetEmployeeBatchNoDynamicReport',
+    datatype: "json",
+    mtype: "post",
+    loadError: function(xhr,status,error){ alert(status + " loading data of " + $(this).attr("id") + " : " + error ); },
+    shrinkToFit:false,
+    autowidth: true,
+    height: 'auto',
+    colNames: ['操作', 'ID', '商户', '分公司名称', '区域', '停车场', '泊位段', '泊位号', '车牌号', '总应收', '预付款', '出场应收', '实收', '欠费金额', '入场时间', '离场时间','车辆类型', '停车时长',  '状态', '支付类型', '停车类型', '入场收费员', '入场设备', '出场收费员', '出场设备', '收费收费员', '收费设备','车检器入场时间','车检器出场时间','车检器停车时长','车检器应收','进场批次号','出场批次号','追缴批次号', 'guid'],
+    colModel: [
+    {
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false ,search: false,
+    formatter: 'actions', hidden: window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", hidden: true },//editoptions:{ dataUrl: '../InspectionDevice/GetAllTenantName/'+(new Date()).getMilliseconds(), defaultValue: '1' }
+    { name: 'Tenant', editable: false, index: 'Tenant', hidden: window.TenantField, search: true, stype:'select', searchoptions: { dataUrl: '../InspectionDevice/GetAllTenantName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne'] } },
+    { name: 'CompanyName', editable: false, index: 'CompanyName',search: false, stype:'select', searchoptions: { dataUrl: '../Equipments/GetAllCompanyName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne'], defaultValue: '2' }},
+    { name: 'RegionName', index: 'RegionName', search: true, stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllRegionName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'ParkName', editable: true, index: 'ParkName', search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllParkName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'BerthsecName', index: 'BerthsecName',search:true ,
+    stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetBerthsecListSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'BerthNumber', editable: false, width: 70, index: 'BerthNumber' },
+    { name: 'PlateNumber', editable: false,width: 80, index: 'PlateNumber', searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']} },
+    { name: 'Money', index: 'Money', width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Prepaid', index: 'Prepaid', width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Receivable', index: 'Receivable',width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'FactReceive', index: 'FactReceive',width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>" },
+    { name: 'Arrearage', index: 'Arrearage',width: 70, formatter:"number", summaryType:'sum', summaryTpl:"<b>总计：{0} </b>"  },
+    { name: 'CarInTimeString', index: 'CarInTimeString', sorttype: "date", editable: false, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}},
+    { name: 'CarOutTimeString', index: 'CarOutTimeString', sorttype: "date", editable: false, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']}},
+    { name: 'CarTypeName', index: 'CarTypeName'},
+    { name: 'StopTimes', index: 'StopTimes'},
+    { name: 'StatusName', index: 'StatusName', formatter:Status },
+    { name: 'PayStatusName', index: 'PayStatusName' },
+    { name: 'StopTypeName', index: 'StopTypeName' },
+    { name: 'InEmployeeName', index: 'InEmployeeName' },
+    { name: 'InDeviceCode', index: 'InDeviceCode' },
+    { name: 'OutEmployeeName', index: 'OutEmployeeName' },
+    { name: 'OutDeviceCode', index: 'OutDeviceCode' },
+    { name: 'ChargeEmployeeName', index: 'ChargeEmployeeName' },
+    { name: 'ChargeDeviceCode', index: 'ChargeDeviceCode' },
+    { name: 'SensorsInCarTimeString', index: 'SensorsInCarTime', sorttype: "date", editable: false },
+    { name: 'SensorsOutCarTimeString', index: 'SensorsOutCarTime', sorttype: "date", editable: false },
+    { name: 'SensorsStopTimes', index: 'SensorsStopTime',editable: false },
+    { name: 'SensorsReceivable', index: 'SensorsReceivable',editable: false },
+    { name: 'InBatchNo', index: 'InBatchNo' },
+    { name: 'OutBatchNo', index: 'OutBatchNo' },
+    { name: 'PaymentBatchNo', index: 'PaymentBatchNo' },
+    { name: 'guid', index: 'guid',editable: false, key: true, hidden: true }
+    ],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    loadonce:false,
+    jsonReader: {
+    repeatitems: false
+    },
+    toppager: false,
+    multiselect: true,
+    //autowidth: false,
+    //shrinkToFit:false,
+    userDataOnFooter : true,//汇总
+    footerrow:true,//汇总
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                                + "' class='scroll'></table><div id='"
+                                + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    ajaxSelectOptions: { type: "GET" ,async:false},
+    ajaxGridOptions : {type:"POST",async:false},
+    url: "../Business/GetBusinessDetailsPictureList/" + row_id,
+    datatype: "json",
+    colNames: ['ID', '图片', '上传时间', '照片类型'],
+    colModel: [
+    { name: "Id", index: "Id", key: true, hidden: true },
+    { name: "BusinessDetailPictureUrl", index: "BusinessDetailPictureUrl",formatter: PicFormatter, width:100  },
+    { name: 'CreateTime', index: 'CreationTime', sorttype: "date", editable: false, formatter: 'date', formatoptions: { srcformat: 'Y-m-d  H:i:s', newformat: 'Y-m-d H:i:s' }, width:180 },
+    { name: 'PicTypeName', index: 'PicTypeName' }
+    ],
+    sortname: 'Id',
+    rowNum : 50,
+    sortorder: "asc",
+    height: 'auto'
+    });
+    },
+    pager: pager_selector,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    grouping:false,
+    groupingView : {
+    groupField : ['BerthsecName'],
+    groupSummary : [true],
+    groupColumnShow : [false],
+    groupText : ['<b>{0}</b>'],
+    groupCollapse : false,
+    groupOrder: ['asc']
+    },
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    afterCompleteFunction();
+    }
+    });
+
+    function afterCompleteFunction()
+    {
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    var rowDatas = $(grid_selector).jqGrid("getRowData");
+    for(var i =0;  rowDatas.length > i ;i++)
+    {
+    var q=parseFloat(rowDatas[i].Receivable) + parseFloat(rowDatas[i].Prepaid);
+    if(parseFloat(rowDatas[i].Receivable) + parseFloat(rowDatas[i].Prepaid) == 0){
+    $("td[title$='"+rowDatas[i].Id+"']").find("td").addClass("SelectBG");
+    }
+    }
+    }
+}
+
+@section scriptsbuttonbyself{
+
+    if(window.field2)
+    {
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "恢复欠费",
+    caption: "恢复欠费",
+    position: "last",
+    onClickButton: function () {
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length==1)
+    {
+    Saveoper="edit";
+    selectedId=ids[0];
+    $.ajax({
+    type: "Post",
+    url: "../Business/GetBusinessDetail",
+    data: {
+    Id: selectedId
+    },
+    success: function (data) {
+    $("#AccountName").html(data.PlateNumber);
+    $("#AccountCardNo").html(data.BerthNumber);
+    $("#AccountWallet").html(data.FactReceive);
+    }
+    });
+    $("#myModal").modal('show');
+    }
+    else
+    {
+    swal("", "请选择账户...", "info");
+    }
+    }
+    });
+    }
+
+
+    function Status(cellvalue, options)
+    {
+    if(cellvalue == '正常收费')
+    return "<span class='badge badge-info'>正常收费</span>";
+    else if(cellvalue == '追缴')
+    return "<span class='badge badge-yellow'>追缴</span>";
+    else if(cellvalue == '逃逸')
+    return "<span class='badge badge-danger'>逃逸</span>";
+    else
+    return cellvalue;
+    }
+}

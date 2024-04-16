@@ -1,0 +1,641 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("ParkingInformation");
+    ViewBag.ActiveMenu = "ParkingInformation";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/metroStyle.css" />
+}
+
+
+<div class="alert alert-info">
+    <i class="icon-hand-right"></i>
+    停车场添加、修改时，早班费率不允许为空
+    <button class="close" data-dismiss="alert">
+        <i class="icon-remove"></i>
+    </button>
+</div>
+
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<!--Tree Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">泊位树</h4>
+            </div>
+            <div class="modal-body">
+                <div class="content_wrap">
+                    <div class="zTreeDemoBackground left">
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="getCheckedNodes()">查看泊位信息</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="Save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form class="form-horizontal" role="form">
+            <div class="modal-content" style="width:690px">
+                <div class="modal-header" style="padding:8px 15px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">坐标设置</h4>
+                </div>
+                <div class="modal-body" style="margin:10px 20px 1px 10px">
+                    <div class="content_wrap">
+                        <div class="form-group" style="display:none">
+                            <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> Id</label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="Id" value="" placeholder="Id" class="col-xs-10 col-sm-11" />
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 地址 </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="Address" value="" placeholder="泊位段地址" class="col-xs-10 col-sm-11" />
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label no-padding-right"></label>
+                            <div class="col-sm-11" id="allmap" style="width:650px;height:400px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="Save1()">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../Berthsecs/GetBerthsecList',
+    datatype: "json",
+    ajaxSelectOptions: { type: "GET" },
+    mtype: "post",
+    autowidth: true,
+    height: 'auto',
+    shrinkToFit:false,
+    colNames: ['操作', 'ID',  '区域',  '停车场' , '泊位数', '早班费率','中班费率','晚班费率', '是否激活', '签到人员', '签到设备', '签到时间','签退人员', '签退设备', '签退时间','签到/签退', '是否推送'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: false, resize: false, search: false,
+    formatter: 'actions', hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true},
+    { name: 'RegionName', editable: true, index: 'RegionName' ,search:true ,edittype:"select",
+    editoptions:{ dataUrl: '../Berthsecs/GetAllRegionName/'+(new Date()).getMilliseconds(), defaultValue: '1' , dataEvents: [{ type: 'click', fn:FillParkSelectByRegionId }] }, stype:'select', searchoptions: { dataUrl:'../Berthsecs/GetAllRegionName/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+
+    { name: 'BerthsecName', editable: true, index: 'BerthsecName', required: true },
+    { name: 'BerthCount', editable: true, index: 'BerthCount' ,editable: false, width: 80},
+    { name: 'RateName', editable: true, index: 'RateName' ,search:false,edittype:"select",
+    editoptions:{ dataUrl: '../Berthsecs/GetAllRateName/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+
+    { name: 'RateName1', editable: true, index: 'RateName1' ,search:false,edittype:"select",
+    editoptions:{ dataUrl: '../Berthsecs/GetAllRateName/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+
+    { name: 'RateName2', editable: true, index: 'RateName2' ,search:false,edittype:"select",
+    editoptions:{ dataUrl: '../Berthsecs/GetAllRateName/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+
+    { name: 'IsActive', index: 'IsActive',search:true, editable: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:YesAndNo, width: 80, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'CheckInName', editable: false, index: 'CheckInName',search:false, width: 100 },
+    { name: 'CheckInDeviceCode', editable: false, index: 'CheckInDeviceCode',search:true, width: 100 },
+    { name: 'CheckInTime', editable: false, index: 'CheckInTime', sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }, search:true, stype:'text', searchoptions: {dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge']} },
+    { name: 'CheckOutName', editable: false, index: 'CheckOutName',search:false },
+    { name: 'CheckOutDeviceCode', editable: false, index: 'CheckOutDeviceCode',search:true },
+    { name: 'CheckOutTime', editable: false, index: 'CheckOutTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }, search:true, stype:'text', searchoptions: { dataInit:datePick
+    , attr:{title:'选择日期'}, sopt:['lt', 'le', 'gt', 'ge'] } },
+    { name: 'UseStatus', index: 'UseStatus',search:true, editable: false, edittype: "select", editoptions: { value: "true:签到; false:签退" }, formatter:CinAndCout, width: 80, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetCheckOrCheckOutSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne'], defaultValue: '2'} },
+    { name: 'PushStatus', index: 'PushStatus', search:true, editable: true, edittype: "select", editoptions: { value: "true:是;false:否" }, formatter:YesAndNo , width: 80, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}}
+
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    toppager: false,
+    editurl: "../Berthsecs/ProcessBerthsec",
+    multiselect: true,
+    multiboxonly: true,
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                            + "' class='scroll'></table><div id='"
+                            + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    ajaxSelectOptions: { type: "GET" , async: false },
+    ajaxGridOptions : {type:"POST", async: false },
+    url: "../Berth/GetBerthByBerthsecId/" + row_id,
+    datatype: "json",
+    colNames: ['ID', '泊位号', '泊位状态', '在停车辆', '入场时间', '离场时间'],
+    colModel: [
+    { name: "Id", index: "Id", key: true, hidden: true },
+    { name: 'BerthNumber', editable: false, index: 'BerthNumber',search:false, width:80 },
+    { name: 'BerthStatus', editable: false, index: 'BerthStatus',search:false, width:80, formatter:StopOrEmpty },
+    { name: 'RelateNumber', editable: false, index: 'RelateNumber',search:false, width:80,searchoptions:{sopt:['cn', 'nc', 'eq', 'ne']} },
+    { name: 'InCarTimeStr', editable: false, index: 'InCarTimeStr',search:false, width:135 },
+    { name: 'OutCarTimeStr', editable: false, index: 'OutCarTimeStr',search:false, width:135 }
+    ],
+    sortname: 'Id',
+    rowNum : 50,
+    sortorder: "asc",
+    width: 600,
+    height: 310,
+    shrinkToFit:false
+    });
+    },
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+@section scriptsbuttonbyself{
+    if(window.field1){
+    //批量签退
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "批量签退",
+    caption: "批量签退",
+    position: "last",
+    onClickButton: function () {
+
+    var ids = jQuery(grid_selector).jqGrid('getGridParam', 'selarrrow');
+    if (ids.length != 0)
+    {
+    Saveoper="edit";
+    //selectedId=ids[0];
+    swal({   title: "是否批量签退?",    type: "warning",   showCancelButton: true, cancelButtonText: "取消",  confirmButtonColor: "#DD6B55",   confirmButtonText: "确定",   closeOnConfirm: false },function(){
+
+    $.ajax({
+    type: "Post",
+    url: "../Berthsecs/BatchBerthsecCheckOut",
+    data: {
+    berthsecId: ids
+    },
+    success: function (data) {
+    if(data.a=="OK")
+    {
+    swal("", "批量签退成功！", "success");
+    $("#grid-table").trigger("reloadGrid");
+    }
+    else
+    {
+    //alert('批量签退失败！');
+    }
+    }
+    });
+
+    });
+    }
+    else
+    {
+    swal("", "请选择泊位段...", "info");
+    }
+    }
+    });
+    }
+
+    if(window.field2){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "分配泊位",
+    caption: "分配泊位",
+    position: "last",
+    onClickButton: function () {
+
+    Savetype="oper";
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length==1)
+    {
+    chooseberthsecid= ids[0];
+    $.ajax({
+    type: "Post",
+    url: "/Berthsecs/GetBerthsList/"+ ids[0],
+    success: function (data) {
+    treeini(data);
+    $("#myModal").modal('show');
+    }, error: function (data) {
+    swal("", "获取泊位数据失败，请稍后重试...", "error");
+    }
+    });
+    }
+    else
+    {
+    swal("", "请选择泊位段...", "info");
+    }
+    }
+    });
+    }
+
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "泊位段坐标设置",
+    caption: "泊位段定位",
+    position: "last",
+    onClickButton: function(){
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length == 1)
+    {
+    Saveoper = "edit";
+    selectedId = ids[0];
+    $.ajax({
+    type: "Post",
+    url: "../Berthsecs/GetBerthsecById/",
+    data:{
+    Id:selectedId
+    },
+    success: function (data) {
+    window.X = data.Lat;
+    window.Y =  data.Lng;
+    $("#myModal1").css("display","block");
+    $("#myModal1").modal('show');
+    mapIni();
+    }, error: function (data) {
+
+    swal("", "获取经纬度数据失败，请稍后重试...", "error");
+    }
+    });
+    }
+    else
+    {
+    swal("", "请选择泊位段...", "info");
+    }
+    }
+    });
+
+
+    function CinAndCout(cellvalue, options)
+    {
+    if(cellvalue==true)
+    return "<span class='badge badge-success'>签到</span>";
+    else
+    return "<span class='badge badge-warning'>签退</span>";
+    }
+
+    function StopOrEmpty(cellvalue, options)
+    {
+    if(cellvalue==1)
+    return "<span class='badge badge-info'>在停</span>";
+    else
+    return "<span class='badge badge-danger'>未停</span>";
+    }
+}
+
+@section scripts
+{
+    <script src="~/assets/js/z-tree/jquery.ztree.core-3.5.js"></script>
+    <script src="~/assets/js/z-tree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="~/assets/js/z-tree/jquery.ztree.exedit-3.5.js"></script>
+
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+
+    <script type="text/javascript">
+
+        var setting = {
+            view: {
+                selectedMulti: false
+            },
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                beforeCheck: beforeCheck,
+                onCheck: onCheck
+            }
+        };
+
+        var zNodes = "";
+
+        var code, log, className = "dark";
+
+        function beforeCheck(treeId, treeNode) {
+            className = (className === "dark" ? "" : "dark");
+            showLog("[ " + getTime() + " beforeCheck ]&nbsp;&nbsp;&nbsp;&nbsp;" + treeNode.name);
+            return (treeNode.doCheck !== false);
+        }
+
+        function onCheck(e, treeId, treeNode) {
+            showLog("[ " + getTime() + " onCheck ]&nbsp;&nbsp;&nbsp;&nbsp;" + treeNode.name);
+        }
+
+        function showLog(str) {
+            if (!log) log = $("#log");
+            log.append("<li class='" + className + "'>" + str + "</li>");
+            if (log.children("li").length > 6) {
+                log.get(0).removeChild(log.children("li")[0]);
+            }
+        }
+
+        function getTime() {
+            var now = new Date(),
+            h = now.getHours(),
+            m = now.getMinutes(),
+            s = now.getSeconds(),
+            ms = now.getMilliseconds();
+            return (h + ":" + m + ":" + s + " " + ms);
+        }
+
+        function checkNode(e) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+            type = e.data.type,
+            nodes = zTree.getSelectedNodes();
+            if (type.indexOf("All") < 0 && nodes.length == 0) {
+                //alert("请先选择一个节点");
+                swal("", "请先选择一个节点", "info");
+            }
+
+            if (type == "checkAllTrue") {
+                zTree.checkAllNodes(true);
+            } else if (type == "checkAllFalse") {
+                zTree.checkAllNodes(false);
+            } else {
+                var callbackFlag = $("#callbackTrigger").attr("checked");
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if (type == "checkTrue") {
+                        zTree.checkNode(nodes[i], true, false, callbackFlag);
+                    } else if (type == "checkFalse") {
+                        zTree.checkNode(nodes[i], false, false, callbackFlag);
+                    } else if (type == "toggle") {
+                        zTree.checkNode(nodes[i], null, false, callbackFlag);
+                    } else if (type == "checkTruePS") {
+                        zTree.checkNode(nodes[i], true, true, callbackFlag);
+                    } else if (type == "checkFalsePS") {
+                        zTree.checkNode(nodes[i], false, true, callbackFlag);
+                    } else if (type == "togglePS") {
+                        zTree.checkNode(nodes[i], null, true, callbackFlag);
+                    }
+                }
+            }
+        }
+
+        function setAutoTrigger(e) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.check.autoCheckTrigger = $("#autoCallbackTrigger").attr("checked");
+            $("#autoCheckTriggerValue").html(zTree.setting.check.autoCheckTrigger ? "true" : "false");
+        }
+
+        function treeini(data) {
+            zNodes = eval("[" + data + "]");
+            $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            $("#checkTrue").bind("click", { type: "checkTrue" }, checkNode);
+            $("#checkFalse").bind("click", { type: "checkFalse" }, checkNode);
+            $("#toggle").bind("click", { type: "toggle" }, checkNode);
+            $("#checkTruePS").bind("click", { type: "checkTruePS" }, checkNode);
+            $("#checkFalsePS").bind("click", { type: "checkFalsePS" }, checkNode);
+            $("#togglePS").bind("click", { type: "togglePS" }, checkNode);
+            $("#checkAllTrue").bind("click", { type: "checkAllTrue" }, checkNode);
+            $("#checkAllFalse").bind("click", { type: "checkAllFalse" }, checkNode);
+            $("#autoCallbackTrigger").bind("change", {}, setAutoTrigger);
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            type = { "Y": "ps", "N": "s" };// 取消勾选时 不关联父节点
+            zTree.setting.check.chkboxType = type;
+        }
+
+        function getCheckedNodes() {
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+            var nodes = treeObj.transformToArray(treeObj.getNodes());
+            var checkednode = "";
+            for (var i = 0; i < nodes.length; i++) {
+                var checked = nodes[i].checked;
+                if (checked == true) {
+                    checkednode += nodes[i].name + " ,  ";
+                    if (nodes[i].name.indexOf(".") > 0)
+                        checkednode += nodes[i].name + " ,\r\n  ";
+                }
+            }
+            alert(checkednode);
+        }
+
+        function Save() {
+            var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+            var nodes = treeObj.transformToArray(treeObj.getNodes());
+            var checkNodes = new Array();
+            for (var i = 0, j = 0; i < nodes.length; i++) {
+                var checked = nodes[i].checked;
+                var disabled = nodes[i].chkDisabled;
+                if (checked == true && disabled == false) {
+                    checkNodes[j] = nodes[i];
+                    j++;
+                }
+            }
+
+            var json = { "savetype": Savetype, "chooseberthsecid": chooseberthsecid, "nodes": JSON.stringify(checkNodes) };
+            var jsonstr = JSON.stringify(json);
+            $.ajax({
+                type: "POST",
+                url: "../Berthsecs/SaveBerthsToBerthsec",
+                contentType: "application/json; charset=utf-8",
+                cache: false,
+                dataType: 'json',
+                data: jsonstr,
+                success: function (data) {
+                    if (data.Success == false) {
+                        swal("", data.Error.Message, "error");
+                    }
+                    else if(data.Success == true) {
+                        swal("", "保存成功", "info");
+                        $('#myModal').modal('hide');
+                    }
+                }
+            });
+        }
+
+        function Save1() {
+            $.ajax({
+                type: "POST",
+                url: '../Berthsecs/SaveBerthsecAddress/',
+                data: {
+                    oper: Saveoper,
+                    id: selectedId,
+                    X: window.X,
+                    Y: window.Y
+                },
+                success: function (data) {
+                    if (data.Success == false) {
+                        swal("", data.Error.Message, "error");
+                    } else {
+                        $('#myModal1').modal('hide');
+                        $("#grid-table").trigger("reloadGrid");
+                    }
+                }, error: function () {
+                }
+            });
+        }
+
+        function mapIni() {
+            var map = new BMap.Map("allmap");
+            map.enableScrollWheelZoom();
+            map.enableInertialDragging();
+            map.enableContinuousZoom()
+            var point = new BMap.Point(116.331398, 39.897445);
+            map.centerAndZoom(point, 12);
+            var geoc = new BMap.Geocoder();
+            var geolocation = new BMap.Geolocation();
+            var myIcongreen = new BMap.Icon("../assets/images/03.png", new BMap.Size(36, 36));
+            if (window.X.length > 0 && window.Y.length > 0) {
+                var mk = new BMap.Marker(new BMap.Point(window.X, window.Y), {
+                    enableDragging: true,
+                    raiseOnDrag: true,
+                    icon: myIcongreen
+                });
+                map.addOverlay(mk);
+                map.panTo(new BMap.Point(window.X, window.Y));
+
+                mk.addEventListener('dragend', function (e) {
+                    var pt = e.point;
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                        $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                        window.X = e.point.lng;
+                        window.Y = e.point.lat;
+                    });
+                })
+                var pt = new BMap.Point(window.X, window.Y);
+                geoc.getLocation(pt, function (rs) {
+                    var addComp = rs.addressComponents;
+                    $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                });
+                //城市列表
+                var size = new BMap.Size(10, 20);
+                map.addControl(new BMap.CityListControl({
+                    anchor: BMAP_ANCHOR_TOP_RIGHT,
+                    offset: size
+                }));
+                //城市列表
+            }
+            else {
+                geolocation.getCurrentPosition(function (r) {
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                        //城市列表
+                        var size = new BMap.Size(10, 20);
+                        map.addControl(new BMap.CityListControl({
+                            anchor: BMAP_ANCHOR_TOP_RIGHT,
+                            offset: size
+                        }));
+                        //城市列表
+                        var mk = new BMap.Marker(r.point, {
+                            enableDragging: true,
+                            raiseOnDrag: true
+                        });
+                        map.addOverlay(mk);
+                        map.panTo(r.point);
+                        //城市列表
+                        var size = new BMap.Size(10, 20);
+                        map.addControl(new BMap.CityListControl({
+                            anchor: BMAP_ANCHOR_TOP_RIGHT,
+                            offset: size
+                        }));
+                        //城市列表
+                        mk.addEventListener('dragend', function (e) {
+                            var pt = e.point;
+                            geoc.getLocation(pt, function (rs) {
+                                var addComp = rs.addressComponents;
+                                $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                                window.X = e.point.lng
+                                window.Y = e.point.lat
+                            });
+                        })
+                        var pt = r.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            $("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                            window.X = r.point.lng;
+                            window.Y = r.point.lat;
+                        });
+                    }
+                    else {
+                        alert('failed' + this.getStatus());
+                    }
+                }, { enableHighAccuracy: true });
+            }
+        }
+    </script>
+}
+
+<script type="text/javascript">
+
+    function FillParkSelectByRegionId(e) {
+        var str = "";
+        var rowid = this.id.indexOf('_') > 0 ? this.id.split('_')[0] : 0;
+
+        $.ajax({
+            url: '../Berthsecs/GetAllParkName1/' + (new Date()).getMilliseconds(),
+            type: "Post",      
+            data: {
+                regionId: this.value
+            },
+            success: function (data) {
+                if (data != null) {
+                    $.each(data, function (i, item) {
+                        str += "<option value=" + item.Id + ">" + item.ParkName + "</option>";
+                    });
+                    if (rowid == 0) {
+                        $("#ParkName option").remove();
+                        $("#ParkName").append(str);   //获取下面下拉框RoleName对象
+                    }
+                    else {
+                        $("#" + rowid + "_ParkName option").remove();
+                        $("#" + rowid + "_ParkName").append(str);  //获取下面下拉框RoleName对象
+                    }
+                }
+            }, error: function (data) {
+                swal("", "获取停车场数据失败，请稍后重试...", "error");
+            }
+        });
+    }
+</script>
+
+
+
+

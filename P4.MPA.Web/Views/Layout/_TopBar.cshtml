@@ -1,0 +1,203 @@
+﻿@using Abp.Collections.Extensions
+@model P4.Web.Models.Layout.TopBarViewModel
+
+
+<li class="grey">
+    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+        <i class="icon-tasks"></i>
+        <span class="badge badge-grey">@Model.TasksCount</span>
+    </a>
+
+    <ul class="pull-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+        <li class="dropdown-header">
+            <i class="icon-ok"></i>
+            还有@(Model.TasksCount)个任务完成
+        </li>
+        @{
+            foreach (var task in Model.Tasks)
+            {
+                <li>
+                    <a href="#">
+                        <div class="clearfix">
+                            <span class="pull-left">@(task.TaskInfo.Length > 18 ? task.TaskInfo.Substring(0, 17)+"..." : task.TaskInfo)</span>
+                            @*<span class="pull-right">65%</span>*@
+                        </div>
+
+                        @*<div class="progress progress-mini ">
+                                <div style="width:65%" class="progress-bar "></div>
+                            </div>*@
+                    </a>
+                </li>
+            }
+        }
+
+        <li>
+            <a href="~/Users/Tasks">
+                查看任务列表
+                <i class="icon-arrow-right"></i>
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+<li class="purple">
+    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+        <i class="icon-bell-alt icon-animated-bell"></i>
+        <span class="badge badge-important">@Model.NoticesCount</span>
+    </a>
+
+    <ul class="pull-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+        <li class="dropdown-header">
+            <i class="icon-warning-sign"></i>
+            @(Model.NoticesCount)条通知
+        </li>
+        @{
+            foreach (var notice in Model.Notices)
+            {
+                <li>
+                    <a href="#">
+                        <div class="clearfix">
+                            <span class="pull-left">
+                                <i class="btn btn-xs no-hover btn-pink icon-comment"></i>
+                                @(notice.NoticeInfo.Length > 18 ? notice.NoticeInfo.Substring(0, 17) + "..." : notice.NoticeInfo)
+                            </span>
+                            @*<span class="pull-right badge badge-info">+12</span>*@
+                        </div>
+                    </a>
+                </li>
+            }
+        }
+
+        <li>
+            <a href="~/Users/Notices">
+                查看所有通知
+                <i class="icon-arrow-right"></i>
+            </a>
+        </li>
+    </ul>
+</li>
+
+<li class="green">
+    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+        <i class="icon-envelope icon-animated-vertical"></i>
+        <span class="badge badge-success">@Model.MessagesCount</span>
+    </a>
+
+    <ul class="pull-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+        <li class="dropdown-header">
+            <i class="icon-envelope-alt"></i>
+            @(Model.MessagesCount)条消息
+        </li>
+
+        @{
+            foreach (var message in Model.Messages)
+            {
+                <li>
+                    <a href="#">
+                        <img src="~/assets/avatars/fuser.jpg" class="msg-photo" alt="照片" />
+                        <span class="msg-body">
+                            <span class="msg-title">
+                                <span class="blue"></span>
+                                @(message.Msg== null ? "": message.Msg.Length > 18 ? message.Msg.Substring(0, 17) + "..." : message.Msg)
+                            </span>
+
+                            @*<span class="msg-time">
+                                    <i class="icon-time"></i>
+                                    <span>1分钟以前</span>
+                                </span>*@
+                        </span>
+                    </a>
+                </li>
+            }
+        }
+
+        <li>
+            <a href="~/Users/Messages">
+                查看所有消息
+                <i class="icon-arrow-right"></i>
+            </a>
+        </li>
+    </ul>
+</li>
+
+<li class="light-blue">
+    <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+        <!--<img class="nav-user-photo" src="../Users/ShowImage" alt="@Model.Name" />-->
+        <span class="user-info">
+            <small>@L("Welcome"),</small>
+            @Model.Name
+        </span>
+        <i class="icon-caret-down"></i>
+    </a>
+
+    <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+        <li>
+            <a href="~/Users/UserSetting">
+                <i class="icon-cog"></i>
+                @L("UserSettingManagement")
+            </a>
+        </li>
+        @*<li>
+                <a href="~/Users/UserInbox">
+                    <i class="icon-inbox"></i>
+                    @L("UserInbox")
+                    <span class="badge badge-inverse">10</span>
+                </a>
+            </li>*@
+        <li>
+            <a href="~/System/FAQ">
+                <i class="icon-inbox"></i>
+                @L("FAQManagement")
+            </a>
+        </li>
+        <li>
+            <a href="~/Users/ProfileInfo">
+                <i class="icon-user"></i>
+                @L("ProfileInfo")
+            </a>
+        </li>
+
+        <li class="divider"></li>
+        <li>
+            <a href="~/Platform/ExtraLock">
+                <i class="icon-lock"></i>
+                @L("Lock")
+            </a>
+        </li>
+
+        <li>
+            <a href="javascript:Logout()">
+                <i class="icon-off"></i>
+                @L("Exit")
+            </a>
+        </li>
+    </ul>
+</li>
+<script type="text/javascript">
+    toastr.options.positionClass = "@Model.SystemPromptBox";
+    toastr.options.showDuration = "30000";
+    function Logout() {
+        swal({
+            title: "系统提示?",
+            text: "您确定要退出系统？",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定,退出系统!",
+            closeOnConfirm: "取消"
+        },
+        function () {
+            swal("成功!", "正在退出系统.", "success");
+            $.ajax({
+                type: "Post",
+                url: "/Platform/Logout",
+                success: function (data) {
+                    window.location.href = "../Platform/Login";
+                }, error: function () {
+                    swal("错误!", "退出系统失败！", "error");
+                }
+            });
+        });
+    }
+</script>

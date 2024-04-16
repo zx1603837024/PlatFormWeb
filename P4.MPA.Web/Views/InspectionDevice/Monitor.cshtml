@@ -1,0 +1,346 @@
+﻿@using P4.Web.Models
+@model SensorModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("InspectionMonitor");
+    ViewBag.ActiveMenu = "InspectionMonitor";
+}
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+@section scriptsindex{
+
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="row" style="margin:10px 30px;">
+    <table border="0">
+        <tr>
+
+            <td style="width:100px">泊位段名称：</td>
+
+            <td>
+                <select class="combobox" id="berthsecIdInput" name="berthsecIdInput" data-placeholder="选择泊位段名称..." style="width:200px;">
+
+                    @foreach (var entity in Model.berthsecList)
+                    {
+                        <option value="@entity.Id">@entity.BerthsecName</option>
+                    }
+                </select>
+
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" id="searchButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+
+            </td>
+
+
+        </tr>
+    </table>
+</div>
+
+<div id="timeline-1">
+    <div class="row">
+
+        <div class="col-sm-6">
+            <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+                <div class="timeline-container">
+                    <div class="timeline-label">
+                        <span class="label label-primary arrowed-in-right label-lg berthsecName" id="berthsecId">
+                            <b></b>
+                        </span>
+                    </div>
+                      
+                            <div class="timeline-items" id="leftberthshow">
+                            @*@foreach (var sensor in Model.sensorList.Where(s => s.BerthNumber % 2 == 0))
+                            {
+                                <span></span>
+                                contentString(@sensor);
+                            }*@
+                        @*@foreach (var sensor in Model.sensorList.Where(s => s.BerthNumber % 2 == 0))
+                        {
+
+                            var statusstring = sensor.ParkStatus == 1 ? "泊位在停" : "泊位空闲";
+                            var time = sensor.ParkStatus == 1 ? sensor.InCarTime : sensor.OutCarTime;
+                            var statusinfo = sensor.ParkStatus == 1 ? "停入此泊位" : "离开此泊位";
+                            var berthsecId = sensor.SensorNumber + "_berthnumber";
+                            var statusId = sensor.SensorNumber + "_status";
+                            var batteryId = sensor.SensorNumber + "_battery";
+                            <div class="timeline-item clearfix">
+                                <div class="timeline-info">
+                                    <img alt="Susan't Avatar" src="/assets/avatars/Car.jpg" />
+                                </div>
+
+                                <div class="widget-box">
+                                    <div class="widget-header header-color-green widget-header-small">
+                                        <h5 class="smaller">
+
+                                            <a href="#" class="blue"><span id=@berthsecId>@sensor.BerthNumber</span> 号泊位</a>
+                                            <span class="grey" id=@statusId>@statusstring</span>
+                                            <span> &nbsp;&nbsp;电池电量:</span>  <span id=@batteryId>@sensor.Battery  </span>
+                                        </h5>
+
+                                        <span class="widget-toolbar no-border">
+                                            <i class="icon-time bigger-110"></i>
+                                            9:15
+                                        </span>
+
+                                        <span class="widget-toolbar">
+                                            <a href="#" data-action="reload">
+                                                <i class="icon-refresh"></i>
+                                            </a>
+
+                                            <a href="#" data-action="collapse">
+                                                <i class="icon-chevron-up"></i>
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                    <div class="widget-body">
+                                        <div class="widget-main">
+                                            车牌号为 @sensor.RelateNumber 在
+                                            <span class="red">@time</span>
+                                            @statusinfo
+                                            <div class="space-6"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }*@
+
+                    </div><!-- /.timeline-items -->
+                </div><!-- /.timeline-container -->
+            </div>
+        </div><!-- /span -->
+
+        <div class="col-sm-6">
+            <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+                <div class="timeline-container">
+                    <div class="timeline-label">
+                        <span class="label label-primary arrowed-in-right label-lg berthsecName">
+                            <b> </b>
+                        </span>
+                    </div>
+
+                    <div class="timeline-items" id="rightberthshow">
+                        @*@foreach (var sensor in Model.sensorList.Where(s => s.BerthNumber % 2 != 0))
+                        {
+                           
+                            var statusstring = sensor.ParkStatus == 1 ? "泊位在停" : "泊位空闲";
+                            var time = sensor.ParkStatus == 1 ? sensor.InCarTime : sensor.OutCarTime;
+                            var statusinfo = sensor.ParkStatus == 1 ? "停入此泊位" : "离开此泊位";
+                            var berthsecId = sensor.SensorNumber + "_berthnumber";
+                            var statusId = sensor.SensorNumber + "_status";
+                            var batteryId = sensor.SensorNumber + "_battery";
+                            <div class="timeline-item clearfix">
+                                <div class="timeline-info">
+                                    <img alt="Susan't Avatar" src="/assets/avatars/Car.jpg" />
+                                </div>
+
+                                <div class="widget-box">
+                                    <div class="widget-header header-color-red widget-header-small">
+                                        <h5 class="smaller">
+
+                                            <a href="#" class="blue"><span id=@berthsecId>@sensor.BerthNumber</span> 号泊位</a>
+                                            <span class="grey" id=@statusId>@statusstring</span>
+                                            <span> &nbsp;&nbsp;电池电量:</span>  <span id=@batteryId>@sensor.Battery  </span>
+                                        </h5>
+
+                                        <span class="widget-toolbar no-border">
+                                            <i class="icon-time bigger-110"></i>
+                                            9:15
+                                        </span>
+
+                                        <span class="widget-toolbar">
+                                            <a href="#" data-action="reload">
+                                                <i class="icon-refresh"></i>
+                                            </a>
+
+                                            <a href="#" data-action="collapse">
+                                                <i class="icon-chevron-up"></i>
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                    <div class="widget-body">
+                                        <div class="widget-main">
+                                            车牌号为 @sensor.RelateNumber 在
+                                            <span class="red">@time</span>
+                                            @statusinfo
+                                            <div class="space-6"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }*@
+
+                    </div><!-- /.timeline-items -->
+                </div><!-- /.timeline-container -->
+            </div>
+        </div><!-- /span -->
+    </div>
+</div>
+
+@section scripts{
+    @*signalr-begin*@
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="../signalr/hubs"></script>
+    @*signalr-end*@
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('[data-toggle="buttons"] .btn').on('click', function (e) {
+                var target = $(this).find('input[type=radio]');
+                var which = parseInt(target.val());
+                $('[id*="timeline-"]').addClass('hide');
+                $('#timeline-' + which).removeClass('hide');
+            });
+        });
+        
+        //车检器通讯
+        $(function () {
+            var chat = $.connection.chat;
+            $.connection.hub.start().done(function () {
+                chat.server.userlogin(window.UserName + ' Sensor' + window.TenantId);//注册名称
+            });
+            //接收诱导信息
+            chat.client.SensorMessage = function (Magnetism, Battery, SensorNumber, ParkStatus){
+                NotifySuccess(SensorNumber + '车检器,车位状态' + ParkStatus, '系统消息');
+                if (ParkStatus == 1 && $("#" + SensorNumber + "_status").html() == "车位空闲")
+                    $("#" + SensorNumber + "_status").html("车位在停");
+                else if (ParkStatus == 0 && $("#" + SensorNumber + "_status").html() == "车位在停")
+                    $("#" + SensorNumber + "_status").html("车位空闲");
+                if (Battery != null) {
+                    $("#" + SensorNumber + "_battery").html(Battery);
+                }
+            }
+
+            chat.client.SensorCarMessage = function (SensorNumber, PlateNumber, CarTime, ParkStatus) {
+                NotifySuccess(SensorNumber + '车检器,车牌号' + PlateNumber, '系统消息');
+                if (ParkStatus == 1)
+                {
+                    $("#" + SensorNumber + "_relatenumber").html(PlateNumber == null ? "未知" : PlateNumber);
+                    $("#" + SensorNumber + "_time").html(CarTime);
+                    $("#" + SensorNumber + "_statusinfo").html("停入此泊位");
+                }  
+                else {
+                    $("#" + SensorNumber + "_relatenumber").html(PlateNumber);
+                    $("#" + SensorNumber + "_time").html(CarTime);
+                    $("#" + SensorNumber + "_statusinfo").html("离开此泊位");
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            $(".chosen-select").chosen();
+        });
+        $(function () {
+            GetSensor();
+        });
+        $('#searchButton').on('click', function () {
+            GetSensor();          
+
+        });
+        function GetSensor() {
+            $.ajax({
+                type: "POST",
+                url: '../InspectionDevice/GetSensorByBerthsecId/',
+                //data: { jsonstr: jsonstr },
+                data: {
+                    berthsecid: $('#berthsecIdInput').val()
+
+                },
+                success: function (data) {
+
+                    $(".berthsecName").html($("#berthsecIdInput").find("option:selected").text());
+                    $("#leftberthshow").empty();
+                    $("#rightberthshow").empty();
+                    var len = data.length / 2;
+                    //alert(len);
+                    $.each(data, function (i, item) {
+                        var string = contentString(item);
+                        if (i < len) {
+                            $("#leftberthshow").append(string);
+                        }
+                        else {
+                            $("#rightberthshow").append(string);
+                        }
+                    });
+                    NotifySuccess('数据加载完成', '系统提示');
+                }, error: function (data) {
+                    alert("error");
+                }
+            });
+        }
+        function contentString(item) {
+            var berthsecId = item.SensorNumber + "_berthnumber";
+            var statusId = item.SensorNumber + "_status";
+            var batteryId = item.SensorNumber + "_battery";
+            var relatenumberId = item.SensorNumber + "_relatenumber";
+            var timeId = item.SensorNumber + "_time";
+            var statusinfoId = item.SensorNumber + "_statusinfo";
+            var beatTimeId = item.SensorNumber + "_beattime";
+
+            var isOnline = item.IsOnline == "1" ? "在线" : "离线";
+
+            var statusstring = item.ParkStatus == 1 ? "车位在停" : "车位空闲";
+            var time = item.BerthStatus == 1 ? item.EmplopyeeCarInTime : item.EmplopyeeCarOutTime;
+            var statusinfo = item.BerthStatus == 1 ? "停入此泊位" : "离开此泊位";
+            var string = "";
+            string += "<div class='timeline-item clearfix'>" +
+                          "<div class='timeline-info'>" +
+                            "<img alt='Susan\'t Avatar' src='/assets/avatars/Car.jpg' />" +
+                          "</div>" +
+                         "<div class='widget-box'>";
+                if (item.IsOnline == "0")
+                { string += "<div class='widget-header header-color-gray widget-header-small showcolor'>"; }
+                else if (item.ParkStatus == 1)
+                { string += "<div class='widget-header header-color-green  widget-header-small showcolor'>"; }
+                else if (item.ParkStatus == 0)
+                { string += "<div class='widget-header header-color-red  widget-header-small showcolor'>"; }
+                        string += "<h5 class='smaller'>" +
+                                     "<a href='#' class='blue'><span id=" + berthsecId + ">" + item.BerthNumber + "</span>号泊位</a>" +
+                                     " <span class='grey'  id=" + statusId + ">" + statusstring + "</span>" +
+                                     " <span class='blue'> &nbsp;&nbsp;电池电量:</span>  <span class='blue' id=" + batteryId + ">" + (item.Battery == null ? "0" : item.Battery) + "</span>" +
+                                      "<span class='blue' >&nbsp;&nbsp;&nbsp;" + isOnline + "</span>" +
+                                 " </h5>" +
+
+                                 "<span class='widget-toolbar no-border'>" +
+                                     "<i class='icon-time bigger-110'></i>" +
+                                     "<span  class='blue' id=" + beatTimeId + ">" + item.BeatDateTimeString + "</span>" +
+                                 "</span>" +
+
+                                 "<span class='widget-toolbar'>" +
+                                     "<a href='#' data-action='reload'>" +
+                                         " <i class='icon-refresh'></i>" +
+                                     "</a>" +
+
+                                     "<a href='#' data-action='collapse'>" +
+                                         "<i class='icon-chevron-up'></i>" +
+                                     "</a>" +
+                               "</span>" +
+                        "</div>" +
+
+                         "<div class='widget-body'>" +
+                             "<div class='widget-main'>" +
+                                 "车牌号为<span class='red'  id=" + relatenumberId + ">" + (item.EmplopyeePlateNumber == null ? "未知车牌" : item.EmplopyeePlateNumber) + "</span>在" +
+                                 "<span class='red' id=" + timeId+ ">" + time + "</span>" +
+                                 "<span id=" + statusinfoId + ">" + statusinfo + "</span>" +
+
+                                 "<div class='space-6'></div>" +
+                             "</div>" +
+                         "</div>" +
+                    "</div>" +
+                "</div>";
+                        return string;
+        }
+
+    </script>
+}

@@ -1,0 +1,179 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = L("CarStopLocus");
+    ViewBag.ActiveMenu = "CarStopLocus";
+}
+
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+}
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td><label for="id-date-picker-1">查询日期：</label></td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;&nbsp;</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="width:6%;">车牌号：</td>
+            <td style="width:15%;">
+                <input id="PlateNumber" type="text" style="width:200px;" />
+            </td>
+            <td colspan="2" style="text-align: center;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="allmap"></div>
+
+<script type="text/javascript">
+
+    // 百度地图API功能
+
+    var XMap;
+    var YMap;
+    var map = new BMap.Map("allmap");
+
+    map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+    map.enableScrollWheelZoom();
+    map.enableInertialDragging();
+    map.enableContinuousZoom();
+
+    map.addControl(new BMap.NavigationControl());
+
+    //百度地图自适应
+    $(document).ready(function () {
+        BaiDuMap();
+
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('.date-picker').datepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        $('.chosen-select').chosen();
+
+    });
+
+    $(window).resize(function () {
+        BaiDuMap();
+    });
+
+    function BaiDuMap() {
+        var winWidth = 0;  //1440
+        var winHeight = 0;   //417
+        a = window.innerWidth;
+        b = window.innerHeight;
+        if ((document.body) && (document.body.clientWidth)) {
+
+        }
+        if ((document.body) && (document.body.clientHeight)) {
+        }
+
+        if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth) {
+            winWidth = document.documentElement.clientWidth;
+            winHeight = document.documentElement.clientHeight;
+        }
+        $("#allmap").css({ "height": parseInt(winHeight) * (650 / 805) });
+    }
+
+
+    $('#myButton').on('click', function () {
+
+        map.clearOverlays();
+
+        loadEquipmentPoint(1);
+    });
+
+    function loadEquipmentPoint(Id) {
+        $.ajax({
+            type: "POST",
+            url: '../Business/GetPlatenumberLocusList',
+            data: {
+                //type: 'getData',
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'PlateNumber': $('#PlateNumber').val()
+            },
+            dataType: "json", //返回数据形式为json
+            success: function (data) {
+
+                NotifySuccess('数据加载完成，加载总记录条数(' + data.length + ')', '系统提示');
+
+                 if (data.length == 0)
+                    return;
+                var onWay = new Array();//创建数组
+
+                var p1 = new BMap.Point(116.301934, 39.977552);
+                var p2 = new BMap.Point(116.508328, 39.919141);
+                var len = data.length;
+                $.each(data, function (i, item) {
+                    if (i == 0)
+                    {
+                        p1 = new BMap.Point(item.X, item.Y);
+                    }
+                    else if (len - 1 == i) {
+                        p2 = new BMap.Point(item.X, item.Y);
+                    }
+                    else {
+                        onWay.push(new BMap.Point(item.X, item.Y));
+                    }
+                });
+
+                var driving = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: true } });
+                driving.search(p1, p2, { waypoints: onWay });//waypoints表示途经点
+            }
+        });
+    }
+
+</script>
+
+
+
+

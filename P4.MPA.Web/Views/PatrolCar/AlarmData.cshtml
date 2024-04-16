@@ -1,0 +1,491 @@
+﻿@{
+Layout = "~/Views/Shared/_LayoutPage.cshtml";
+ViewBag.Title = L("AlarmData");
+ViewBag.ActiveMenu = "AlarmData";
+}
+
+@section styles
+{
+<link href="~/assets/css/bootstrapSwitch.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/assets/css/chosen.css" />
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<style type="text/css">
+    .SelectBG {
+        background-color: #f00;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+</style>
+
+}
+
+@section scriptsindex{
+<script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+<script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="row" style="margin:10px 0">
+    <table style="width:100%;" border="0">
+        <tr>
+            <td style="width:7%;" align="right">区域：</td>
+            <td style="width:12%;">
+                <select class="ls-wp-fullwidth-container region-chosen-select" id="RegionList" name="RegionId"
+                    data-placeholder="选择区域名称..." style="width:150px;">
+
+                </select>
+            </td>
+            <td style="width:6%;" align="right">停车场：</td>
+            <td style="width:13%;">
+                <select class="ls-wp-fullwidth-container park-chosen-select" id="ParkList" name="ParkId"
+                    data-placeholder="选择停车场名称..." style="width:150px;">
+
+                </select>
+            </td>
+            <td style="width:6%;" align="right">泊位段：</td>
+            <td style="width:13%;">
+                <select class="ls-wp-fullwidth-container berthsec-chosen-select" id="BerthsecList" name="BerthsecId"
+                    data-placeholder="选择泊位段名称..." style="width:150px;">
+
+                </select>
+            </td>
+            <td style="width:6%;" align="right">泊位号：</td>
+            <td style="width:16%;">
+                <input id="BerthNumber" type="text" />
+            </td>
+            <td style="width:6%;" align="right">巡检车编号：</td>
+            <td style="width:13%;">
+                <input id="DeviceNumber" type="text" style="width:150px;" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:8%;" align="right">异常时间：</td>
+            <td style="width:16%;">
+                <div class="row">
+                    <div class="col-xs-9 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control" id="operateDateBegin" type="text"
+                                data-date-format="yyyy-mm-dd hh:ii" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;width:5%;">到&nbsp;</td>
+            <td style="width:16%;">
+                <div class="row">
+                    <div class="col-xs-9 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control" id="operateDateEnd" type="text"
+                                data-date-format="yyyy-mm-dd hh:ii" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td colspan="2" style="text-align: left;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary"
+                    autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<script type="text/javascript">
+    var regionList = [{
+        Id: '',
+        RegionName: '全部'
+    }];
+
+    var parkingList = [{
+        Id: '',
+        ParkName: '全部'
+    }];
+
+    var berthSecList = [{
+        Id: '',
+        BerthsecName: '全部'
+    }];
+
+    $(document).ready(function () {
+        getRegion();
+        getParking();
+        getBerthSec()
+        var myDate = new Date();
+        myDate.toLocaleDateString();
+        var operateDateBegin = myDate.getFullYear() + "-" +
+            ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() +
+                1)) + "-" +
+            (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-" +
+            ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() +
+                1)) + "-" +
+            (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+    });
+
+    function getRegion() {
+        var that = this;
+        var param = {
+            rows: 100,
+            page: 1,
+            sidx: 'Id',
+            sord: 'desc'
+        };
+        $.ajax({
+            type: "post",
+            url: "/Regions/GetAllRegionsList",
+            data: param,
+            success: function (data) {
+                that.regionList = new Array();
+                that.regionList.push({
+                    Id: '',
+                    RegionName: '全部'
+                });
+                var rows = data.rows;
+                if (rows.length != 0) {
+                    that.regionList = that.regionList.concat(rows);
+                }
+                for (i = 0; i < that.regionList.length; i++) {
+                    $("#RegionList").append("<option value='" + that.regionList[i].Id + "'>" + that
+                        .regionList[i].RegionName + "</option>");
+                }
+                $('.region-chosen-select').chosen();
+            }
+        });
+    }
+
+    function getParking() {
+        var that = this;
+        $.ajax({
+            type: "post",
+            url: "/VideoConfig/SelectParkInfoList",
+            success: function (data) {
+                that.parkingList = new Array();
+                that.parkingList.push({
+                    Id: '',
+                    ParkName: '全部'
+                });
+                var strVar = "";
+                if (data.result == "success") {
+                    var rows = data.rows;
+                    if (rows.length != 0) {
+                        that.parkingList = that.parkingList.concat(rows);
+                        console.log(that.parkingList);
+                    }
+                }
+                for (i = 0; i < that.parkingList.length; i++) {
+                    $("#ParkList").append("<option value='" + that.parkingList[i].Id + "'>" + that
+                        .parkingList[i].ParkName + "</option>");
+                }
+                $('.park-chosen-select').chosen();
+            }
+        });
+    }
+
+    function getBerthSec() {
+        var that = this;
+        $.ajax({
+            type: "post",
+            url: "/VideoConfig/SelectBerthsecsInfoList",
+            data: {
+                input: ''
+            },
+            dataType: "json",
+            success: function (data) {
+                that.berthSecList = new Array();
+                that.berthSecList.push({
+                    Id: '',
+                    BerthsecName: '全部'
+                });
+                var strVar = "";
+                if (data.result == "success") {
+                    var rows = data.rows;
+                    if (rows.length != 0) {
+                        that.berthSecList = that.berthSecList.concat(rows);
+                        console.log(that.berthSecList);
+                    }
+                }
+                for (i = 0; i < that.berthSecList.length; i++) {
+                    $("#BerthsecList").append("<option value='" + that.berthSecList[i].Id + "'>" + that
+                        .berthSecList[i].BerthsecName + "</option>");
+                }
+                $('.berthsec-chosen-select').chosen();
+            }
+        });
+    }
+
+    $('#myButton').on('click', function () {
+        var param = {
+            'RegionId': $(".region-chosen-select").val(),
+            'ParkId': $(".park-chosen-select").val(),
+            'BerthsecId': $(".berthsec-chosen-select").val(),
+            'BerthNumber': $('#BerthNumber').val(),
+            'PatrolCarNumber': $('#DeviceNumber').val(),
+            'StartTime': $('#operateDateBegin').val(),
+            'EndTime': $('#operateDateEnd').val(),
+            'filters': null
+        };
+        console.log(param);
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            ajaxSelectOptions: {
+                type: "GET",
+                async: false
+            },
+            ajaxGridOptions: {
+                type: "POST",
+                async: false
+            },
+            url: '../PatrolCar/GetAlarmDataList',
+            datatype: 'json',
+            postData: {
+                'RegionId': $(".region-chosen-select").val(),
+                'ParkId': $(".park-chosen-select").val(),
+                'BerthsecId': $(".berthsec-chosen-select").val(),
+                'BerthNumber': $('#BerthNumber').val(),
+                'PatrolCarNumber': $('#DeviceNumber').val(),
+                'StartTime': $('#operateDateBegin').val(),
+                'EndTime': $('#operateDateEnd').val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+
+    function showImg(src) {
+        if (src == "") {
+            layer.msg("没有图片！");
+            return;
+        }
+        src = "/VideoPic" + src;
+        var img = new Image();
+        img.onload = function () {
+            var max_height = $(window).height() - 100;
+            var max_width = $(window).width();
+            var rate1 = max_height / img.height;
+            var rate2 = max_width / img.width;
+            var rate3 = 1;
+            var rate = Math.min(rate1, rate2, rate3);
+            var imgHeight = img.height * rate;
+            var imgWidth = img.width * rate;
+            var imgHtml = "<img src='" + src + "' width='" + imgWidth + "px' height='" + imgHeight + "px'/>";
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 2,
+                area: ['auto', 'auto'],
+                skin: 'layui-layer-nobg',
+                shadeClose: true,
+                content: imgHtml
+            });
+        }
+        img.src = src;
+    }
+
+    function alarmFormatter(cellvalue, options, rowdata) {
+        if (rowdata.OssPathURL != null && rowdata.OssPathURL.length != 0) {
+            rowdata.OssPathURL = rowdata.OssPathURL.replace(/\\/g, '/');
+            return '<img src=/VideoPic/' + rowdata.OssPathURL + ' id="img' + rowdata.Id +
+                '" style="width: 80px;  background-size:auto" class="pointer" onClick="showImg(\'' + rowdata
+                .OssPathURL + '\')" />';
+        } else {
+            return "";
+        }
+    }
+
+    function PatrolType(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "二轮巡检车";
+                break;
+            case 2:
+                return "四轮巡检车";
+                break;
+            default:
+                return "";
+        }
+    }
+
+    @section scriptsgrid {
+        //主表
+        jQuery(grid_selector).jqGrid({
+            url: '../PatrolCar/GetAlarmDataList',
+            datatype: "json",
+            ajaxSelectOptions: {
+                type: "GET"
+            },
+            postData: {
+                'StartTime': $('#operateDateBegin').val(),
+                'EndTime': $('#operateDateEnd').val(),
+            },
+            mtype: "post",
+            height: 'auto',
+            autowidth: true,
+            shrinkToFit: false,
+            colNames: ['操作', 'ID', '区域名称', '停车场名称', '泊位段名称', '泊位ID', '泊位号', '巡检车编号', '巡检车类型', '异常发生时间',
+                '异常描述',
+                '异常照片'
+            ],
+            colModel: [{
+                    name: 'myac',
+                    index: '',
+                    width: 80,
+                    fixed: true,
+                    sortable: true,
+                    resize: false,
+                    search: false,
+                    formatter: 'actions',
+                    hidden: window.rowedit,
+                    formatoptions: {
+                        keys: true,
+                        delOptions: {
+                            recreateForm: true,
+                            beforeShowForm: beforeDeleteCallback
+                        }
+                    }
+                },
+                {
+                    name: 'Id',
+                    index: 'Id',
+                    search: false,
+                    sorttype: "int",
+                    key: true,
+                    hidden: true
+                },
+                {
+                    name: 'RegionName',
+                    index: 'RegionName',
+                    search: false
+                },
+                {
+                    name: 'ParkName',
+                    editable: false,
+                    index: 'ParkName',
+                    search: true,
+                    stype: 'select',
+                    searchoptions: {
+                        dataUrl: '../Berthsecs/GetAllParkName/' + (new Date()).getMilliseconds(),
+                        sopt: ['eq',
+                            'ne'
+                        ]
+                    }
+                },
+                {
+                    name: 'BerthsecName',
+                    index: 'BerthsecName',
+                    search: true,
+                    stype: 'select',
+                    searchoptions: {
+                        dataUrl: '../Berthsecs/GetBerthsecListSelect/' + (new Date()).getMilliseconds(),
+                        sopt: ['eq', 'ne']
+                    }
+                },
+                {
+                    name: 'BerthsId',
+                    index: 'BerthsId',
+                    search: true,
+                    width: 70
+                },
+                {
+                    name: 'BerthNumber',
+                    index: 'BerthNumber',
+                    search: true
+                },
+                {
+                    name: 'PatrolCarNumber',
+                    index: 'PatrolCarNumber',
+                    search: false
+                },
+                {
+                    name: 'PatrolType',
+                    index: 'PatrolType',
+                    formatter: PatrolType,
+                    search: false
+                },
+                {
+                    name: 'CreationTime',
+                    index: 'CreationTime',
+                    search: false,
+                    sorttype: "date",
+                    formatter: 'date',
+                    formatoptions: {
+                        srcformat: 'Y-m-d H:i:s',
+                        newformat: 'Y-m-d H:i:s'
+                    }
+                },
+                {
+                    name: 'Remark',
+                    index: 'Remark',
+                    search: false
+                },
+                {
+                    name: 'OssPathURL',
+                    index: 'OssPathURL',
+                    width: 200,
+                    align: "center",
+                    sortable: false,
+                    editable: false,
+                    formatter: alarmFormatter,
+                    search: false
+                }
+            ],
+            viewrecords: true,
+            rowNum: 10,
+            rowList: [10, 20, 30],
+            pager: pager_selector,
+            altRows: true,
+            sortname: 'Id',
+            sortorder: "desc",
+            toppager: false,
+            editurl: "../VideoEquipFault/ProcessVideoEquipFaults",
+            multiselect: true,
+            //multikey: "ctrlKey",
+            multiboxonly: true,
+            loadComplete: function () {
+                var table = this;
+                setTimeout(function () {
+                    styleCheckbox(table);
+                    updateActionIcons(table);
+                    updatePagerIcons(table);
+                    enableTooltips(table);
+                }, 0);
+            }
+        });
+
+    }
+</script>

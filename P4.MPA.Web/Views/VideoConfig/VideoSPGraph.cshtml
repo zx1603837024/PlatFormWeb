@@ -1,0 +1,293 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("VideoSPGraph");
+    ViewBag.ActiveMenu = "VideoSPGraph";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td width="5%"><label for="id-date-picker-1">日期：</label></td>
+            <td width="15%">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;</td>
+            <td width="15%">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">视频设备编号:</td>
+            <td>
+                <div class="row">
+                    <input class="" id="sbbh" type="text" value="">
+                </div>
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="echarDiv" style="height: 410px;">
+
+</div>
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/chart/line.js"></script>
+
+@section scriptsgrid
+{
+    jQuery(grid_selector).jqGrid({
+    url: '../VideoConfig/SelectVideoHeartBeat',
+    datatype: "json",
+    mtype: "post",
+    postData:
+    {
+    'StartTime': $('#operateDateBegin').val(),
+    'EndTime': $('#operateDateEnd').val(),
+    'VedioEqType':'1'
+    },
+    height: 'auto',
+    colNames: ['视频设备编号','视频设备类型', '停车场', '泊位段', '泊位号', '离线次数','在线率',"时间"],
+    colModel: [
+    { name: 'VedioEqNumber', index: 'VedioEqNumber' },
+    { name: 'VedioEqType', index: 'VedioEqType', formatter: VedioEqType },
+    { name: 'ParkName', index: 'ParkName' },
+    { name: 'BerthsecName', index: 'BerthsecName' },
+    { name: 'BerthNumber', index: 'BerthNumber' },
+    { name: 'OfflineCount', index: 'OfflineCount' },
+    { name: 'OnlineRate', index: 'OnlineRate'},
+    { name: 'CreationTime', index: 'CreationTime' }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    altRows: true,
+    pager: pager_selector,
+    sortname: 'VedioEqNumber',
+    sortorder: "asc",
+    multiselect: true,
+    multiboxonly: true,
+    toppager: false,
+    caption: "@ViewBag.Title",
+    autowidth: true
+    });
+}
+<script type="text/javascript">
+
+    function VedioEqType(cellvalue, options) {
+        switch (cellvalue) {
+            case 1:
+                return "有线供电视频桩";
+                break;
+            case 2:
+                return "无源免布线视频桩";
+                break;
+            case 3:
+                return "路牙机";
+                break;
+            case 4:
+                return "高位视频";
+                break;
+            default:
+                return "";
+        }
+    }
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth()) < 10 ? ("0" + (myDate.getMonth()).toString()) : (myDate.getMonth())) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() - 1 < 10 ? ("0" + (myDate.getDate() - 1).toString()) : myDate.getDate() - 1);
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('.date-picker').datepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        EchartShow($('#operateDateBegin').val(), $('#operateDateEnd').val(), "");
+    });
+    $('#myButton').on('click', function () {
+        var StartTime = $('#operateDateBegin').val();
+        var EndTime = $('#operateDateEnd').val();
+        var VedioEqNumber = $('#sbbh').val();
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            url: '../VideoConfig/SelectVideoHeartBeat',
+            datatype: 'json',
+            postData:
+            {
+                'StartTime': StartTime,
+                'EndTime': EndTime,
+                'VedioEqNumber': VedioEqNumber
+            },
+            page: 1
+        }).trigger('reloadGrid');
+        EchartShow(StartTime, EndTime, VedioEqNumber);
+    });
+</script>
+<script>
+    function EchartShow(StartTime, EndTime, VedioEqNumber) {
+        $.ajax({
+            type: "post",
+            url: "SelectVideoHeartBeat",
+            data: { StartTime: StartTime, EndTime: EndTime, VedioEqNumber: VedioEqNumber, sidx: "CreationTime", sord: "asc", VedioEqType: '1' },
+            dataType: "json",
+            success: function (data) {
+                var dateList = [];
+                var aveRateList = [];
+                var rateList = [];
+                var countList = [];
+                if (data.result == "success") {
+                    for (var i = 0; i < data.rows.length; i++) {
+                        var date = data.rows[i].CreationTime.slice(0, 10);
+                        if (dateList.indexOf(date) == -1) {
+                            dateList.push(date);
+                            rateList.push(0);
+                            countList.push(0)
+                        }
+                    }
+                    for (var i = 0; i < data.rows.length; i++) {
+                        var date = data.rows[i].CreationTime.slice(0, 10);
+                        var idx = dateList.indexOf(date);
+                        rateList[idx] = rateList[idx] + data.rows[i].OnlineRate;
+                        countList[idx] = countList[idx] + 1;
+                    }
+                }
+                for (var i = 0; i < dateList.length; i++) {
+                    aveRateList.push(rateList[i] / countList[i]);
+                }
+                //
+                var options = {
+                    title: {
+                        text: "视频设备在线率曲线图",
+                        subtext: "视频设备在线率曲线"
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ["在线率"]
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: function (params) {
+                            return params[0][1] + '<br/>'
+                                + params[0][0] + ' ' + params[0][2] + '%';
+                        },
+                        axisPointer: {
+                            animation: false
+                        }
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: { show: true },
+                            //dataView: { show: true, readOnly: false },
+                            magicType: { show: true, type: ['line', 'bar'] },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: dateList
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisLabel: {
+                                formatter: '{value} %'
+                            }
+                            //splitArea: { show: true }
+                        }
+                    ],
+                    dataZoom: [
+                        {   // 这个dataZoom组件，默认控制x轴。
+                            type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                            start: 10,      // 左边在 10% 的位置。
+                            end: 60         // 右边在 60% 的位置。
+                        }
+                    ],
+                    series: [{
+                        name: '在线率',
+                        type: 'line',
+                        data: aveRateList
+                    }]
+                };
+                var myChart;
+
+                // Step:4 require echarts and use it in the callback.
+                // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+                require.config({
+                    paths: {
+                        echarts: '~/assets/js/Echarts/dist'
+                    }
+                });
+                require(
+                    [
+                        'echarts',
+                        'echarts/chart/line' //按需加载图表关于线性图、折线图的部分
+                    ],
+                    //DrawEChart //异步加载的回调函数绘制图表
+                    function (ec) {
+                        myChart = ec.init(document.getElementById('echarDiv'));
+                        //选择一个空图表
+                        myChart.setOption(options);
+                    }
+                );
+                //
+            }
+        });
+    }
+
+
+</script>

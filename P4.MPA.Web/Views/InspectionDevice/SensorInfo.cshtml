@@ -1,0 +1,227 @@
+﻿
+@model P4.Web.Models.BusinessModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("SensorInfo");
+    ViewBag.ActiveMenu = "SensorInfo";
+}
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td width="5%"><label for="id-date-picker-1">日期：</label></td>
+            <td width="15%">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;</td>
+            <td width="15%">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="width:8%;">车检器编号：</td>
+            <td style="width:19%;">
+                <input id="SensorNumber" type="text" style="width:150px;" />
+            </td>
+            <td style="width:9%;">车检器状态：</td>
+            <td style="width:15%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="SensorstatusS" name="SensorstatusS" style="width:100px;">
+
+                    <option value="0" selected="selected">全部</option>
+                    <option value="1">正常</option>
+                    <option value="2">离线</option>
+                </select>
+            </td>
+            <td style="width:6%;">停车场：</td>
+            <td style="width:19%;">
+                <select class="ls-wp-fullwidth-container chosen-select" id="ParkId" name="ParkId" onchange="ParkChange()" data-placeholder="选择停车场名称..." style="width:200px;">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.parkList)
+                    {
+                        <option value="@entity.Id">@entity.ParkName</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/chart/line.js"></script>
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../InspectionDevice/GetSensorsInfoOnlineOrNot',
+    datatype: "json",
+    ajaxSelectOptions: { type: "GET" },
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: [ '车检器编号','最后心跳时间', '停车场ID', '停车场','泊位段','掉线次数', '车检器状态'],
+    colModel: [
+    { name: 'SensorNumber', index: 'SensorNumber' },
+    { name: 'BeatDatetimeString', index: 'BeatDatetimeString' },
+    { name: 'ParkId', index: 'ParkId',  key: true ,hidden:true },
+    { name: 'ParkName', index: 'ParkName' },
+    { name: 'BerthsecName', index: 'BerthsecName'},
+    { name: 'SensorARPCount', index: 'SensorARPCount' },
+    { name: 'SensorStatus', index: 'SensorStatus', formatter: OnlineOrOffline }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    sortname: 'Id',
+    sortorder: "desc",
+    multiselect: true,
+    multikey: "ctrlKey",
+    multiboxonly: true,
+
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                            + "' class='scroll'></table><div id='"
+                            + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    url: "../InspectionDevice/GetSensorsRatio?RatioParkId=" + row_id,
+    datatype: "json",
+    colNames: ['停车场', '车检器在线率'],
+    colModel: [
+    { name: "ParkName", index: "ParkName", key: true, width:150 },
+    { name: "Ratio", index: "Ratio", width:120 }
+
+    ],
+    width: 300,
+    height: 'auto'
+    });
+    },
+
+    loadComplete: function () {
+    var table = this;
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    },
+    caption: "@ViewBag.Title",
+    autowidth: true
+    });
+
+}
+
+@section scriptsbuttonbyself{
+    function OnlineOrOffline(cellvalue, options)
+    {
+    if(cellvalue == '正常')
+    return "<span class='badge badge-info'>在线</span>";
+    else
+    return "<span class='badge badge-danger'>离线</span>";
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+        $('.chosen-select').chosen();
+    });
+
+
+    $('#myButton').on('click', function () {
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            url: '../InspectionDevice/GetSensorsInfoOnlineOrNot',
+            datatype: 'json',
+            postData:
+            {
+                'SensorstatusS': $('#SensorstatusS').find("option:selected").text(),
+                'SensorNumber': $('#SensorNumber').val(),
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'ParkId': $('#ParkId').val(),
+                'filters': null
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+</script>

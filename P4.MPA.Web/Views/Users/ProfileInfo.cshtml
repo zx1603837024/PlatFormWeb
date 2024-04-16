@@ -1,0 +1,1105 @@
+﻿@using P4.Web.Models
+@model ProfileInfoModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("ProfileInfo");
+    ViewBag.ActiveMenu = "ProfileInfo";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/jquery-ui-1.10.3.custom.min.css" />
+    <link rel="stylesheet" href="~/assets/css/jquery.gritter.css" />
+    <link rel="stylesheet" href="~/assets/css/select2.css" />
+    <link rel="stylesheet" href="~/assets/css/bootstrap-editable.css" />    
+}
+
+
+<div class="clearfix">
+    <div class="pull-left alert alert-success no-margin">
+        <button type="button" class="close" data-dismiss="alert">
+            <i class="icon-remove"></i>
+        </button>
+
+        <i class="icon-umbrella bigger-120 blue"></i>
+        @Model.user.Surname 您好, 点击图片可修改个人头像
+    </div>
+
+    <div class="pull-right">
+        <span class="green middle bolder">切换个人信息: &nbsp;</span>
+
+        <div class="btn-toolbar inline middle no-margin">
+            <div data-toggle="buttons" class="btn-group no-margin">
+                @*<label class="btn btn-sm btn-yellow active">
+                    <span class="bigger-110">基本信息</span>
+
+                    <input type="radio" value="1" />
+                </label>*@
+
+                <label class="btn btn-sm btn-yellow active">
+                    <span class="bigger-110">关系</span>
+
+                    <input type="radio" value="2" />
+                </label>
+
+                <label class="btn btn-sm btn-yellow">
+                    <span class="bigger-110">个人信息</span>
+
+                    <input type="radio" value="3" />
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="hr dotted"></div>
+
+<div>
+    <div id="user-profile-2" class="user-profile">
+        <div class="tabbable">
+            <ul class="nav nav-tabs padding-18">
+                <li class="active">
+                    <a data-toggle="tab" href="#home">
+                        <i class="green icon-user bigger-120"></i>
+                        个人基本信息
+                    </a>
+                </li>
+
+                <li>
+                    <a data-toggle="tab" href="#feed">
+                        <i class="orange icon-rss bigger-120"></i>
+                        操作日志
+                    </a>
+                </li>
+
+                <li>
+                    <a data-toggle="tab" href="#friends">
+                        <i class="blue icon-group bigger-120"></i>
+                        组织关系
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content no-border padding-24">
+                <div id="home" class="tab-pane in active">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-3 center">
+                            <span class="profile-picture">
+                                <img class="editable img-responsive" id="avatar" src="../Users/ShowImage" />
+                            </span>
+                            <div class="space space-4"></div>
+                            <a href="#" class="btn btn-sm btn-block btn-success">
+                                <i class="icon-plus-sign bigger-120"></i>
+                                <span class="bigger-110">@(Model.user.IsActive == true? "激活": "锁定")</span>
+                            </a>
+                        </div><!-- /span -->
+
+                        <div class="col-xs-12 col-sm-9">
+                            <h4 class="blue">
+                                <span class="middle">@Model.user.Surname</span>
+
+                                @foreach (var temp in Model.UserRoles)
+                                {
+                                    <span class="label label-purple arrowed-in-right">
+                                        @temp
+                                    </span>
+                                }
+
+                                
+                            </h4>
+
+                            <div class="profile-user-info">
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 姓名 </div>
+
+                                    <div class="profile-info-value">
+                                        <span>@Model.user.Surname</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 用户名 </div>
+
+                                    <div class="profile-info-value">
+                                        <span>@Model.user.UserName</span>
+                                    </div>
+                                </div>
+                                @if (Model.TenantName != null)
+                                {
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 所属企业 </div>
+                                        <div class="profile-info-value">
+                                            <span>&nbsp;@Model.TenantName</span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.CompanyName != null)
+                                {
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> 所属公司 </div>
+                                        <div class="profile-info-value">
+                                            <span>&nbsp;@Model.CompanyName</span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 邮箱 </div>
+                                    <div class="profile-info-value">
+                                        <span>@Model.user.EmailAddress</span>
+                                        @if(Model.user.IsEmailConfirmed){
+                                            <span class="label label-success arrowed">验证通过</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="label label-danger arrowed-in"><i class="icon-warning-sign bigger-120"></i>未验证</span>
+                                        }
+                                    </div>
+                                </div>
+
+                               
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 手机号 </div>
+
+                                    <div class="profile-info-value">
+                                        <span>&nbsp;@Model.user.Telephone</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 性别 </div>
+
+                                    <div class="profile-info-value">
+                                        <span>@(Model.user.Gender == true ? "男":"女")</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 注册时间 </div>
+                                    <div class="profile-info-value">
+                                        <span>@Model.user.CreationTime.ToString("yyyy-MM-dd hh:mm:ss")</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 最后登录时间 </div>
+
+                                    <div class="profile-info-value">
+                                        <span>@Model.user.LastLoginTime.Value.ToString("yyyy-MM-dd hh:mm:ss")</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hr hr-8 dotted"></div>
+
+                            
+                        </div><!-- /span -->
+                    </div><!-- /row-fluid -->
+
+                    <div class="space-20"></div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="widget-box transparent">
+                                <div class="widget-header widget-header-small">
+                                    <h4 class="smaller">
+                                        <i class="icon-check bigger-110"></i>
+                                        我能查看的数据权限
+                                    </h4>
+                                </div>
+
+                                <div class="widget-body">
+                                    <div class="widget-main padding-16">
+                                        <div class="profile-skills">
+                                           
+
+                                                @foreach (var regionname in Model.RegionList)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-danger" style="width:60%">
+                                                            <span class="pull-left">@regionname</span>
+                                                            <span class="pull-right">区域</span>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @foreach (var parkname in Model.ParkList)
+                                                {
+                                                     <div class="progress">
+                                                        <div class="progress-bar" style="width:55%">
+                                                            <span class="pull-left">@parkname</span>
+                                                            <span class="pull-right">停车场</span>
+                                                        </div>
+                                                     </div>
+                                                }
+
+                                                @foreach (var berthsecname in Model.BerthsecList)
+                                                {
+                                                      <div class="progress">
+                                                          <div class="progress-bar progress-bar-success" style="width:50%">
+                                                              <span class="pull-left">@berthsecname</span>
+                                                              <span class="pull-right">泊位段</span>
+                                                          </div>
+                                                      </div>
+                                                }
+                                            </div>
+                                       </div>
+                                  </div>
+                             </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="widget-box transparent">
+                                <div class="widget-header widget-header-small header-color-blue2">
+                                    <h4 class="smaller">
+                                        <i class="icon-lightbulb bigger-120"></i>
+                                        我能操作的功能权限内容
+                                    </h4>
+                                </div>
+
+                                <div class="widget-body">
+                                    <div class="widget-main padding-16">
+                                        <div class="profile-skills">
+                                            @for (int i = 0; i < Model.Permissions.Count; i = i + 3)
+                                            {
+                                                int count = 1;
+                                                if (Model.Permissions.Count < i)
+                                                {
+                                                    return;
+                                                }
+                                                var temp = L(Model.Permissions[i].Name.Split('.')[0]); 
+                                                if (Model.Permissions[i].Name.Contains(".")) { temp += L(Model.Permissions[i].Name.Split('.')[1]); }
+                                                temp += " & ";
+                                                if (Model.Permissions.Count > i + 1)
+                                                {
+                                                    temp += L(Model.Permissions[i + 1].Name.Split('.')[0]);
+                                                    if (Model.Permissions[i + 1].Name.Contains(".")) { temp += L(Model.Permissions[i + 1].Name.Split('.')[1]); }
+                                                    temp += " & ";
+                                                    count += 1;
+                                                }
+                                                if (Model.Permissions.Count > i + 2)
+                                                {
+                                                    temp += L(Model.Permissions[i + 2].Name.Split('.')[0]);
+                                                    if (Model.Permissions[i + 2].Name.Contains(".")) { temp += L(Model.Permissions[i + 2].Name.Split('.')[1]); }
+                                                    count += 1;
+                                                }
+                                               
+                                               
+                                                if ((i / 3) % 5 == 0)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar" style="width:@(temp.Length * 2.3)%">
+                                                            <span class="pull-left">@temp</span>
+                                                            <span class="pull-right">@count</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if ((i / 3) % 5 == 1)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-success" style="width:@(temp.Length * 2.3)%">
+                                                            <span class="pull-left">
+                                                                @temp
+                                                            </span>
+                                                            <span class="pull-right">@count</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if ((i / 3) % 5 == 2)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-purple" style="width:@(temp.Length * 2.3)%">
+                                                            <span class="pull-left">
+                                                                @temp
+                                                            </span>
+                                                            <span class="pull-right">@count</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if ((i / 3) % 5 == 3)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-warning" style="width:@(temp.Length * 2.3)%">
+                                                            <span class="pull-left">
+                                                                @temp
+                                                            </span>
+                                                            <span class="pull-right">@count</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else if ((i / 3) % 5 == 4)
+                                                {
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-danger" style="width:@(temp.Length * 2.3)%">
+                                                            <span class="pull-left">
+                                                                @temp
+                                                            </span>
+                                                            <span class="pull-right">@count</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- #home -->
+
+                <div id="feed" class="tab-pane">
+                    <div class="profile-feed row-fluid">
+
+                        <div class="span6">
+
+                        @foreach (var entity in Model.DataLogs.rows)
+                        {
+                            <div class="profile-activity clearfix">
+                                <div>
+                                    <i class="pull-left thumbicon icon-key btn-info no-hover"></i>
+                                    <a class="user" href="#"> @entity.CreationUserName </a>
+                                    @(string.Format("{0} 对 {1} 进行了 {2} 操作", entity.CreationUserName, entity.Name, entity.OperateType))
+                                    <div class="time">
+                                        <i class="icon-time bigger-110"></i>
+                                        @entity.CreationTime
+                                    </div>
+                                </div>
+
+                                <div class="tools action-buttons">
+                                    <a href="#" class="red">
+                                        <i class="icon-remove bigger-125"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+
+                        </div><!-- /span -->
+                    </div><!-- /row -->
+
+                    <div class="space-12"></div>
+
+                    <div class="center">
+                        <a href="~/Logging/OperationLog" class="btn btn-small btn-primary">
+                            <i class="icon-rss bigger-150 middle"></i>
+                            查看更多操作
+                            <i class="icon-on-right icon-arrow-right"></i>
+                        </a>
+                    </div>
+                </div><!-- /#feed -->
+
+                <div id="friends" class="tab-pane">
+                    <div class="profile-users clearfix">
+                        <div class="itemdiv memberdiv">
+                            <div class="inline position-relative">
+                                <div class="user">
+                                    <a href="#">
+                                        <img src="~/assets/avatars/fuser.jpg" />
+                                    </a>
+                                </div>
+
+                                <div class="body">
+                                    <div class="name">
+                                        <a href="#">
+                                            <span class="user-status status-online"></span>
+                                            @Model.user.Surname
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="popover">
+                                    <div class="arrow"></div>
+
+                                    <div class="popover-content">
+                                        <div class="bolder">登录系统</div>
+
+                                        <div class="time">
+                                            <i class="icon-time middle bigger-120 orange"></i>
+                                            <span class="green"> 20 分钟 前 </span>
+                                        </div>
+
+                                        <div class="hr dotted hr-8"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr hr10 hr-double"></div>
+                </div><!-- /#friends -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="hide">
+    <div id="user-profile-3" class="user-profile row">
+        <div class="col-sm-offset-1 col-sm-10">
+            <div class="space"></div>
+            <form class="form-horizontal">
+                <div class="tabbable">
+                    <ul class="nav nav-tabs padding-16">
+                        <li class="active">
+                            <a data-toggle="tab" href="#edit-basic">
+                                <i class="green icon-edit bigger-125"></i>
+                                基本信息
+                            </a>
+                        </li>
+
+                        <li>
+                            <a data-toggle="tab" href="#edit-settings">
+                                <i class="purple icon-cog bigger-125"></i>
+                                个人设置
+                            </a>
+                        </li>
+
+                        <li>
+                            <a data-toggle="tab" href="#edit-password"> 
+                                <i class="blue icon-key bigger-125"></i>
+                                密码
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content profile-edit-tab-content">
+                        <div id="edit-basic" class="tab-pane in active">
+                            <h4 class="header blue bolder smaller">基本</h4>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-4">
+                                    <input type="file" />
+                                </div>
+
+                                <div class="vspace-xs"></div>
+
+                                <div class="col-xs-12 col-sm-8">
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label no-padding-right" for="form-field-username">姓名</label>
+
+                                        <div class="col-sm-8">
+                                            <input class="col-xs-12 col-sm-10" type="text" id="form-field-Surname" placeholder="Truename" value="@Model.user.Surname" />
+                                        </div>
+                                    </div>
+
+                                    <div class="space-4"></div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label no-padding-right" for="form-field-first">用户名</label>
+
+                                        <div class="col-sm-8">
+                                            <input class="col-xs-12 col-sm-10" type="text" id="form-field-UserName" placeholder="Username" value="@Model.user.UserName" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr />
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right" for="form-field-date">生日</label>
+
+                                <div class="col-sm-9">
+                                    <div class="input-medium">
+                                        <div class="input-group">
+                                            <input class="input-medium date-picker" id="form-field-Birthday" type="text" data-date-format="yyyy-mm-dd" placeholder="yyyy-mm-dd" value='@Model.user.Birthday' />
+                                            <span class="input-group-addon">
+                                                <i class="icon-calendar"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-4"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right">性别</label>
+
+                                <div class="col-sm-9">
+                                    <label class="inline">
+                                        <input name="form-field-radio" id="Gender" type="radio" class="ace" @(Model.user.Gender == true ? "checked='checked'" : "") />
+                                        <span class="lbl"> 男</span>
+                                    </label>
+                                    &nbsp; &nbsp; &nbsp;
+                                    <label class="inline">
+                                        <input name="form-field-radio" id="Gender" type="radio" class="ace" @(Model.user.Gender == false ? "checked='checked'" : "") />
+                                        <span class="lbl"> 女</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            @*<div class="space-4"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right" for="form-field-comment">个人描述</label>
+
+                                <div class="col-sm-9">
+                                    <textarea id="form-field-comment"></textarea>
+                                </div>
+                            </div>*@
+
+                            @*<div class="space"></div>*@
+                            <h4 class="header blue bolder smaller">联系方式</h4>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right" for="form-field-email">邮箱</label>
+
+                                <div class="col-sm-9">
+                                    <span class="input-icon input-icon-right">
+                                        <input type="email" @(Model.user.IsEmailConfirmed == true ? "disabled='disabled'" : "") id="form-field-email" value="@Model.user.EmailAddress" />
+                                        <i class="icon-envelope"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="space-4"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right" for="form-field-website">手机号</label>
+
+                                <div class="col-sm-9">
+                                    <span class="input-icon input-icon-right">
+                                        <input type="url" id="form-field-phone" value="@Model.user.Telephone" />
+                                        <i class="icon-phone icon-flip-horizontal"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="edit-settings" class="tab-pane">
+                            <div class="space-10"></div>
+
+                            <div>
+                                <label class="inline">
+                                    <input type="checkbox" @(Model.user.IsEmailConfirmed == true ? "" : "disabled='disabled'") name="form-field-checkbox" class="ace" />
+                                    <span class="lbl"> 审计流程邮件通知 </span>
+                                </label>
+                            </div>
+
+                            <div class="space-8"></div>
+
+                            <div>
+                                <label class="inline">
+                                    <input type="checkbox" name="form-field-checkbox" class="ace" />
+                                    <span class="lbl"> 日志保存 </span>
+                                </label>
+
+                                <label class="inline">
+                                    <input type="text" class="input-mini" maxlength="30" />
+                                    天
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="edit-password" class="tab-pane">
+                            <div class="space-10"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right" for="form-field-pass1">新密码</label>
+
+                                <div class="col-sm-9">
+                                    <input type="password" id="form-field-pass1" />
+                                </div>
+                            </div>
+
+                            <div class="space-4"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label no-padding-right" for="form-field-pass2">确认密码</label>
+                                <div class="col-sm-9">
+                                    <input type="password" id="form-field-pass2" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clearfix form-actions">
+                    <div class="col-md-offset-3 col-md-9">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-info" type="button" onclick="javascript:SaveProfileInfo()">
+                            <i class="icon-ok bigger-110"></i>
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /span -->
+    </div><!-- /user-profile -->
+</div>
+
+
+@section scriptsindex
+{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/jquery.gritter.min.js"></script>
+    <script src="~/assets/js/bootbox.min.js"></script>
+    <script src="~/assets/js/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/js/jquery.easy-pie-chart.min.js"></script>
+    <script src="~/assets/js/jquery.hotkeys.min.js"></script>
+    <script src="~/assets/js/bootstrap-wysiwyg.min.js"></script>
+    <script src="~/assets/js/select2.min.js"></script>
+    <script src="~/assets/js/fuelux/fuelux.spinner.min.js"></script>
+    <script src="~/assets/js/x-editable/bootstrap-editable.min.js"></script>
+    <script src="~/assets/js/x-editable/ace-editable.min.js"></script>
+    <script src="~/assets/js/jquery.maskedinput.min.js"></script>    
+}
+
+@section scripts
+{
+<script type="text/javascript">
+    jQuery(function ($) {
+
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editableform.loading = "<div class='editableform-loading'><i class='light-blue icon-2x icon-spinner icon-spin'></i></div>";
+        $.fn.editableform.buttons = '<button type="submit" class="btn btn-info editable-submit"><i class="icon-ok icon-white"></i></button>' +
+                                    '<button type="button" class="btn editable-cancel"><i class="icon-remove"></i></button>';
+
+        //editables
+        $('#username').editable({
+            type: 'text',
+            name: 'username'
+        });
+
+
+        var countries = [];
+        $.each({ "CA": "Canada", "IN": "India", "NL": "Netherlands", "TR": "Turkey", "US": "United States" }, function (k, v) {
+            countries.push({ id: k, text: v });
+        });
+
+        var cities = [];
+        cities["CA"] = [];
+        $.each(["Toronto", "Ottawa", "Calgary", "Vancouver"], function (k, v) {
+            cities["CA"].push({ id: v, text: v });
+        });
+        cities["IN"] = [];
+        $.each(["Delhi", "Mumbai", "Bangalore"], function (k, v) {
+            cities["IN"].push({ id: v, text: v });
+        });
+        cities["NL"] = [];
+        $.each(["Amsterdam", "Rotterdam", "The Hague"], function (k, v) {
+            cities["NL"].push({ id: v, text: v });
+        });
+        cities["TR"] = [];
+        $.each(["Ankara", "Istanbul", "Izmir"], function (k, v) {
+            cities["TR"].push({ id: v, text: v });
+        });
+        cities["US"] = [];
+        $.each(["New York", "Miami", "Los Angeles", "Chicago", "Wysconsin"], function (k, v) {
+            cities["US"].push({ id: v, text: v });
+        });
+
+        var currentValue = "NL";
+        $('#country').editable({
+            type: 'select2',
+            value: 'NL',
+            source: countries,
+            success: function (response, newValue) {
+                if (currentValue == newValue) return;
+                currentValue = newValue;
+
+                var new_source = (!newValue || newValue == "") ? [] : cities[newValue];
+
+                //the destroy method is causing errors in x-editable v1.4.6
+                //it worked fine in v1.4.5
+                /**
+                $('#city').editable('destroy').editable({
+                    type: 'select2',
+                    source: new_source
+                }).editable('setValue', null);
+                */
+
+                //so we remove it altogether and create a new element
+                var city = $('#city').removeAttr('id').get(0);
+                $(city).clone().attr('id', 'city').text('Select City').editable({
+                    type: 'select2',
+                    value: null,
+                    source: new_source
+                }).insertAfter(city);//insert it after previous instance
+                $(city).remove();//remove previous instance
+
+            }
+        });
+
+        $('#city').editable({
+            type: 'select2',
+            value: 'Amsterdam',
+            source: cities[currentValue]
+        });
+
+
+
+        $('#signup').editable({
+            type: 'date',
+            format: 'yyyy-mm-dd',
+            viewformat: 'dd/mm/yyyy',
+            datepicker: {
+                weekStart: 1
+            }
+        });
+
+        $('#age').editable({
+            type: 'spinner',
+            name: 'age',
+            spinner: {
+                min: 16, max: 99, step: 1
+            }
+        });
+
+        //var $range = document.createElement("INPUT");
+        //$range.type = 'range';
+        $('#login').editable({
+            type: 'slider',//$range.type == 'range' ? 'range' : 'slider',
+            name: 'login',
+            slider: {
+                min: 1, max: 50, width: 100
+            },
+            success: function (response, newValue) {
+                if (parseInt(newValue) == 1)
+                    $(this).html(newValue + " hour ago");
+                else $(this).html(newValue + " hours ago");
+            }
+        });
+
+        $('#about').editable({
+            mode: 'inline',
+            type: 'wysiwyg',
+            name: 'about',
+            wysiwyg: {
+                //css : {'max-width':'300px'}
+            },
+            success: function (response, newValue) {
+            }
+        });
+
+
+
+        // *** editable avatar *** //
+        try {//ie8 throws some harmless exception, so let's catch it
+
+            //it seems that editable plugin calls appendChild, and as Image doesn't have it, it causes errors on IE at unpredicted points
+            //so let's have a fake appendChild for it!
+            if (/msie\s*(8|7|6)/.test(navigator.userAgent.toLowerCase())) Image.prototype.appendChild = function (el) { }
+
+            var last_gritter
+            $('#avatar').editable({
+                type: 'image',
+                name: 'avatar',
+                value: null,
+                image: {
+                    //specify ace file input plugin's options here
+                    btn_choose: '修改头像',
+                    droppable: true,
+                    /**
+                    //this will override the default before_change that only accepts image files
+                    before_change: function(files, dropped) {
+                        return true;
+                    },
+                    */
+
+                    //and a few extra ones here
+                    name: 'avatar',//put the field name here as well, will be used inside the custom plugin
+                    max_size: 1100000,//~100Kb
+                    on_error: function (code) {//on_error function will be called when the selected file has a problem
+                        if (last_gritter) $.gritter.remove(last_gritter);
+                        if (code == 1) {//file format error
+                            last_gritter = $.gritter.add({
+                                title: '文件不是图片格式!',
+                                text: '请选择 jpg|gif|png 图片!',
+                                class_name: 'gritter-error gritter-center'
+                            });
+                        } else if (code == 2) {//file size rror
+                            last_gritter = $.gritter.add({
+                                title: '文件太大!',
+                                text: '文件大小应该不超过 1000Kb!',
+                                class_name: 'gritter-error gritter-center'
+                            });
+                        }
+                        else {//other error
+                        }
+                    },
+                    on_success: function () {
+                        $.gritter.removeAll();
+                    }
+                },
+                url: function (params) {
+                    // ***UPDATE AVATAR HERE*** //
+                    //You can replace the contents of this function with examples/profile-avatar-update.js for actual upload
+
+
+                    var deferred = new $.Deferred
+
+                    //if value is empty, means no valid files were selected
+                    //but it may still be submitted by the plugin, because "" (empty string) is different from previous non-empty value whatever it was
+                    //so we return just here to prevent problems
+                    var value = $('#avatar').next().find('input[type=hidden]:eq(0)').val();
+                    if (!value || value.length == 0) {
+                        deferred.resolve();
+                        return deferred.promise();
+                    }
+
+
+                    //dummy upload
+                    setTimeout(function () {
+                        if ("FileReader" in window) {
+                            //for browsers that have a thumbnail of selected image
+                            var thumb = $('#avatar').next().find('img').data('thumb');
+                            if (thumb) $('#avatar').get(0).src = thumb;
+
+                            //alert(thumb);
+
+                        
+
+                            $.ajax({
+                                type: "Post",
+                                url: "../Users/SaveUserPicture",
+                                data: {
+                                    base64String: thumb
+                                },
+                                success: function (data) {
+                                    deferred.resolve({ 'status': 'OK' });
+
+                                    if (last_gritter) $.gritter.remove(last_gritter);
+                                    last_gritter = $.gritter.add({
+                                        title: '头像更新!',
+                                        text: '头像已保存到服务器.',
+                                        class_name: 'gritter-info gritter-center'
+                                    });
+                                }
+                            });
+                        }
+                    }, parseInt(Math.random() * 800 + 800))
+                    return deferred.promise();
+                },
+                success: function (response, newValue) {
+                }
+            })
+        } catch (e) { }
+
+
+
+        //another option is using modals
+        $('#avatar1').on('click', function () {
+            var modal =
+            '<div class="modal hide fade">\
+						<div class="modal-header">\
+							<button type="button" class="close" data-dismiss="modal">&times;</button>\
+							<h4 class="blue">修改头像</h4>\
+						</div>\
+						\
+						<form class="no-margin">\
+						<div class="modal-body">\
+							<div class="space-4"></div>\
+							<div style="width:75%;margin-left:12%;"><input type="file" name="file-input" /></div>\
+						</div>\
+						\
+						<div class="modal-footer center">\
+							<button type="submit" class="btn btn-small btn-success"><i class="icon-ok"></i> 确定</button>\
+							<button type="button" class="btn btn-small" data-dismiss="modal"><i class="icon-remove"></i> 取消</button>\
+						</div>\
+						</form>\
+					</div>';
+
+
+            var modal = $(modal);
+            modal.modal("show").on("hidden", function () {
+                modal.remove();
+            });
+
+            var working = false;
+
+            var form = modal.find('form:eq(0)');
+            var file = form.find('input[type=file]').eq(0);
+            file.ace_file_input({
+                style: 'well',
+                btn_choose: '点击选择新头像',
+                btn_change: null,
+                no_icon: 'icon-picture',
+                thumbnail: 'small',
+                before_remove: function () {
+                    //don't remove/reset files while being uploaded
+                    return !working;
+                },
+                before_change: function (files, dropped) {
+                    var file = files[0];
+                    if (typeof file === "string") {
+                        //file is just a file name here (in browsers that don't support FileReader API)
+                        if (!(/\.(jpe?g|png|gif)$/i).test(file)) return false;
+                    }
+                    else {//file is a File object
+                        var type = $.trim(file.type);
+                        if ((type.length > 0 && !(/^image\/(jpe?g|png|gif)$/i).test(type))
+                                || (type.length == 0 && !(/\.(jpe?g|png|gif)$/i).test(file.name))//for android default browser!
+                            ) return false;
+
+                        if (file.size > 110000) {//~100Kb
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            });
+
+            form.on('submit', function () {
+                if (!file.data('ace_input_files')) return false;
+
+                file.ace_file_input('disable');
+                form.find('button').attr('disabled', 'disabled');
+                form.find('.modal-body').append("<div class='center'><i class='icon-spinner icon-spin bigger-150 orange'></i></div>");
+
+                var deferred = new $.Deferred;
+                working = true;
+                deferred.done(function () {
+                    form.find('button').removeAttr('disabled');
+                    form.find('input[type=file]').ace_file_input('enable');
+                    form.find('.modal-body > :last-child').remove();
+
+                    modal.modal("hide");
+
+                    var thumb = file.next().find('img').data('thumb');
+                    if (thumb) $('#avatar').get(0).src = thumb;
+
+                    working = false;
+                });
+
+
+                setTimeout(function () {
+                    deferred.resolve();
+                }, parseInt(Math.random() * 800 + 800));
+
+                return false;
+            });
+
+        });
+
+
+
+        //////////////////////////////
+        $('#profile-feed-1').slimScroll({
+            height: '250px',
+            alwaysVisible: true
+        });
+
+        $('.profile-social-links > a').tooltip();
+
+        $('.easy-pie-chart.percentage').each(function () {
+            var barColor = $(this).data('color') || '#555';
+            var trackColor = '#E2E2E2';
+            var size = parseInt($(this).data('size')) || 72;
+            $(this).easyPieChart({
+                barColor: barColor,
+                trackColor: trackColor,
+                scaleColor: false,
+                lineCap: 'butt',
+                lineWidth: parseInt(size / 10),
+                animate: false,
+                size: size
+            }).css('color', barColor);
+        });
+
+        ///////////////////////////////////////////
+
+        //show the user info on right or left depending on its position
+        $('#user-profile-2 .memberdiv').on('mouseenter', function () {
+            var $this = $(this);
+            var $parent = $this.closest('.tab-pane');
+
+            var off1 = $parent.offset();
+            var w1 = $parent.width();
+
+            var off2 = $this.offset();
+            var w2 = $this.width();
+
+            var place = 'left';
+            if (parseInt(off2.left) < parseInt(off1.left) + parseInt(w1 / 2)) place = 'right';
+
+            $this.find('.popover').removeClass('right left').addClass(place);
+        }).on('click', function () {
+            return false;
+        });
+
+
+        ///////////////////////////////////////////
+        $('#user-profile-3')
+        .find('input[type=file]').ace_file_input({
+            style: 'well',
+            btn_choose: '修改头像',
+            btn_change: null,
+            no_icon: 'icon-picture',
+            thumbnail: 'large',
+            droppable: true,
+            before_change: function (files, dropped) {
+                var file = files[0];
+                if (typeof file === "string") {//files is just a file name here (in browsers that don't support FileReader API)
+                    if (!(/\.(jpe?g|png|gif)$/i).test(file)) return false;
+                }
+                else {//file is a File object
+                    var type = $.trim(file.type);
+                    if ((type.length > 0 && !(/^image\/(jpe?g|png|gif)$/i).test(type))
+                            || (type.length == 0 && !(/\.(jpe?g|png|gif)$/i).test(file.name))//for android default browser!
+                        ) return false;
+
+                    if (file.size > 110000) {//~100Kb
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        })
+        .end().find('button[type=reset]').on(ace.click_event, function () {
+            $('#user-profile-3 input[type=file]').ace_file_input('reset_input');
+        }).end().find('.date-picker').datepicker().next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+        //change profile
+        $('[data-toggle="buttons"] .btn').on('click', function (e) {
+            var target = $(this).find('input[type=radio]');
+            var which = parseInt(target.val());
+            $('.user-profile').parent().addClass('hide');
+            $('#user-profile-' + which).parent().removeClass('hide');
+        });
+    });
+
+    function SaveProfileInfo() {
+        if ($("#form-field-pass1").val().length > 0) {
+            if ($("#form-field-pass1").val() != $("#form-field-pass2").val()) {
+                NotifyWarn('新密码与确认密码不相同!', '系统消息');
+                //swal("错误!", "新密码与确认密码不相同！", "error");
+                return;
+            }
+            if ($("#form-field-pass1").val().length < 6) {
+                NotifyWarn('密码长度必须大于等于6位!', '系统消息');
+                return;
+            }
+        }
+        $.ajax({
+            type: "Post",
+            url: "/Users/SaveProfileInfo",
+            data: {
+                NewPassord: $("#form-field-pass1").val(),
+                ConfirmPassword: $("#form-field-pass2").val(),
+                Surname: $("#form-field-Surname").val(),
+                UserName: $("#form-field-UserName").val(),
+                Birthday: $("#form-field-Birthday").val(),
+                Gender: $('#Gender').is(':checked'),
+                EmailAddress: $("#form-field-email").val(),
+                Telephone: $("#form-field-phone").val()
+            },
+            success: function (data) {
+                NotifySuccess('个人资料保存成功！', '系统消息');
+                $("#form-field-pass1").val('');
+                $("#form-field-pass2").val('');
+            }, error: function () {
+                NotifyError("个人资料保存失败！", "系统消息");
+            }
+        });
+    }
+</script>
+}
+
+
+
+
+

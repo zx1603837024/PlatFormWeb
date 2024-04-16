@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{17298EA0-AF73-4F30-B6F1-2066100D7D74}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>P4</RootNamespace>
+    <AssemblyName>P4.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Abp, Version=2.0.1.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.2.0.1.5\lib\net451\Abp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Abp.Zero, Version=2.0.2.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Abp.Zero.2.0.2.3\lib\net451\Abp.Zero.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.LoggingFacility.3.3.0\lib\net45\Castle.Facilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.0.34.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AliPay\AliPayOrder.cs" />
+    <Compile Include="App\AppMessage.cs" />
+    <Compile Include="Businesses\EscapeGuid.cs" />
+    <Compile Include="Businesses\IllegalOpenSignoPicture.cs" />
+    <Compile Include="Businesses\PictureStore.cs" />
+    <Compile Include="Businesses\RemoteGuid.cs" />
+    <Compile Include="Camera\CameraAlarmreport.cs" />
+    <Compile Include="Camera\CameraBusinessDetail.cs" />
+    <Compile Include="Camera\CameraHeartbeat.cs" />
+    <Compile Include="Camera\Cameras.cs" />
+    <Compile Include="Card\IPassBlackCard.cs" />
+    <Compile Include="Card\IPassCard.cs" />
+    <Compile Include="Card\IpassCardCode.cs" />
+    <Compile Include="Common\DataHelper.cs" />
+    <Compile Include="Common\WebApiHelper.cs" />
+    <Compile Include="Common\XMLHelper.cs" />
+    <Compile Include="Dictionarys\CarModel.cs" />
+    <Compile Include="EquipmentMaintain\CompanyCustomerExpress.cs" />
+    <Compile Include="EquipmentMaintain\CompanyFactoryExpress.cs" />
+    <Compile Include="EquipmentMaintain\Distribution.cs" />
+    <Compile Include="EquipmentMaintain\EquipmentDetail.cs" />
+    <Compile Include="EquipmentMaintain\EquipmentsM.cs" />
+    <Compile Include="EquipmentMaintain\ReworkFlow.cs" />
+    <Compile Include="EquipmentMaintain\ReworkPicture.cs" />
+    <Compile Include="Equipments\AndroidLog.cs" />
+    <Compile Include="Equipments\EquipmentVersion.cs" />
+    <Compile Include="Equipments\PrintAd.cs" />
+    <Compile Include="ExportCommon\ExportCode.cs" />
+    <Compile Include="FXEnum.cs" />
+    <Compile Include="Locked\LockDetails.cs" />
+    <Compile Include="Locked\LockDevices.cs" />
+    <Compile Include="Locked\LockLogs.cs" />
+    <Compile Include="Messages\SignalRMessageType.cs" />
+    <Compile Include="OtherAccounts\RechargeRule.cs" />
+    <Compile Include="OtherAccounts\SmsSendRecord.cs" />
+    <Compile Include="ParkingLot\AbpParkingRecord_Pic.cs" />
+    <Compile Include="ParkingLot\EOrderStatus.cs" />
+    <Compile Include="ParkingLot\ParkingMonthlyRent.cs" />
+    <Compile Include="ParkingLot\ParkingRecord.cs" />
+    <Compile Include="ParkingLot\ParkChannel.cs" />
+    <Compile Include="PayLevelSetting\PayLevelSetting.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemBerthsec.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemEmployee.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemEmployeeCheck.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemHolidaysManager.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemLeaveAdministration.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemScheduleDetail.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemSchedulePreferences.cs" />
+    <Compile Include="SchedulingSystem\SchedulingSystemWorkScheme.cs" />
+    <Compile Include="Signo\ParkReservation.cs" />
+    <Compile Include="Signo\SignoParkInformation.cs" />
+    <Compile Include="Signo\VehiclesError.cs" />
+    <Compile Include="Signo\VehiclesExit.cs" />
+    <Compile Include="Signo\VehiclesFControlBarrierGate.cs" />
+    <Compile Include="Signo\VehiclesHandMoveCutOff.cs" />
+    <Compile Include="Signo\VehiclesPayType.cs" />
+    <Compile Include="Smss\SmsModel.cs" />
+    <Compile Include="TicketCss\TicketStyle.cs" />
+    <Compile Include="VideoCars\VideoCar.cs" />
+    <Compile Include="VideoCars\VideoCarBusinessDetail.cs" />
+    <Compile Include="VideoCars\VideoCarFault.cs" />
+    <Compile Include="VideoEquips\VideoEquip.cs" />
+    <Compile Include="VideoEquips\VideoEquipBusinessDetail.cs" />
+    <Compile Include="VideoEquips\VideoEquipFaults.cs" />
+    <Compile Include="Webchat\Ad.cs" />
+    <Compile Include="Approve\Approval.cs" />
+    <Compile Include="App\AppAccount.cs" />
+    <Compile Include="App\AppAccountRecord.cs" />
+    <Compile Include="Authorization\PermissionChecker.cs" />
+    <Compile Include="Authorization\Role.cs" />
+    <Compile Include="Authorization\RoleManager.cs" />
+    <Compile Include="Authorization\RoleStore.cs" />
+    <Compile Include="Berthsecs\Berthsec.cs" />
+    <Compile Include="Berths\Berth.cs" />
+    <Compile Include="BlackLists\BlackList.cs" />
+    <Compile Include="Businesses\BusinessDetail.cs" />
+    <Compile Include="Businesses\EscapeDetail.cs" />
+    <Compile Include="Businesses\BusinessDetailPictures.cs" />
+    <Compile Include="Companys\Company.cs" />
+    <Compile Include="Companys\OperatorsCompany.cs" />
+    <Compile Include="DataPermissions\DataPermission.cs" />
+    <Compile Include="DataPermissions\RoleDataPermissionSetting.cs" />
+    <Compile Include="DataPermissions\UserDataPermissionSetting.cs" />
+    <Compile Include="DecisionAnalysis\PeakPeriod.cs" />
+    <Compile Include="DecisionAnalysis\UtilizationAndTurnover.cs" />
+    <Compile Include="Dictionarys\DictionaryType.cs" />
+    <Compile Include="Dictionarys\DictionaryTypeTemplate.cs" />
+    <Compile Include="Dictionarys\DictionaryValue.cs" />
+    <Compile Include="Dictionarys\DictionaryValueTemplate.cs" />
+    <Compile Include="Employees\Employee.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Employees\EmployeeCheck.cs" />
+    <Compile Include="Employees\EmployeeManager.cs" />
+    <Compile Include="Employees\EmployeeStore.cs" />
+    <Compile Include="Equipments\EquipmentBeat.cs" />
+    <Compile Include="Equipments\Equipment.cs" />
+    <Compile Include="Equipments\EquipmentConfig.cs" />
+    <Compile Include="Equipments\EquipmentGps.cs" />
+    <Compile Include="Equipments\EquipmentMaintenance.cs" />
+    <Compile Include="Icons\Icon.cs" />
+    <Compile Include="Inducibles\Inducible.cs" />
+    <Compile Include="Inducibles\InducibleLog.cs" />
+    <Compile Include="Inducibles\InducibleToAD.cs" />
+    <Compile Include="Inducibles\InducibleToPark.cs" />
+    <Compile Include="Inspectors\Inspector.cs" />
+    <Compile Include="Inspectors\InspectorCheck.cs" />
+    <Compile Include="Inspectors\InspectorManager.cs" />
+    <Compile Include="Inspectors\InspectorStore.cs" />
+    <Compile Include="Inspectors\InspectorTask.cs" />
+    <Compile Include="Inspectors\InspectorTaskHistory.cs" />
+    <Compile Include="Menus\Menu.cs" />
+    <Compile Include="MonthlyCars\MonthlyCar.cs" />
+    <Compile Include="MonthlyCars\MonthlyCarAbnormal.cs" />
+    <Compile Include="MonthlyCars\MonthlyCarHistory.cs" />
+    <Compile Include="OperationPermissions\OperationPermission.cs" />
+    <Compile Include="Organizations\Organization.cs" />
+    <Compile Include="OtherAccounts\DeductionRecord.cs" />
+    <Compile Include="OtherAccounts\OtherAccount.cs" />
+    <Compile Include="OtherAccounts\OtherAccountManager.cs" />
+    <Compile Include="OtherAccounts\OtherAccountStore.cs" />
+    <Compile Include="OtherPlateNumbers\OtherPlateNumber.cs" />
+    <Compile Include="Parks\Park.cs" />
+    <Compile Include="Rates\Rate.cs" />
+    <Compile Include="Regions\Region.cs" />
+    <Compile Include="Messages\Message.cs" />
+    <Compile Include="MultiTenancy\Tenant.cs" />
+    <Compile Include="Notices\Notice.cs" />
+    <Compile Include="P4Consts.cs" />
+    <Compile Include="P4CoreModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\BerthsecReport.cs" />
+    <Compile Include="Reports\EmployeeReport.cs" />
+    <Compile Include="Sensors\SensorPosition.cs" />
+    <Compile Include="Sensors\Sensor.cs" />
+    <Compile Include="Sensors\SensorBeat.cs" />
+    <Compile Include="Sensors\SensorBusinessDetail.cs" />
+    <Compile Include="Sensors\SensorCaution.cs" />
+    <Compile Include="Sensors\SensorFault.cs" />
+    <Compile Include="Sensors\SensorLog.cs" />
+    <Compile Include="Sensors\SensorMagnetic.cs" />
+    <Compile Include="Sensors\SensorRunStatus.cs" />
+    <Compile Include="Sensors\Transmitter.cs" />
+    <Compile Include="Sensors\TransmitterCaution.cs" />
+    <Compile Include="Smss\Sms.cs" />
+    <Compile Include="SpecialLists\SpecialList.cs" />
+    <Compile Include="Tasks\Task.cs" />
+    <Compile Include="TestJobs\Job.cs" />
+    <Compile Include="Users\User.cs" />
+    <Compile Include="Users\UserManager.cs" />
+    <Compile Include="Users\UserStore.cs" />
+    <Compile Include="UserTrials\UserTrial.cs" />
+    <Compile Include="Weixin\Coupon.cs" />
+    <Compile Include="Weixin\CouponDetail.cs" />
+    <Compile Include="Weixin\WeixinBank.cs" />
+    <Compile Include="Weixin\WeixinConfig.cs" />
+    <Compile Include="Weixin\WeixinCurrencyType.cs" />
+    <Compile Include="Weixin\WeixinIdea.cs" />
+    <Compile Include="Weixin\WeixinMenu.cs" />
+    <Compile Include="Weixin\WeixinMonthRule.cs" />
+    <Compile Include="Weixin\WeixinMsg.cs" />
+    <Compile Include="Weixin\WeixinPlates.cs" />
+    <Compile Include="Weixin\WeixinSendMsgModel.cs" />
+    <Compile Include="Weixin\WeixinOrder.cs" />
+    <Compile Include="Weixin\WeixinPushMsg.cs" />
+    <Compile Include="Weixin\WeixinRechargeRule.cs" />
+    <Compile Include="Weixin\WeixinSendRecord.cs" />
+    <Compile Include="Weixin\WeixinTradeType.cs" />
+    <Compile Include="Weixin\WeixinTuser.cs" />
+    <Compile Include="Weixin\WeixinUser.cs" />
+    <Compile Include="WhiteLists\WhiteList.cs" />
+    <Compile Include="WorkGroupInspectors\WorkGroupInspectors.cs" />
+    <Compile Include="WorkGroups\WorkGroup.cs" />
+    <Compile Include="WorkGroups\WorkGroupBerthsec.cs" />
+    <Compile Include="WorkGroups\WorkGroupEmployee.cs" />
+    <Compile Include="WorkGroupInspectors\WorkGroupInspectorsBerthsecs.cs" />
+    <Compile Include="WorkGroupInspectors\WorkGroupsInspectors.cs" />
+    <Compile Include="XianPay\XianPayOrder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

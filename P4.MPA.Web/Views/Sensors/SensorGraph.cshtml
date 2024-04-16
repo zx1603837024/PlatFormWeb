@@ -1,0 +1,339 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("SensorGraph");
+    ViewBag.ActiveMenu = "SensorGraph";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td width="5%"><label for="id-date-picker-1">日期：</label></td>
+            <td width="15%">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;</td>
+            <td width="15%">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="echarDiv" style="height: 410px;">
+
+</div>
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/chart/line.js"></script>
+
+@section scriptsgrid
+{
+    jQuery(grid_selector).jqGrid({
+    url: '../Sensors/GetSensorFaultList',
+    datatype: "json",
+    mtype: "post",
+    autowidth: true,
+    height: 'auto',
+    colNames: ['区域', '停车场', '泊位段', '泊位号', '车检器编号', '检查点时间'],
+    colModel: [
+    { name: 'RegionName', index: 'RegionName' },
+    { name: 'ParkName', index: 'ParkName' },
+    { name: 'BerthsecName', index: 'BerthsecName' },
+    { name: 'BerthNumber', index: 'BerthNumber' },
+    { name: 'SensorNumber', index: 'SensorNumber',  key: true },
+    { name: 'CreationTimeString', index: 'CreationTimeString' }
+    ],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    sortname: 'Id',
+    sortorder: "desc",
+    multiselect: true,
+    multikey: "ctrlKey",
+    multiboxonly: true,
+
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                            + "' class='scroll'></table><div id='"
+                            + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    url: "../Sensors/GetSensorRunStatusList?SensorNumber=" + row_id,
+    datatype: "json",
+    colNames: ['ID', '车检器编号', '开始时间', '结束时间', '持续时长', '状态'],
+    colModel: [
+    { name: "Id", index: "Id", key: true },
+    { name: "SensorNumber", index: "SensorNumber" },
+    { name: "BeginTimeString", index: "BeginTimeString" },
+    { name: "EndTimeString", index: "BeginTimeString" },
+    { name: "StopTimes", index: "StopTimes" },
+    { name: "StatusString", index: "StatusString", formatter: StopOrEmpty }
+    ],
+    autowidth: true,
+    height: 'auto'
+    });
+    },
+    subGridRowColapsed: function (subgrid_id, row_id) {
+    },
+
+    loadComplete: function () {
+    var table = this;
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    },
+    caption: "@ViewBag.Title",
+    autowidth: true
+    });
+}
+
+@section scriptsbuttonbyself{
+    function StopOrEmpty(cellvalue, options)
+    {
+    if(cellvalue == '正常')
+    return "<span class='badge badge-info'>正常</span>";
+    else
+    return "<span class='badge badge-danger'>故障</span>";
+    }
+}
+
+
+
+<script type="text/javascript">
+
+    $('#myButton').on('click', function () {
+
+
+        GetAjaxChartData();//更改线性数据
+        //jQuery('#grid-table').jqGrid('setCaption', "操作权限").trigger('reloadGrid');
+    });
+
+    //定义图表options
+    var options = {
+        title: {
+            text: "车检器在线率曲线图",
+            subtext: "车检器在线率曲线"
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ["在线率"]
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params) {
+                return params[0][1] + '<br/>'
+                    + params[0][0] + ' ' + params[0][2] + '%';
+            },
+            axisPointer: {
+                animation: false
+            }
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                //dataView: { show: true, readOnly: false },
+                magicType: { show: true, type: ['line', 'bar'] },
+                restore: { show: true },
+                saveAsImage: { show: true }
+            }
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                data: ['0']
+                //data: []
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} %'
+                }
+                //splitArea: { show: true }
+            }
+        ],
+        dataZoom: [
+            {   // 这个dataZoom组件，默认控制x轴。
+                type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+                start: 10,      // 左边在 10% 的位置。
+                end: 60         // 右边在 60% 的位置。
+            }
+        ],
+        series: [{
+            name: '在线率',
+            type: 'line',
+            data: [0]
+            //data: []
+        }]
+    };
+    var myChart;
+
+    // Step:4 require echarts and use it in the callback.
+    // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+    require.config({
+        paths: {
+            echarts: '~/assets/js/Echarts/dist'
+        }
+    });
+    require(
+        [
+            'echarts',
+            'echarts/chart/line' //按需加载图表关于线性图、折线图的部分
+        ],
+        //DrawEChart //异步加载的回调函数绘制图表
+        function (ec) {
+            myChart = ec.init(document.getElementById('echarDiv'));
+            //选择一个空图表
+            myChart.setOption(options);
+            var ecConfig = require('echarts/config');
+            function eConsole(param) {
+                jQuery('#grid-table').jqGrid('setGridParam', {
+                    url: '../Sensors/GetSensorFaultList',
+                    datatype: 'json',
+                    postData:
+                    {
+                        'OperateDateBegin': $('#operateDateBegin').val(),
+                        'OperateDateEnd': $('#operateDateEnd').val(),
+                        'CreationTime': param.name
+                    },
+                    page: 1
+                }).trigger('reloadGrid');
+                NotifySuccess("数据加载成功", "系统提示")
+            }
+            myChart.on(ecConfig.EVENT.CLICK, eConsole);
+            GetAjaxChartData();
+        }
+    );
+
+    ///点击按钮获取图表数据采用ajax方式
+    function GetAjaxChartData() {
+
+        //获得图表的options对象
+        //var options = window.myChart.getOption();
+        //图表显示提示信息
+        myChart.showLoading({
+            text: "图表数据正在努力加载..."
+        });
+        //通过Ajax获取数据
+        $.ajax({
+            type: "post",
+            async: false, //同步执行
+            url: '../Sensors/SensorBeatEchatData',
+            data: {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val()
+            },
+            // data: { operatedatebegin: $('#operateDateBegin').datebox('getValue'), operatedateend: $('#operateDateEnd').datebox('getValue') },
+            //  url: "EmployeeMoneyLine.aspx?type=getData&operateDateBegin=2015/6/30",
+            dataType: "json", //返回数据形式为json
+            success: function (result) {
+                if (result) {
+                    //将返回的category和series对象赋值给options对象内的category和series
+                    //因为xAxis是一个数组 这里需要是xAxis[i]的形式
+
+                    options.xAxis[0].data = result.category;
+                    options.series = result.series;
+                    options.legend.data = result.legend;
+                    myChart.hideLoading();
+                    myChart.setOption(options, true);
+                }
+            },
+            error: function (errorMsg) {
+                NotifyWarn('图表请求数据失败，请重试！');
+            }
+        });
+    }
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin);
+        $('#operateDateEnd').val(operateDateEnd);
+
+        $('.date-picker').datepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+

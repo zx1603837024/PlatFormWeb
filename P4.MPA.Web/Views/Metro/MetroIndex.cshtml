@@ -1,0 +1,180 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>智慧城市综合管理云平台</title>
+    <link rel="stylesheet" href="../css/metro-styles.css" />
+</head>
+
+<body style="background:url('../css/images/1.jpg');">
+    <div class="fxintel-wrapper">
+        <div class="col1 clearfix">
+            <div class="big todos-thumb" data-page="todos" id="f2">
+                <p>
+                    智慧停车管理系统平台
+                    <span class="todos-thumb-span">智慧停车管理系统平台</span>
+                </p>
+            </div>
+            <div class="big notes-thumb" data-page="todos" id="Parking">
+                <p>
+                    路外停车场管理系统
+                </p>
+            </div>
+            <div class="big games-thumb" data-page="random-page" id="ServiceCenter"><p>客服中心系统平台</p></div>
+        </div>
+        <div class="col2 clearfix">
+            <div class="big organizer-thumb" data-page="random-page" id="Inducible"><p>智能交通与停车诱导系统</p></div>
+            <div class="big news-thumb" data-page="random-page" id="ParkMonitoring"><p>停车场监控系统平台</p></div>
+
+            <div class="big weather-thumb" data-page="random-page" id="Statistics"><p>智慧城市管理与决策分析</p></div>
+        </div>
+        <div class="col3 clearfix">
+            <div class="big photos-thumb" data-page="random-page" id="nb-iot"><p>物联网设备设施管理平台</p></div>
+            <div class="big games-thumb" data-page="random-page" id="ChargingPoint"><p>智能充电桩管理平台</p></div>
+            <div class="small lock-thumb">
+                <span class="icon-font  center" aria-hidden="true" data-icon="&#xe00d;"></span>
+            </div>
+            <div class="small last cpanel-thumb" data-page="random-page" id="system">
+                <span class="icon-font" aria-hidden="true" data-icon="&#xe016;"></span> @*系统设置*@
+            </div>
+        </div>
+    </div>
+    <script src="../Scripts/jquery-1.8.2.min.js"></script>
+    <script src="../Scripts/modernizr-1.5.min.js"></script>
+    <script src="../Scripts/prefixfree.min.js"></script>
+    <script src="~/assets/global/plugins/jquery-sweetalert/sweetalert-dev.js"></script>
+    <link rel="stylesheet" href="~/assets/global/plugins/jquery-sweetalert/sweetalert.css" />
+    <script>
+
+        //锁定
+        $(".lock-thumb").click(function () {
+            window.location.href = '../Platform/ExtraLock';
+        });
+        //停车管理平台
+        $('#f2').click(function () {
+            $.ajax({
+                type: "post",
+                url: '../Metro/UpdateMenuType',
+                data: { menuType: "Road" },
+                dataType: 'json',
+                success: function (result) {
+                    window.location.href = '../Platform/BridgeIndex';
+                }
+            });
+        });
+        //诱导
+        $('#Inducible').click(function () {
+            TitleShow();
+            //$.ajax({
+            //    type: "post",
+            //    url: '../Metro/UpdateMenuType',
+            //    data: { menuType: "Inducible" },
+            //    dataType: 'json',
+            //    success: function (result) {
+            //        window.location.href = '../InducibleSystem/InducibleMap';
+            //    }
+            //});
+        });
+        //停车场监控
+        $('#ParkMonitoring').click(function () {
+            TitleShow();
+            //$.ajax({
+            //    type: "post",
+            //    url: '../Metro/UpdateMenuType',
+            //    data: { menuType: "Inducible" },
+            //    dataType: 'json',
+            //    success: function (result) {
+            //        window.location.href = '../InducibleSystem/InducibleMap';
+            //    }
+            //});
+        });
+        //物联网
+        $('#nb-iot').click(function () {
+            TitleShow();
+            //$.ajax({
+            //    type: "post",
+            //    url: '../Metro/UpdateMenuType',
+            //    data: { menuType: "NB-IoT" },
+            //    dataType: 'json',
+            //    success: function (result) {
+            //        window.location.href = '../Sensors/SensorGraph';
+            //    }
+            //});
+        });
+        //路外停车场
+        $('#Parking').click(function () {
+            TitleShow();
+            //$.ajax({
+            //    type: "post",
+            //    url: '../Metro/UpdateMenuType',
+            //    data: { menuType: "Park" },
+            //    dataType: 'json',
+            //    success: function (result) {
+            //        //window.location.href = '../Parking/Index';
+            //        window.location.href = '../ParkingLot/Index';
+            //    }
+            //});
+        });
+
+        //企业信息设置
+        $('#system').click(function () {
+            $.ajax({
+                type: "post",
+                url: '../Metro/UpdateMenuType',
+                data: { menuType: "System" },
+                dataType: 'json',
+                success: function (result) {
+                    window.location.href = '../Enterprise/EnterpriseSetting';
+                }
+            });
+        });
+        //客服中心
+        $('#ServiceCenter').click(function () {
+            TitleShow();
+            //$.ajax({
+            //    type: "post",
+            //    url: '../Metro/UpdateMenuType',
+            //    data: { menuType: "Service" },
+            //    dataType: 'json',
+            //    success: function (result) {
+            //        window.location.href = '../Weixin/WeixinIdea';
+            //    }
+            //});
+        });
+        //充电桩
+        $('#ChargingPoint').click(function () {
+            TitleShow();
+        });
+        
+
+        function TitleShow() {
+            swal("系统提示!", "对不起，此功能未开放", "error");
+        }
+        //违停系统
+        $('#Escape').click(function () {
+            window.location.href = '../Business/EscapeDetails';
+        });
+
+        $('#userinfo').click(function () {
+            window.location.href = '../Users/ProfileInfo';
+        });
+
+        $('#Decision').click(function () {
+            window.location.href = '../Decision/SensorPOSContrast';
+        });
+
+
+        $('#BigScreen').click(function () {
+            window.location.href = '../BigScreen/Index';
+        });
+        //数据分析 大屏展示
+        $('#Statistics').click(function () {
+            window.location.href = '../BigScreen/Statistics';
+        });
+    </script>
+</body>
+</html>

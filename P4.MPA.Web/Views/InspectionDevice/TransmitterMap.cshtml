@@ -1,0 +1,294 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("TransmitterMap");
+    ViewBag.ActiveMenu = "TransmitterMap";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div id="l-map">
+</div>
+<div>
+    <div class="form-group">
+        <div class="col-sm-9" id="allmap" style="width:100%;height:100%;">
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gomvEhrIsmCOhYbLpVNuQSug"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+@*signalr-begin*@
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="../signalr/hubs"></script>
+@*signalr-end*@
+<script type="text/javascript">
+    var XMap;
+    var YMap;
+    $.ajax({
+        type: "POST",
+        url: '../InspectionDevice/GetTenantX_Y',
+        success: function (data) {
+            XMap = data.X;
+            YMap = data.Y;
+        }, error: function () {
+
+        }
+    });
+    var map = new BMap.Map("allmap");
+    map.enableScrollWheelZoom();
+    map.enableInertialDragging();
+    map.enableContinuousZoom();
+
+ 
+    map.addControl(new BMap.NavigationControl());
+
+    var geolocation = new BMap.Geolocation();
+    geolocation.getCurrentPosition(function (r) {
+        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+            var size = new BMap.Size(10, 20);
+            map.addControl(new BMap.CityListControl({
+                anchor: BMAP_ANCHOR_TOP_RIGHT,
+                offset: size
+            }));
+
+            //map.centerAndZoom(r.point, 12);
+            map.centerAndZoom(new BMap.Point(XMap, YMap), 16);
+
+          
+        }
+    }, { enableHighAccuracy: true });
+
+
+
+
+    $.ajax({
+        type: "POST",
+        url: '../InspectionDevice/GetAllTransmitterList',
+        success: function (data) { 
+            var X = "114.1644";
+            var Y = "22.572174";
+            //window.X = x;
+            //window.Y = y;
+           
+            var geoc = new BMap.Geocoder();
+            var geolocation = new BMap.Geolocation();
+            var customLayer;
+            function addCustomLayer(keyword) {
+                if (customLayer) {
+                    map.removeTileLayer(customLayer);
+                }
+                customLayer = new BMap.CustomLayer({
+                    geotableId: 30960,
+                    q: '', //检索关键字
+                    tags: '', //空格分隔的多字符串
+                    filter: '' //过滤条件,参考http://developer.baidu.com/map/lbs-geosearch.htm#.search.nearby
+                });
+                map.addTileLayer(customLayer);
+                customLayer.addEventListener('hotspotclick', callback);
+            }
+            var myIcon = new BMap.Icon("../assets/images/normaltrans.png", new BMap.Size(20, 20));
+            var myIconBlack = new BMap.Icon("../assets/images/faulttrans.png", new BMap.Size(20, 20));
+            $.each(data, function (i, item) {
+                if (X != null && Y != null && X.length > 0 && Y.length > 0 && item.IsOnline=="1") {
+                X = item.X;
+                Y = item.Y;
+        
+
+                    var mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIcon
+                    });
+                    map.addOverlay(mk);
+                    map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            //var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/fox.gif", new BMap.Size(300, 157));
+
+                            //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                        //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                    });
+
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                }
+                else if (X != null && Y != null && X.length > 0 && Y.length > 0 && item.IsOnline == "0")
+                {
+                    X = item.X;
+                    Y = item.Y;
+
+
+                    var mk = new BMap.Marker(new BMap.Point(X, Y), {
+                        enableDragging: false,
+                        raiseOnDrag: true,
+                        icon: myIconBlack
+                    });
+                    map.addOverlay(mk);
+                    map.panTo(new BMap.Point(X, Y));
+                    mk.addEventListener('dragend', function (e) {
+                        var pt = e.point;
+                        geoc.getLocation(pt, function (rs) {
+                            var addComp = rs.addressComponents;
+                            //var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/fox.gif", new BMap.Size(300, 157));
+
+                            //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                            X = e.point.lng;
+                            Y = e.point.lat;
+                        });
+                    });
+
+                    var pt = new BMap.Point(X, Y);
+                    geoc.getLocation(pt, function (rs) {
+                        var addComp = rs.addressComponents;
+                        //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                    });
+
+
+                    mk.addEventListener('click', function () {
+                        map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                    });
+                }
+                else {
+                    geolocation.getCurrentPosition(function (r) {
+                        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                            //var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/fox.gif", new BMap.Size(300, 157));
+
+                            var mk = new BMap.Marker(r.point, {
+                                enableDragging: false,
+                                raiseOnDrag: true,
+                                icon: myIcon
+                            });
+                            map.addOverlay(mk);
+                            map.panTo(r.point);
+                            mk.addEventListener('dragend', function (e) {
+                                var pt = e.point;
+                                geoc.getLocation(pt, function (rs) {
+                                    var addComp = rs.addressComponents;
+                                    //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber  );
+
+
+                                    X = e.point.lng
+                                  
+                                    Y = e.point.lat
+                                });
+                            });
+
+
+                            var pt = r.point;
+                            geoc.getLocation(pt, function (rs) {
+                                var addComp = rs.addressComponents;
+                                //$("#Address").val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                                X = r.point.lng;
+                                Y = r.point.lat;
+                            });
+
+                            mk.addEventListener('click', function () {
+                                map.openInfoWindow(showMessage(item), pt); //开启信息窗口
+                            });
+                        }
+                        else {
+                            alert('failed' + this.getStatus());
+                        }
+                    }, { enableHighAccuracy: true });
+                }
+            });
+        }, error: function () {
+
+        }
+    });
+
+
+
+
+    //百度地图自适应
+    $(document).ready(function () {
+        BaiDuMap();
+        $(".chosen-select").chosen();
+    });
+
+    $(window).resize(function () {
+        BaiDuMap();
+    });
+
+    function BaiDuMap() {
+        //alert('1223');
+        var winWidth = 0;  //1440
+        var winHeight = 0;   //417
+        //var bibi=
+        //获取窗口宽度
+        //if (window.innerWidth) {
+        //    winWidth = window.innerWidth;
+        a = window.innerWidth;
+        b = window.innerHeight;
+
+        //    a = document.body.clientHeight;
+        //    b = document.body.clientWidth;
+        //} else
+        if ((document.body) && (document.body.clientWidth)) {
+            //winWidth = document.body.clientWidth;
+        }
+        //alert('1223');
+        //获取窗口高度
+        //if (window.innerHeight) {
+        //    winHeight = window.innerHeight;
+        //} else
+        if ((document.body) && (document.body.clientHeight)) {
+            // winHeight = document.body.clientHeight;
+        }
+        //通过深入Document内部对body进行检测，获取窗口高度
+        if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth) {
+            winWidth = document.documentElement.clientWidth;
+            winHeight = document.documentElement.clientHeight;
+        }
+
+        var bibi = (parseInt(winHeight) * (650 / 805)).toString();
+        $("#allmap").css({ "height": parseInt(winHeight) * (650 / 805) });
+
+        //$("#allmap").attr("style","width:100%;height:"+bibi+"px");
+
+        //$("#div1).css({"height":parseInt(winHeight),"width":parseInt(winWidth)});
+    }
+
+    function showMessage(item) {
+        var opts = {
+            width: 260,     // 信息窗口宽度
+            height: 120,     // 信息窗口高度
+            title: "<span style='font-size:18px;font-weight:bold'>" + item.TransmitterName + "</span>", // 信息窗口标题
+            enableMessage: true,//设置允许信息窗发送短息
+            message: item.Address
+        }
+        var parkMessage = "电池电量：<span style=\"font-size:14px;\">" + item.VoltageCaution + " &nbsp;&nbsp;V</span> <br/>" +
+                          "地址：" + item.Address;
+        var infoWindow = new BMap.InfoWindow(parkMessage, opts);  // 创建信息窗口对象
+
+        return infoWindow;
+    }
+
+    $('#myButton').on('click', function () {
+        map.centerAndZoom($('#cityIdInput').val(), 11);
+    });
+</script>

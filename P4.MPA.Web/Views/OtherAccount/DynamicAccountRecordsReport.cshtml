@@ -1,0 +1,633 @@
+﻿@model P4.Web.Models.AccountAndDeductionRecordModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("DynamicAccountRecordsReport");
+    ViewBag.ActiveMenu = "DynamicAccountRecordsReport";
+}@section styles
+{
+    <link rel="stylesheet" href="~/assets/css/bootstrapSwitch.css" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+    <script src="~/assets/js/jquery-migrate-1.1.0.js"></script>
+    <script src="~/assets/js/jquery.jqprint-0.3.js"></script>
+}
+@*----------------------------------------------------------------------------------------------------------*@
+<div class="row" style="margin:10px 0">
+    <table>
+        <tr>
+            <td><label for="id-date-picker-1">查询日期：</label></td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;&nbsp;</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            @*<td>收费员名称：</td>
+
+                <td width="300px">
+                    <select class="ls-wp-fullwidth-container chosen-select" id="employeeIdInput" name="employeeIdInput" data-placeholder="选择停车场名称...">
+                        @foreach (var entity in Model.EmployeeList)
+                        {
+                            <option value="@entity.Id">@entity.TrueName</option>
+                        }
+                    </select>
+                </td>*@
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+
+
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportTotalButton">
+                    导出统计
+                </button>
+
+
+
+
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出明细
+                </button>
+            </td>
+            <td>
+                <input type="button" class="btn btn-sm btn-primary" onclick="a()" value="打印" />
+            </td>
+            <td width="200px"></td>
+            <td>
+                <div id="mySwitch" class="switch has-switch" data-on-label="图形" data-off-label="列表" style="float:right">
+                    <input checked="" type="checkbox">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="ddd" style="width:100%;">
+    <table id="mytable" style="width:100%" border="1" cellpadding="2" cellspacing="0">
+        <tr>
+            <th colspan="9" style="text-align: center;font-size:40px;text-decoration:underline;background-color: White;border-right: White 1px solid;border-top: White 1px solid;border-left: White 1px solid;border-bottom: White 1px solid; ">月份储值卡使用情况表</th>
+        </tr>
+        <tr>
+            <td colspan="4" style="background-color: White;border-right: White 1px solid;border-top: White 1px solid;border-left: White 1px solid;border-bottom: White 1px solid;"></td>
+            <td colspan="3" style="text-align: right;background-color: White;border-right: White 1px solid;border-top: White 1px solid;border-left: White 1px solid;border-bottom: White 1px solid;">&nbsp;&nbsp;年&nbsp;&nbsp;月&nbsp;&nbsp;日</td>
+            <td colspan="2" style="background-color: White; border-right: White 1px solid; border-top: White 1px solid; border-left: White 1px solid; border-bottom: White 1px solid; "></td>
+        </tr>
+        <tr>
+            <td colspan="9" style="text-align: right;background-color: White;border-right: White 1px solid;border-top: White 1px solid;border-left: White 1px solid;border-bottom: White 0px solid; ">金额单位：&nbsp;元</td>
+        </tr>
+        <tr>
+            <td rowspan="2" style="text-align: center;">序号</td>
+            <td rowspan="2" style="text-align: center;">卡号</td>
+            <td rowspan="2" style="text-align: center;">首发面值</td>
+            <td rowspan="2" style="text-align: center;">首发售价</td>
+            <td rowspan="2" style="text-align: center;">期初结存额</td>
+            <td colspan="2" style="text-align: center;">本期储值</td>
+            <td rowspan="2" style="text-align: center;">本期消费额</td>
+            <td rowspan="2" style="text-align: center;">期末结存额</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">储值额</td>
+            <td style="text-align: center;">售价</td>
+        </tr>
+        @foreach (var entity in Model.AccountList)
+        {
+            <tr>
+                <td style="text-align: center;">@entity.Id</td>
+                <td style="text-align: center;">@entity.CardNo</td>
+                <td style="text-align: center;">@entity.TheFirstValue</td>
+                <td style="text-align: center;">@entity.TheFirstValue</td>
+                <td style="text-align: center;">@entity.EarlyMonthBalance</td>
+                <td style="text-align: center;">@entity.StoredValue</td>
+                <td style="text-align: center;">@entity.StoredValue</td>
+                <td style="text-align: center;">@entity.CurrentConsumptionValue</td>
+                <td style="text-align: center;">@entity.TheFinalBalance</td>
+            </tr>
+        }
+        @*<tr>
+                <td colspan="9">
+                    <table id="addTable" style="width:100%" border="1" cellpadding="2" cellspacing="0"></table>
+                </td>
+            </tr>*@
+        @*<tr id="addTR"></tr>*@
+        <tr id="totalRow"></tr>
+        <tr id="footer">
+            <td style="background-color: White;border-right: White 1px solid;border-top: White 0px solid;border-left: White 1px solid;border-bottom: White 1px solid;"></td>
+            <td style="background-color: White;border-right: White 1px solid;border-top: White 0px solid;border-left: White 1px solid;border-bottom: White 1px solid;" colspan="3">分管领导：</td>
+            <td style="background-color: White;border-right: White 1px solid;border-top: White 0px solid;border-left: White 1px solid;border-bottom: White 1px solid;" colspan="3">部门负责人：</td>
+            <td style="background-color: White;border-right: White 1px solid;border-top: White 0px solid;border-left: White 1px solid;border-bottom: White 1px solid;" colspan="2">制表：</td>
+        </tr>
+    </table>
+
+</div>
+
+
+@*<table id="grid-table"></table>
+    <div id="grid-pager"></div>*@
+<div id="jqgridDiv">
+
+    <table id="grid-table"></table>
+    <div id="grid-pager"></div>
+</div>
+<div id="echarDiv" style="height: 410px;">
+
+</div>
+
+
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript">
+    $('#mySwitch').on('switch-change', function (e, data) {
+        var $el = $(data.el), value = data.value;
+        if (value == true) {
+            $('#echarDiv').css('display', 'block');
+            $('#jqgridDiv').css('display', 'none');
+        }
+        else {
+            $('#echarDiv').css('display', 'none');
+            $('#jqgridDiv').css('display', 'block');
+
+        }
+    });
+    $('#myButton').on('click', function () {
+        //swal({
+        //    title: "系统提示",
+        //    text: "正在加载数据，请稍等....",
+        //    timer: 10000,
+        //    showConfirmButton: false
+        //});
+        GetAjaxChartData();//更改线性数据
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            url: '../OtherAccount/AccountRecordsJqGridData',
+            datatype: 'json',
+            postData:
+                {
+                    'operateDateBegin': $('#operateDateBegin').val(),
+                    'operateDateEnd': $('#operateDateEnd').val()
+                },
+            page: 1
+        }).trigger('reloadGrid');
+        //jQuery('#grid-table').jqGrid('setCaption', "操作权限").trigger('reloadGrid');
+        $.ajax({
+            type: "post",
+            async: false, //同步执行
+            url: '/OtherAccount/AccountRecordsDataReport',
+            data: {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val()
+            },
+            dataType: 'html',
+            success: function (result) {
+                var tbrows = $("#mytable tr").length;
+                
+                if (tbrows > 7) {
+                    for (var trrow = 6; trrow < tbrows - 1; trrow++) {
+                        $("#mytable tr").eq(5).remove();
+                    }
+                }
+                
+                //var objlist = JSON.parse(result.a);
+                var objlist = eval(result);
+                function addTr(tab, row, trHtml) {
+                    //获取table最后一行 $("#tab tr:last")
+                    //获取table第一行 $("#tab tr").eq(0)
+                    //获取table倒数第二行 $("#tab tr").eq(-2)
+                    var $tr = $("#" + tab + " tr").eq(row);
+                    if ($tr.size() == 0) {
+                        alert("指定的table id或行数不存在！");
+                        return;
+                    }
+                    $tr.after(trHtml);
+                }
+                
+                for (var i = 0, length = objlist.length; i < length; i++) {
+
+                    function addTr2(tab, row) {
+                        var trHtml = '<tr><td style="text-align: center;">' + objlist[i]["Id"] + '</td><td style="text-align: center;">' + objlist[i]["CardNo"] +
+                        '</td><td style="text-align: center;">' + objlist[i]["TheFirstValue"] + '</td><td style="text-align: center;">' + objlist[i]["TheFirstValue"] +
+                        '</td><td style="text-align: center;">' + objlist[i]["EarlyMonthBalance"] + '</td><td style="text-align: center;">' + objlist[i]["StoredValue"] +
+                        '</td><td style="text-align: center;">' + objlist[i]["StoredValue"] + '</td><td style="text-align: center;">' + objlist[i]["CurrentConsumptionValue"] +
+                        '</td><td style="text-align: center;">' + objlist[i]["TheFinalBalance"] + '</td></tr>';
+                        addTr(tab, row, trHtml);
+                    }
+                    addTr2("mytable", -3);
+                }
+
+                $("#mytable tr").eq(-2).remove();
+                var tblength = $("#mytable tr").length;
+                var CardNumb = tblength - 6
+                var TheFirstValueTotal = 0
+                var TheFirstPriceTotal = 0
+                var EarlyMonthBalanceTotal = 0
+                var StoredValueTotal = 0
+                var PriceTotal = 0
+                var CurrentConsumptionValueTotal = 0
+                var TheFinalBalanceTotal = 0
+                $('#mytable tr').each(function () {
+                    $(this).find('td:eq(2)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            TheFirstValueTotal += parseFloat(t);
+                        }
+                    });
+                    $(this).find('td:eq(3)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            TheFirstPriceTotal += parseFloat(t);
+                        }
+                    });
+                    $(this).find('td:eq(4)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            EarlyMonthBalanceTotal += parseFloat(t);
+                        }
+                    });
+                    $(this).find('td:eq(5)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            StoredValueTotal += parseFloat(t);
+                        }
+                    });
+                    $(this).find('td:eq(6)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            PriceTotal += parseFloat(t);
+                        }
+                    });
+                    $(this).find('td:eq(7)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            CurrentConsumptionValueTotal += parseFloat(t);
+                        }
+                    });
+                    $(this).find('td:eq(8)').each(function () {
+                        //totalRow += parseFloat($(this).text());
+                        var t = $(this).text();//这个就是我们要判断的值了
+                        if (!isNaN(parseFloat(t))) {
+                            TheFinalBalanceTotal += parseFloat(t);
+                        }
+                    });
+                });
+                function addTr3(tab, row) {
+                    var trHtml = '<tr><td style="text-align: center;">合计</td><td style="text-align: center;">共' + CardNumb + '(张)</td><td style="text-align: center;">' + TheFirstValueTotal + '</td><td style="text-align: center;">' + TheFirstPriceTotal + '</td><td style="text-align: center;">' + EarlyMonthBalanceTotal + '</td><td style="text-align: center;">' + StoredValueTotal + '</td><td style="text-align: center;">' + PriceTotal + '</td><td style="text-align: center;">' + CurrentConsumptionValueTotal + '</td><td style="text-align: center;">' + TheFinalBalanceTotal + '</td></tr>';
+                    addTr(tab, row, trHtml);
+                }
+                addTr3("mytable", -2);
+            },
+            error: function (result)
+            {
+                alert('ajax失败')
+            }
+        });
+
+     
+    });
+    $('#exportButton').on('click', function () {
+        var operateDateBegin = $('#operateDateBegin').val();
+        var operateDateEnd = $('#operateDateEnd').val();
+        window.location.href = "../StaticReport/ExportOtherAccount?operateDateBegin=" + operateDateBegin + "&operateDateEnd=" + operateDateEnd;
+    });
+    $('#exportTotalButton').on('click', function () {
+        var operateDateBegin = $('#operateDateBegin').val();
+        var operateDateEnd = $('#operateDateEnd').val();
+        window.location.href = "../StaticReport/AccountRecordsDataExcelReport?operateDateBegin=" + operateDateBegin + "&operateDateEnd=" + operateDateEnd;
+    });
+    function a() {
+        $("#ddd").jqprint();
+    }
+    $(document).ready(function () {
+        var tbrows = $("#mytable tr").length;
+        var CardNumb = tbrows - 7
+        var TheFirstValueTotal = 0
+        var TheFirstPriceTotal = 0
+        var EarlyMonthBalanceTotal = 0
+        var StoredValueTotal = 0
+        var PriceTotal = 0
+        var CurrentConsumptionValueTotal = 0
+        var TheFinalBalanceTotal = 0
+        $('#mytable tr').each(function () {
+            $(this).find('td:eq(2)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    TheFirstValueTotal += parseFloat(t);
+                }
+            });
+            $(this).find('td:eq(3)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    TheFirstPriceTotal += parseFloat(t);
+                }
+            });
+            $(this).find('td:eq(4)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    EarlyMonthBalanceTotal += parseFloat(t);
+                }
+            });
+            $(this).find('td:eq(5)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    StoredValueTotal += parseFloat(t);
+                }
+            });
+            $(this).find('td:eq(6)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    PriceTotal += parseFloat(t);
+                }
+            });
+            $(this).find('td:eq(7)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    CurrentConsumptionValueTotal += parseFloat(t);
+                }
+            });
+            $(this).find('td:eq(8)').each(function () {
+                //totalRow += parseFloat($(this).text());
+                var t = $(this).text();//这个就是我们要判断的值了
+                if (!isNaN(parseFloat(t))) {
+                    TheFinalBalanceTotal += parseFloat(t);
+                }
+            });
+        });
+
+        $('#totalRow').append('<td style="text-align: center;">合计</td><td style="text-align: center;">共' + CardNumb + '(张)</td><td style="text-align: center;">' + TheFirstValueTotal + '</td><td style="text-align: center;">' + TheFirstPriceTotal + '</td><td style="text-align: center;">' + EarlyMonthBalanceTotal + '</td><td style="text-align: center;">' + StoredValueTotal + '</td><td style="text-align: center;">' + PriceTotal + '</td><td style="text-align: center;">' + CurrentConsumptionValueTotal + '</td><td style="text-align: center;">' + TheFinalBalanceTotal + '</td>');
+    });
+</script>
+
+
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="~/assets/js/Echarts/dist/chart/line.js"></script>
+
+
+<script type="text/javascript">
+    //总充值");
+    //legendList.Add("总消费");
+    //legendList.Add("总预付");
+    //legendList.Add("总返还");
+    //legendList.Add("总余额
+    var options = {
+        title: {
+            text: 'Mone消费统计柱状图',
+            subtext: '充值/消费/预付/返还/余额'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ["总充值", "总消费", "总预付", "总返还", "总余额"]
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                dataView: { show: true, readOnly: false },
+                magicType: { show: true, type: ['line', 'bar'] },
+                restore: { show: true },
+                saveAsImage: { show: true }
+            }
+        },
+        calculable: true,
+
+        xAxis: [
+            {
+                type: 'category',
+                data: ['0', '0']
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        series: [
+            {
+                name: '总充值',
+                type: 'bar',
+                data: ["0", "0"]
+            },
+            {
+                name: '总消费',
+                type: 'bar',
+                data: ["0", "0"]
+            },
+            {
+                name: '总预付',
+                type: 'bar',
+                data: ["0", "0"]
+            },
+            {
+                name: '总返还',
+                type: 'bar',
+                data: ["0", "0"]
+            },
+            {
+                name: '总余额',
+                type: 'bar',
+                data: ["0", "0"]
+            }
+        ]
+    };
+    var myChart;
+
+
+    // Step:4 require echarts and use it in the callback.
+    // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+    require.config({
+        paths: {
+            echarts: '~/assets/js/Echarts/dist'
+        }
+    });
+    require(
+        [
+            'echarts',
+            'echarts/chart/bar', //按需加载图表关于柱形图的部分
+            'echarts/chart/line', //按需加载图表关于线性图、折线图的部分
+        ],
+        //DrawEChart //异步加载的回调函数绘制图表
+        function (ec) {
+            myChart = ec.init(document.getElementById('echarDiv'));
+            //选择一个空图表
+            myChart.setOption(options);
+            GetAjaxChartData();
+        }
+    );
+
+    ///点击按钮获取图表数据采用ajax方式
+    function GetAjaxChartData() {
+
+        //获得图表的options对象
+        //var options = window.myChart.getOption();
+        //图表显示提示信息
+        myChart.showLoading({
+            text: "图表数据正在努力加载..."
+        });
+        //通过Ajax获取数据
+        $.ajax({
+            type: "post",
+            async: false, //同步执行
+            url: '/OtherAccount/AccountRecordsEchar',
+            data: {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'rows': 15,
+                'page': 1
+            },
+            // data: { operatedatebegin: $('#operateDateBegin').datebox('getValue'), operatedateend: $('#operateDateEnd').datebox('getValue') },
+            //  url: "EmployeeMoneyLine.aspx?type=getData&operateDateBegin=2015/6/30",
+            dataType: "json", //返回数据形式为json
+            success: function (result) {
+                if (result) {
+                    //将返回的category和series对象赋值给options对象内的category和series
+                    //因为xAxis是一个数组 这里需要是xAxis[i]的形式
+
+                    options.xAxis[0].data = result.category;
+                    options.series = result.series;
+                    options.legend.data = result.legend;
+                    myChart.hideLoading();
+                    myChart.setOption(options, true);
+                }
+            },
+            error: function (errorMsg) {
+                console.log(errorMsg);
+                alert("不好意思，图表请求数据失败啦!");
+            }
+
+        });
+    }
+</script>
+
+
+@section scriptsgrid
+{
+    jQuery(grid_selector).jqGrid({
+    url: '../OtherAccount/AccountRecordsJqGridData',
+    datatype: "json",
+    mtype: "post",
+    height: 'auto',
+    autowidth: true,
+    colNames: ['用户名', '姓名','时间', '卡号','手机号码', '消费类型', '消费金额','钱包余额'],
+    colModel: [
+        { name: 'UserName', index: 'UserName' },
+        { name: 'Name', index: 'Name' },
+        { name: 'InTimeStr', index: 'InTimeStr' },
+        { name: 'CardNo', index: 'CardNo' },
+        { name: 'TelePhone', index: 'TelePhone' },
+        { name: 'Remark', index: 'Remark' },
+        { name: 'Money', index: 'Money' },
+        { name: 'Wallet', index: 'Wallet' }
+    ],
+
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    @*altRows: true,*@
+    sortname: 'Id',
+    multiselect: true,
+    multikey: "ctrlKey",
+    multiboxonly: true,
+    loadComplete: function () {
+        var table = this;
+        setTimeout(function () {
+            styleCheckbox(table);
+            updateActionIcons(table);
+            updatePagerIcons(table);
+            enableTooltips(table);
+        }, 0);
+    },
+    caption: "@ViewBag.Title"
+    });
+}
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#echarDiv').css('display', 'block');
+        $('#jqgridDiv').css('display', 'none');
+
+        $('.chosen-select').chosen();
+        $('#employeeIdInput_chosen').css('width', '150px');
+    });
+</script>

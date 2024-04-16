@@ -1,0 +1,290 @@
+﻿@using P4.Web.Models
+@model IndexModel
+@{
+Layout = "~/Views/Shared/_Layout.cshtml";
+ViewBag.Title = L("ParamConfig");
+ViewBag.ActiveMenu = "ParamConfig";
+}
+
+<style>
+    .form {
+        width: 500px;
+        height: 500px;
+        font-size: 16px;
+    }
+
+    .formItem {
+        width: 100%;
+        height: 70px;
+        line-height: 50px;
+        margin-left: 20px;
+    }
+
+    button {
+        width: 100px;
+        height: 50px;
+        background: #1890ff;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+    }
+</style>
+
+<div class="form">
+    <!--
+    <div class="formItem">
+        <span>数据清洗</span>
+        &nbsp;&nbsp;&nbsp;
+        <input type="checkbox" checked="true" id='isDataClean' />
+        <span>启用</span>
+    </div>
+    -->
+    <div class="formItem">
+        <span>推送设置</span>
+        &nbsp;&nbsp;&nbsp;
+        <input type="checkbox" checked="true" id='isPush' />
+        <span>启用</span>
+    </div>
+    <div class="formItem">
+        <span>置信度阈值</span>
+        &nbsp;&nbsp;&nbsp;
+        <input type="text" id="confidence" onkeyup="this.value=this.value.replace(/\D/g,'')"
+            onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+    </div>
+    <div class="formItem">
+        <span>推送地址</span>
+        &nbsp;&nbsp;&nbsp;
+        <input type="text" id="pushUrl" style="width:400px" />
+    </div>
+    <div class="formItem">
+        <span>推送方式</span>
+        &nbsp;&nbsp;&nbsp;
+        <input type="checkbox" checked="true" disabled />
+        <span>Post</span>
+    </div>
+    <div class="formItem">
+        <span>超时占用阈值</span>
+        &nbsp;&nbsp;&nbsp;
+        <input type="text" id="OrderOverTime" onkeyup="this.value=this.value.replace(/\D/g,'')"
+            onafterpaste="this.value=this.value.replace(/\D/g,'')" />（天）
+    </div>
+    <div class="formItem">
+        <button onclick="saveParamConfig()">保存配置</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var paramId;
+
+    $(document).ready(function () {
+        // 获取配置信息
+        getParamConfig();
+    });
+
+    /**
+     * 获取配置信息
+     * */
+    function getParamConfig() {
+        var that = this;
+        $.ajax({
+            type: "get",
+            url: "/CarVideoConfig/SelectAbpParamConfig",
+            success: function (data) {
+                if (data.result == 'success') {
+                    console.log(data);
+                    if (data.rows.length != 0) {
+                        var paramConfig = data.rows[0];
+                        that.paramId = paramConfig.Id;
+                        $('#confidence').val(paramConfig.Trust);
+                        $('#pushUrl').val(paramConfig.Url);
+                        $('#isDataClean').prop('checked', paramConfig.IsClean);
+                        $('#isPush').prop('checked', paramConfig.IsPost);
+                        $('#OrderOverTime').val(paramConfig.OrderOverTime);
+                    } else {
+                        $('#confidence').val("95");
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * 保存配置信息
+     */
+    function saveParamConfig() {
+        if (this.paramId == null) {
+            insertParamConfig();
+        } else {
+            updateParamConfig();
+        }
+    }
+
+    /**
+     * 新增配置信息
+     */
+    function insertParamConfig() {
+        var pushUrl = $('#pushUrl').val() + "";
+        pushUrl = pushUrl.replace(/\s+/g, '');
+        if (pushUrl.length > 0) {
+            var isURL = verifyUrl(pushUrl);
+            if (!isURL) {
+                swal({
+                    title: "推送地址需要包含http://或者https://",
+                    timer: 1000,
+                    type: "error",
+                    showConfirmButton: false
+                });
+                return;
+            }
+        }
+        //var isDataClean = $('#isDataClean').prop('checked');
+        var isPush = $('#isPush').prop('checked');
+        var confidence = $('#confidence').val() + "";
+        confidence = confidence.replace(/\s+/g, '');
+        var OrderOverTime = $('#OrderOverTime').val() + "";
+        OrderOverTime = OrderOverTime.replace(/\s+/g, '');
+        if (confidence.length == 0) {
+            confidence = '95';
+        }
+        if (confidence > 100) {
+            swal({
+                title: "置信度阈值范围0-100",
+                timer: 1000,
+                type: "error",
+                showConfirmButton: false
+            });
+            return;
+        }
+        var param = {
+            "Url": pushUrl,
+            "IsPost": isPush ? 1 : 0,
+            "IsClean": 1,
+            "Trust": Number(confidence),
+            "OrderOverTime": Number(OrderOverTime)
+        };
+        $.ajax({
+            type: "post",
+            url: "/CarVideoConfig/InsertAbpParamConfig",
+            data: {
+                input: JSON.stringify(param)
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.result == 'success') {
+                    swal({
+                        title: "保存成功！",
+                        timer: 1000,
+                        type: "success",
+                        showConfirmButton: false
+                    });
+                } else {
+                    swal({
+                        title: "保存失败！",
+                        timer: 1000,
+                        type: "error",
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function (data) {
+                swal({
+                    title: "保存失败！",
+                    timer: 1000,
+                    type: "error",
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+    /**
+     * 更新配置信息
+     */
+    function updateParamConfig() {
+        var pushUrl = $('#pushUrl').val() + "";
+        pushUrl = pushUrl.replace(/\s+/g, '');
+        if (pushUrl.length > 0) {
+            var isURL = verifyUrl(pushUrl);
+            if (!isURL) {
+                swal({
+                    title: "推送地址需要包含http://或者https://",
+                    timer: 1000,
+                    type: "error",
+                    showConfirmButton: false
+                });
+                return;
+            }
+        }
+        //var isDataClean = $('#isDataClean').prop('checked');
+        var isPush = $('#isPush').prop('checked');
+        var confidence = $('#confidence').val() + "";
+        confidence = confidence.replace(/\s+/g, '');
+        var OrderOverTime = $('#OrderOverTime').val() + "";
+        OrderOverTime = OrderOverTime.replace(/\s+/g, '');
+        if (confidence > 100) {
+            swal({
+                title: "置信度阈值范围0-100",
+                timer: 1000,
+                type: "error",
+                showConfirmButton: false
+            });
+            return;
+        }
+        if (confidence.length == 0) {
+            confidence = '95';
+        }
+        var param = {
+            "Id": this.paramId,
+            "Url": pushUrl,
+            "IsPost": isPush ? 1 : 0,
+            "IsClean": 1,
+            "Trust": Number(confidence),
+            "OrderOverTime": Number(OrderOverTime)
+        };
+        $.ajax({
+            type: "post",
+            url: "/CarVideoConfig/UpdateAbpParamConfig",
+            data: {
+                input: JSON.stringify(param)
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.result == 'success') {
+                    swal({
+                        title: "保存成功！",
+                        timer: 1000,
+                        type: "success",
+                        showConfirmButton: false
+                    });
+                    getParamConfig();
+                } else {
+                    swal({
+                        title: "保存失败！",
+                        timer: 1000,
+                        type: "error",
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function (data) {
+                swal({
+                    title: "保存失败！",
+                    timer: 1000,
+                    type: "error",
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+    /**
+     * 验证URL是否包含http或者https
+     */
+    function verifyUrl(str) {
+        if (str.indexOf('http://') != -1 || str.indexOf('https://') != -1) {
+            return true;
+        }
+        return false;
+    }
+</script>

@@ -1,0 +1,391 @@
+﻿@using P4.Web.Models
+@model ParkChargesModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("BerthsecChargesDayReport");
+    ViewBag.ActiveMenu = "BerthsecChargesDayReport";
+}
+@section styles
+{
+    <link href="~/assets/css/bootstrapSwitch.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<div class="row" style="margin:10px 0">
+    <table border="0">
+        <tr>
+            <td width="80px"><label for="id-date-picker-1">查询日期：</label></td>
+            <td width="190px">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;">到&nbsp;&nbsp;</td>
+            <td width="190px">
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td width="100px">泊位段名称：</td>
+
+            <td width="200px">
+                <select class="ls-wp-fullwidth-container chosen-select" id="berthsecIdInput" name="berthsecIdInput" data-placeholder="选择泊位段名称...">
+                    @Html.Raw(Model.AllOption)
+                    @foreach (var entity in Model.BerthsecList)
+                    {
+                        <option value="@entity.Id">@entity.BerthsecName</option>
+                    }
+                </select>
+            </td>
+            <td colspan="2" style="text-align: center;">
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            <td colspan="2" style="text-align: center;">
+
+                <button type="button" class="btn btn-sm btn-primary" autocomplete="off" id="exportButton">
+                    导出
+                </button>
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="GetAjaxChartData()">搜索</a>*@
+            </td>
+            @*<td width="200px"></td>
+                <td>
+                    <div id="mySwitch" class="switch has-switch" data-on-label="图形" data-off-label="列表" style="float:right">
+                        <input checked="" type="checkbox">
+                    </div>
+                </td>*@
+        </tr>
+    </table>
+</div>
+<div id="jqgridDiv" style="width:100%">
+    <table id="grid-table"></table>
+    <div id="grid-pager"></div>
+</div>
+<div id="echarDiv" style="height: 410px;width:100%;">
+
+</div>
+<script type="text/javascript" src="~/assets/js/bootstrapSwitch.js"></script>
+<script type="text/javascript">
+    $('#mySwitch').on('switch-change', function (e, data) {
+        var $el = $(data.el), value = data.value;
+        if (value == true) {
+            $('#echarDiv').css('display', 'block');
+            $('#jqgridDiv').css('display', 'none');
+        }
+        else {
+            $('#echarDiv').css('display', 'none');
+            $('#jqgridDiv').css('display', 'block');
+        }
+    });
+    $('#myButton').on('click', function () {
+        GetAjaxChartData();//更改线性数据
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            url: '../ParkCharges/BerthsecJqGridData',
+            datatype: 'json',
+            postData:
+            {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'berthsecIdInput': $('#berthsecIdInput').val()
+            },
+            page: 1
+        }).trigger('reloadGrid');
+        //jQuery('#grid-table').jqGrid('setCaption', "操作权限").trigger('reloadGrid');
+    });
+
+    $('#exportButton').on('click', function () {
+
+        var count = $('#grid-table').jqGrid("getRowData").length;
+        //$('#grid-table').jqGrid('setGridWidth', $(".page-content").width());
+        if (count > 0) {
+            var operateDateBegin = $('#operateDateBegin').val();
+            var operateDateEnd = $('#operateDateEnd').val();
+            var BerthsecName = $('#berthsecIdInput').val();
+            window.location.href = "../StaticReport/ExportBerthsecReport?operateDateBegin=" + operateDateBegin + "&operateDateEnd=" + operateDateEnd + "&berthsecIdInput=" + BerthsecName;
+        }
+        else {
+            NotifyWarn('报表暂无数据！');
+        }
+    });
+</script>
+<script type="text/javascript" src="../../assets/js/Echarts/dist/esl.js"></script>
+<script type="text/javascript" src="../../assets/js/Echarts/dist/echarts.js"></script>
+<script type="text/javascript" src="../../assets/js/Echarts/dist/chart/line.js"></script>
+
+@*定义图表options*@
+<script type="text/javascript">
+
+    //定义图表options
+    var options = {
+        title: {
+            text: "泊位段日报曲线图",
+            subtext: "实收/欠费/现金/账号/应收"
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ["实收", "欠费", "现金", "账号", "应收"]
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                dataView: { show: true, readOnly: false },
+                magicType: { show: true, type: ['line', 'bar'] },
+                restore: { show: true },
+                saveAsImage: { show: true }
+            }
+
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                boundaryGap: false,
+                data: ['0', '0', '0']
+                //data: []
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} '
+                }
+            }
+        ],
+        series: [{
+            name: '实收',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '欠费',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '现金',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '刷卡',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }, {
+            name: '应收',
+            type: 'line',
+            data: [0, 0, 0]
+            //data: []
+        }]
+    };
+    var myChart;
+
+    // Step:4 require echarts and use it in the callback.
+    // Step:4 动态加载echarts然后在回调函数中开始使用，注意保持按需加载结构定义图表路径
+    require.config({
+        paths: {
+            echarts: '../../assets/js/Echarts/dist'
+        }
+    });
+    require(
+        [
+            'echarts',
+            'echarts/chart/line' //按需加载图表关于线性图、折线图的部分
+        ],
+        //DrawEChart //异步加载的回调函数绘制图表
+        function (ec) {
+
+            myChart = ec.init(document.getElementById('echarDiv'));
+            //--- 折柱 ---
+            //var myChart = ec.init(document.getElementById('echarDiv'));
+
+            //选择一个空图表
+            myChart.setOption(options);
+            GetAjaxChartData();
+        }
+    );
+
+    //var window.myChart;
+    //创建ECharts图表方法
+
+
+    ///点击按钮获取图表数据采用ajax方式
+    function GetAjaxChartData() {
+
+        //图表显示提示信息
+        myChart.showLoading({
+            text: "图表数据正在努力加载..."
+        });
+        //通过Ajax获取数据
+        $.ajax({
+            type: "post",
+            async: true, //同步执行
+            url: '../ParkCharges/BerthsecEcharData',
+            data: {
+                //type: 'getData',
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'berthsecIdInput': $('#berthsecIdInput').val(),
+                'rows': 1000,
+                'page': 1
+            },
+            // data: { operatedatebegin: $('#operateDateBegin').datebox('getValue'), operatedateend: $('#operateDateEnd').datebox('getValue') },
+            //  url: "EmployeeMoneyLine.aspx?type=getData&operateDateBegin=2015/6/30",
+            dataType: "json", //返回数据形式为json
+            success: function (result) {
+                if (result) {
+                    //将返回的category和series对象赋值给options对象内的category和series
+                    //因为xAxis是一个数组 这里需要是xAxis[i]的形式
+                    options.xAxis[0].data = result.category;
+                    options.series = result.series;
+                    options.legend.data = result.legend;
+                    window.myChart.hideLoading();
+                    window.myChart.setOption(options, true);
+                }
+            },
+            error: function (errorMsg) {
+                console.log(errorMsg);
+                alert("不好意思，图表请求数据失败啦!");
+            }
+
+        });
+    }
+</script>
+
+@section scriptsgrid
+    {
+    jQuery(grid_selector).jqGrid({
+    url: '../ParkCharges/BerthsecJqGridData',
+    async: true, //同步执行
+    datatype: "json",
+    mtype: "post",
+    height: 400,
+    autowidth: true,
+    colNames: [ '泊位段', '实收总和', '现金收入', '刷卡收入', '账号支付', '其他金额', '账号补缴', '在线支付', '欠费补缴', '欠费总和', '应收总和', '车检器应收总和', 'Pos进场次数' , 'Pos出场次数' , '地磁停车次数'],
+    colModel: [
+    { name: 'ParkName', index: 'ParkName', width: 100 },
+    { name: 'SumFactReceive', index: 'SumFactReceive', width: 100,formatter: 'number' },
+    { name: 'XJSumFactReceive', index: 'XJSumFactReceive', width: 100,formatter: 'number' },
+    { name: 'SKSumFactReceive', index: 'SKSumFactReceive', width: 100,formatter: 'number' },
+    { name: 'AccSumFactReceive', index: 'AccSumFactReceive', width: 100,formatter: 'number' },
+    { name: 'AccSumOtherMoney', index: 'AccSumOtherMoney', width: 100,formatter: 'number' },
+    { name: 'AccSumRepayment', index: 'AccSumRepayment', width: 100,formatter: 'number' },
+    { name: 'OnlineSumFactReceive', index: 'OnlineSumFactReceive', width: 100,formatter: 'number' },
+    { name: 'SumRepayment', index: 'SumRepayment', width: 100,formatter: 'number' },
+    { name: 'SumArrearage', index: 'SumArrearage', width: 100,formatter: 'number' },
+    { name: 'SumMoney', index: 'SumMoney', width: 100,formatter: 'number' },
+    { name: 'SensorSumReceivable', index: 'SensorSumReceivable' , width: 120,formatter: 'number'},
+    { name: 'PosInTimes', index: 'PosTimes', width: 100 },
+    { name: 'PosOutTimes', index: 'PosTimes', width: 100 },
+    { name: 'SensorTimes', index: 'SensorTimes', width: 100 }
+    ], aggregates : [{
+    member : 'Price',
+    aggregator : 'sum',
+    width:80,
+    formatter:'number',
+    align:'right',
+    summaryType: 'sum'
+    }],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    sortname: 'Id',
+    sortorder: 'desc',
+    altRows: true,//汇总
+    caption:"Summary Footer Row",//汇总
+    userDataOnFooter : true,//汇总
+    footerrow:true,//汇总
+    multiselect: true,
+    multikey: "ctrlKey",
+    multiboxonly: true,
+
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    },
+    loadComplete: function(){
+    var count = $(grid_selector).jqGrid("getRowData").length;
+    if(count == 0)
+    NotifyWarn('暂无数据！');
+    },
+    caption: "@ViewBag.Title"
+    });
+}
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString()
+
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+        $(".chosen-select").chosen();
+    });
+</script>

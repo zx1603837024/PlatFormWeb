@@ -1,0 +1,351 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("EmployeeManagement");
+    ViewBag.ActiveMenu = "EmployeeManagement";
+}
+@section styles
+{
+    <link href="~/assets/css/bootstrapSwitch.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+}
+@section scriptsindex{
+    <script src="~/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="~/assets/js/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/global/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+    <script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+<div class="row" style="margin:10px 0">
+    <table style="width:50%;" border="0">
+        <tr>
+            <td style="width:13%;">签到时间:</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateBegin" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: center;width:13%;">到:</td>
+            <td>
+                <div class="row">
+                    <div class="col-xs-8 col-sm-11">
+                        <div class="input-group">
+                            <input class="form-control date-picker" id="operateDateEnd" type="text" data-date-format="yyyy-mm-dd" />
+                            <span class="input-group-addon">
+                                <i class="icon-calendar bigger-110"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td colspan="2" style="text-align: left;">
+
+                <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-sm btn-primary" autocomplete="off">
+                    搜索
+                </button>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var myDate = new Date();
+        myDate.toLocaleDateString();
+        var operateDateBegin = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + myDate.getDate().toString()) : myDate.getDate());
+        var operateDateEnd = myDate.getFullYear() + "-"
+            + ((myDate.getMonth() + 1) < 10 ? ("0" + (myDate.getMonth() + 1).toString()) : (myDate.getMonth() + 1)) + "-"
+            + (myDate.getDate() < 10 ? ("0" + (myDate.getDate()).toString()) : myDate.getDate());
+        $('#operateDateBegin').val(operateDateBegin + " 00:00");
+        $('#operateDateEnd').val(operateDateEnd + " 23:59");
+
+        $('#operateDateBegin').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        $('#operateDateEnd').datetimepicker({
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            linkFormat: "yyyy-mm-dd hh:ii",
+            format: 'yyyy-mm-dd hh:ii'
+        });
+        $('.chosen-select').chosen();
+        //$('#employeeIdInput_chosen').css('width', '150px');
+    });
+
+    $('#myButton').on('click', function () {
+        jQuery('#grid-table').jqGrid('setGridParam', {
+            //escape()---中文转码
+            // url: "../System/GetOperFunction?name=" + escape(arrayToJson(dataname).toString()),
+            ajaxSelectOptions: { type: "GET", async: false },
+            ajaxGridOptions: { type: "POST", async: false },
+            url: '../Employees/GetAllEmployeeList',
+            datatype: 'json',
+            postData:
+            {
+                'operateDateBegin': $('#operateDateBegin').val(),
+                'operateDateEnd': $('#operateDateEnd').val(),
+                'filters': 1
+            },
+            page: 1
+        }).trigger('reloadGrid');
+    });
+</script>
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+@section scriptsgrid
+{
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../Employees/GetAllEmployeeList',
+    datatype: "json",
+    mtype: "post",
+    ajaxSelectOptions: { type: "GET" },
+    height: 'auto',
+    autowidth: true,
+    shrinkToFit:false,
+    colNames: ['操作','ID', '分公司名称', '收费员编号', '收费员名称', '银行卡号', '密码', '手机号', '地址', '收费员状态', '批次号',  '是否签到', '签到时间', '是否签退', '签退时间', '签退类型', '备注'],
+    colModel: [{
+    name: 'myac', index: '', width: 80, fixed: true, sortable: true, resize: false, search: false,
+    formatter: 'actions', hidden:window.rowedit,
+    formatoptions: {
+    keys: true,
+    delOptions: { recreateForm: true, beforeShowForm: beforeDeleteCallback }
+    }
+    },
+    { name: 'Id', index: 'Id', sorttype: "int", key: true, hidden: true, width: 80 },
+    { name: 'CompanyName', editable: true, index: 'CompanyName',search:false, edittype:"select",
+    editoptions:{ dataUrl: '../Equipments/GetAllCompanyName/'+(new Date()).getMilliseconds(), defaultValue: '1' }},
+    { name: 'UserName', index: 'UserName', editable: true , width: 80},
+    { name: 'TrueName', index: 'TrueName', editable: true, width: 80 },
+    { name: 'BankCard', index: 'BankCard', editable: true, width: 80 },
+    { name: 'Password', index: 'Password', editable: true , width: 80, search:false },
+    { name: 'Telephone', index: 'Telephone', editable: true, width: 80 },
+    { name: 'Address', index: 'Address', editable: true , width: 80 },
+    { name: 'AccountStatus', index: 'AccountStatus', width: 80, editable: true ,edittype:"select",editoptions:{ dataUrl: '../Employees/GetAllAccountStaus/'+(new Date()).getMilliseconds(), defaultValue: '1' }, search: true, stype:'select', searchoptions: { dataUrl:'../Employees/GetAllAccountStaus/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'BatchNo', index: 'BatchNo',search: false },
+    { name: 'CheckIn',index: 'CheckIn', width: 80,search:true, edittype: "select", editoptions:{ value: "true:是;false:否" }, formatter:YesAndNo, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'CheckInTime', index: 'CheckInTime', width: 160,search:false, esorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'CheckOut', index: 'CheckOut', width: 80,search:true,  edittype: "select",editable: true , editoptions:{ value: "true:是;false:否" }, formatter:YesAndNo, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']} },
+    { name: 'CheckOutTime', index: 'CheckOutTime', width: 160,search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    { name: 'CheckOuttype', index: 'CheckOuttype', width: 80,search:false,edittype:"text"},
+    { name: 'Remark', index: 'Remark', width: 80, editable: true, edittype:'textarea' }
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    editurl: "../Employees/ProcessEmployee",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    subGrid: true,
+    subGridRowExpanded: function (subgrid_id, row_id) {
+    var subgrid_table_id, pager_id;
+    subgrid_table_id = subgrid_id + "_t";
+    pager_id = "p_" + subgrid_table_id;
+    $("#" + subgrid_id).html(
+    "<table id='" + subgrid_table_id
+                            + "' class='scroll'></table><div id='"
+                            + pager_id + "' class='scroll'></div>");
+    jQuery("#" + subgrid_table_id).jqGrid(
+    {
+    ajaxSelectOptions: { type: "GET" , async: false },
+    ajaxGridOptions : {type:"POST", async: false },
+    url: "../Employees/GetEmployeeCheckTopList/" + row_id,
+    datatype: "json",
+    colNames: ['ID',  '收费员名称','停车场','泊位段名称',  '批次号',  '是否签到', '签入时间', '是否签退', '签出时间', '签到设备'],
+    colModel: [
+    { name: 'Id', index: 'Id',search: false, sorttype: "int", key: true, hidden: true},
+    { name: 'TrueName', index: 'TrueName',search: false, required: true },
+    { name: 'ParkName', index: 'ParkName',search: false },
+    { name: 'BerthsecName', index: 'BerthsecName',search: false },
+    { name: 'BatchNo', index: 'BatchNo',search: false },
+    { name: 'CheckIn', index: 'CheckIn',search: false, formatter: CinAndCoutChild },
+    { name: 'CheckInTime', index: 'CheckInTime',search: false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }},
+    { name: 'CheckOut', index: 'CheckOut', formatter: CinAndCoutChild1},
+    { name: 'CheckOutTime', index: 'CheckOutTime',search: false,sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }},
+    { name: 'DeviceCode', index: 'DeviceCode'}
+    ],
+    sortname: 'Id',
+    rowNum : 50,
+    sortorder: "asc",
+    width: 1400,
+    height: 'auto',
+    shrinkToFit:false
+    });
+    },
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+@section scriptsbuttonbyself{
+    //批量签退
+    if(window.field1){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil blue",
+    title: "批量签退",
+    caption: "批量签退",
+    position: "last",
+    onClickButton: function () {
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length!=0)
+    {
+    Saveoper="edit";
+    //selectedId=ids[0];
+    swal({
+    title: "是否批量签退?",
+    type: "warning",
+    showCancelButton: true,
+    cancelButtonText: "取消",
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "确定",
+    closeOnConfirm: false },
+    function(){
+    $.ajax({
+    type: "Post",
+    url: "../Employees/EmployeeBatchCheckOut",
+    data: {
+    Ids: ids
+    },
+    success: function (data) {
+    if(data.a=="OK")
+    {
+    swal("", "批量签退成功！", "success");
+    $("#grid-table").trigger("reloadGrid");
+    }
+    else
+    {
+    //alert('批量签退失败！');
+    }
+    }
+    });
+    });
+    }
+    else
+    {
+    swal("", "请选择收费员...", "info");
+    }
+    }
+    });
+    }
+
+
+    //后台取消对账
+    if(window.field2){
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-pencil red",
+    title: "取消对账",
+    caption: "取消对账",
+    position: "last",
+    onClickButton: function () {
+    var id = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (id.length==1)
+    {
+    Saveoper="edit";
+    //selectedId=ids[0];
+    swal({
+    title: "是否取消对账?",
+    type: "warning",
+    showCancelButton: true,
+    cancelButtonText: "取消",
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "确定",
+    closeOnConfirm: false },
+    function(){
+    $.ajax({
+    type: "Post",
+    url: "../Employees/EmployeeNOAccountCheckOut",
+    data: {
+    Id: id
+    },
+    success: function (data) {
+    if(data.a=="OK")
+    {
+    swal("", "取消对账成功！", "success");
+    $("#grid-table").trigger("reloadGrid");
+    }
+    else
+    {
+    swal("", "取消对账失败！", "error");
+    }
+    }
+    });
+    });
+    }
+    else
+    {
+    swal("", "请选择一个收费员...", "info");
+    }
+    }
+    });
+    }
+
+
+
+
+
+    function CinAndCout(cellvalue, options)
+    {
+    if(cellvalue==true)
+    return "签到";
+    else
+    return "未签到";
+    }
+
+    function CinAndCoutChild(cellvalue, options)
+    {
+    if(cellvalue == true)
+    return "<span class='badge badge-success'>签到</span>";
+    else
+    return "未签到";
+    }
+
+    function CinAndCoutChild1(cellvalue, options)
+    {
+    if(cellvalue == true)
+    return "<span class='badge badge-success'>签退</span>";
+    else
+    return "未签退";
+    }
+}
+
+
+
+

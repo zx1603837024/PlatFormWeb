@@ -1,0 +1,395 @@
+﻿@using P4.Web.Models
+@model WeixinSettingModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = L("WeixinConfig");
+    ViewBag.ActiveMenu = "WeixinConfig";
+}
+
+@section styles
+{  
+    <link rel="stylesheet" href="~/assets/css/chosen.css" />
+
+}
+@section scriptsindex{
+
+    <script src="~/assets/js/chosen.jquery.min.js"></script>
+}
+
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">  </label>
+
+        <div class="col-sm-9">
+            <input type="text" id="Id" value="" placeholder="" class="col-xs-10 col-sm-5" style="display:none" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 公众帐号名称 </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="AppName" value="" placeholder="公众帐号名称" class="col-xs-12 col-sm-12" maxlength="20" />
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 公众号原始ID </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="AppId" value="" placeholder="公众号原始ID" class="col-xs-12 col-sm-12" maxlength="20" />
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 微信AppSecret </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="AppSecret" value="" placeholder="微信AppSecret" class="col-xs-12 col-sm-12" maxlength="100" />
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> Token </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="Token" value="" placeholder="Token" class="col-xs-12 col-sm-12" maxlength="10" />
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> ZappId </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="ZappId" value="" placeholder="ZappId" class="col-xs-12 col-sm-12" maxlength="20" />
+        </div>
+
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 微信支付 </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="PayUrl" value="" placeholder="PayUrl" class="col-xs-12 col-sm-12" maxlength="20" />
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 微信退款路径 </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="BackPayUrl" value="" placeholder="BackPayUrl" class="col-xs-12 col-sm-12" maxlength="20" />
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 地磁选择泊位状态 </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="BerthStatus" value="" placeholder="BerthStatus" class="col-xs-12 col-sm-12" />
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> webAppId </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="webAppId" value="" placeholder="webAppId" class="col-xs-12 col-sm-12" maxlength="50" />
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 域名 </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="domain" value="" placeholder="domain" class="col-xs-12 col-sm-12" maxlength="200" />
+        </div>
+
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> 微信支付商户id </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="mch_id" value="" placeholder="mch_id" class="col-xs-12 col-sm-12" maxlength="50" />
+        </div>
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> EncodingAESKey </label>
+
+        <div class="col-sm-3">
+            <input type="text" id="EncodingAESKey" value="" placeholder="EncodingAESKey" class="col-xs-12 col-sm-12" maxlength="100" />
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> subscribe_rul </label>
+
+        <div class="col-sm-8">
+            <textarea id="subscribe_rul" value="" placeholder="subscribe_rul" class="col-xs-12 col-sm-12" maxlength="500" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> paternerKey </label>
+
+        <div class="col-sm-8">
+            <textarea id="paternerKey" value="" placeholder="paternerKey" class="col-xs-12 col-sm-12" maxlength="200" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> privateKey </label>
+
+        <div class="col-sm-8">
+            <textarea id="privateKey" value="" placeholder="privateKey" class="col-xs-12 col-sm-12" maxlength="2000" rows="20"></textarea>
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> alipayPulicKey </label>
+
+        <div class="col-sm-8">
+            <textarea id="alipayPulicKey" value="" placeholder="alipayPulicKey" class="col-xs-12 col-sm-12" maxlength="2000" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="space-4"></div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label no-padding-right" for="form-field-1"> serverUrl </label>
+
+        <div class="col-sm-8">
+            <textarea id="serverUrl" value="" placeholder="serverUrl" class="col-xs-12 col-sm-12" maxlength="200" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2">
+            </div>
+            <div class="col-sm-4">
+                <label>
+                    <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="BerthDetail" checked="" />
+                    <span class="lbl">&nbsp;&nbsp;车位详情</span>
+                </label>
+            </div>
+            <div class="col-sm-4">
+                <label>
+                    <input name="switch-field-1" class="ace ace-switch ace-switch-3" type="checkbox" id="encryptMessage" checked="" />
+                    <span class="lbl">&nbsp;&nbsp;encryptMessage</span>
+                </label>
+            </div>
+        </div>
+
+    <div class="form-group">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-2 control-label ">
+            包月支付：
+            <select class="ls-wp-fullwidth-container chosen-select" style="width:90px" id="monthlyPayment" name="monthlyPayment">
+                @Html.Raw(Model.AllOption)
+                @foreach (var entity in Model.UserList)
+                {
+                    if (Model.weixinconfigmodel.MonthlyPayment == entity.Id)//ViewBag.MonthlyPayment == entity.Id)
+                    {
+                        <option value="@entity.Id" selected="selected">@entity.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@entity.Id">@entity.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 control-label">
+            充值支付：
+            <select class="ls-wp-fullwidth-container chosen-select" style="width:90px" id="depositCard" name="depositCard">
+                @Html.Raw(Model.AllOption)
+                @foreach (var entity in Model.UserList)
+                {
+                    if (Model.weixinconfigmodel.DepositCard == entity.Id)//ViewBag.DepositCard == entity.Id)
+                    {
+                        <option value="@entity.Id" selected="selected">@entity.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@entity.Id">@entity.Name</option>
+                    }
+
+                }
+            </select>
+        </div>
+
+        <div class="col-sm-2 control-label">
+            追缴支付：
+            <select class="ls-wp-fullwidth-container chosen-select" style="width:90px" id="recoverMoneny" name="recoverMoneny">
+                @Html.Raw(Model.AllOption)
+                @foreach (var entity in Model.employeeList)
+                {
+                    if (Model.weixinconfigmodel.RecoverMoneny == entity.Id)//ViewBag.RecoverMoneny == entity.Id)
+                    {
+                        <option value="@entity.Id" selected="selected">@entity.TrueName</option>
+                    }
+                    else
+                    {
+                        <option value="@entity.Id">@entity.TrueName</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-2 control-label">
+            在线停车：
+            <select class="ls-wp-fullwidth-container chosen-select" style="width:90px" id="onlineOrdering" name="onlineOrdering">
+                @Html.Raw(Model.AllOption)
+                @foreach (var entity in Model.employeeList)
+                {
+                    if (Model.weixinconfigmodel.OnlineOrdering == entity.Id)//)ViewBag.OnlineOrdering == entity.Id)
+                    {
+                        <option value="@entity.Id" selected="selected">@entity.TrueName</option>
+                    }
+                    else
+                    {
+                        <option value="@entity.Id">@entity.TrueName</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    @*<div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right"></label>
+            <div class="col-sm-9" id="allmap" style="width:450px;height:200px;">
+            </div>
+        </div>*@
+
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-3 col-md-9">
+            <button class="btn btn-info" type="button" onclick="javascript:Save()">
+                <i class="icon-ok bigger-110"></i>
+                保存
+            </button>
+
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+            <button class="btn" type="reset">
+                <i class="icon-undo bigger-110"></i>
+                重置
+            </button>
+        </div>
+    </div>
+</form>
+
+
+@section scripts{
+    <script type="text/javascript">
+
+        $(function () {
+            $('.chosen-select').chosen();
+
+            $.ajax({
+                type: "Post",
+                url: '../Weixin/GetWeixinConfig',
+                success: function (data) {
+
+                  //  var key = data.MonthlyPayment;
+                    //$("#monthlyPayment option").val(key).trigger("change"); 
+                    //$("#monthlyPayment option[value='" + key + "']").removeAttr("selected");
+                    //$("#monthlyPayment_chosen option[value='" + key + "']").attr("selected", true); 
+
+                    $("#Id").val(data.Id);
+                    $("#AppName").val(data.AppName);
+                    $("#AppId").val(data.AppId);
+                    $("#AppSecret").val(data.AppSecret);
+                    $("#Token").val(data.Token);
+                    $("#EncodingAESKey").val(data.EncodingAESKey);
+                    $("#PayUrl").val(data.PayUrl);
+                    $("#BackPayUrl").val(data.BackPayUrl);
+                    $("#BerthStatus").val(data.BerthStatus);
+                    if (data.BerthDetail == true) {
+                        //$('#BerthDetail').attr("checked", "checked");
+                        //$('#BerthDetail').checked = true;
+                        $('#BerthDetail').attr("checked", true);
+                        //alert("A123");
+                    }
+                    else if (data.BerthDetail == false) {
+                        //$('#BerthDetail').attr("checked", "");
+                        //$('#BerthDetail').checked = false;
+                        $('#BerthDetail').attr("checked", false);
+                        //alert("A1234");
+                    }
+                    $("#BerthDetail").val(data.BerthDetail);
+                    $("#ZappId").val(data.ZappId);
+                    $("#privateKey").val(data.privateKey);
+                    $("#alipayPulicKey").val(data.alipayPulicKey);
+                    $("#serverUrl").val(data.serverUrl);
+                    $("#webAppId").val(data.webAppId);
+                    $("#mch_id").val(data.mch_id);
+                    $("#paternerKey").val(data.paternerKey);
+                    $("#subscribe_rul").val(data.subscribe_rul);
+                    $("#domain").val(data.domain);
+                    if (data.encryptMessage == true) {
+                        //$('#encryptMessage').attr("checked", "checked");
+                        //$('#encryptMessage').checked = true;
+                        $('#encryptMessage').attr("checked", true);
+                        //alert("B123");
+                    }
+                    else if (data.encryptMessage == false) {
+                        //$('#encryptMessage').attr("checked", "");
+                        //$('#encryptMessage').checked = false;
+                        $('#encryptMessage').attr("checked", false);
+                        //alert("B1234");
+                    }
+
+
+                }, error: function () {
+
+                }
+            });
+
+
+        });
+
+        function Save() {
+            swal({
+                title: "系统提示?",
+                text: "您确定要保存吗？",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定,保存!",
+                closeOnConfirm: false
+            },
+                function () {
+                    swal("成功!", "正在保存.", "success");
+                    $.ajax({
+                        type: "Post",
+                        url: '../Weixin/SaveWeixinConfig',
+                        data: {
+                            Id: $("#Id").val(),
+                            AppName: $("#AppName").val(),
+                            AppId: $("#AppId").val(),
+                            AppSecret: $("#AppSecret").val(),
+                            Token: $("#Token").val(),
+                            EncodingAESKey: $("#EncodingAESKey").val(),
+                            PayUrl: $("#PayUrl").val(),
+                            BackPayUrl: $('#BackPayUrl').val(),
+                            BerthStatus: $('#BerthStatus').val(),
+                            BerthDetail: $('#BerthDetail').is(':checked'),
+                            // BerthDetail: $('#BerthDetail').val(),
+                            webAppId: $("#webAppId").val(),
+                            mch_id: $("#mch_id").val(),
+                            paternerKey: $("#paternerKey").val(),
+                            subscribe_rul: $("#subscribe_rul").val(),
+                            domain: $("#domain").val(),
+                            ZappId: $("#ZappId").val(),
+                            privateKey: $("#privateKey").val(),
+                            alipayPulicKey: $("#alipayPulicKey").val(),
+                            serverUrl: $("#serverUrl").val(),
+                            encryptMessage: $('#encryptMessage').is(':checked'),
+
+
+                            monthlyPayment: $('#monthlyPayment option:selected').val(),
+                            depositCard: $('#depositCard option:selected').val(),
+                            recoverMoneny: $('#recoverMoneny option:selected').val(),
+                            onlineOrdering: $('#onlineOrdering option:selected').val()
+
+                        },
+                        success: function (data) {
+                            NotifySuccess('数据保存成功！', '系统消息');
+                        }, error: function () {
+
+                        }
+                    });
+                });
+        }
+    </script>
+}

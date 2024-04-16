@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="Ibatis" xmlns="http://ibatis.apache.org/mapping" xmlns:xls="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		
+	</alias>
+	<statements>
+
+		<select id="getOpinionList" parameterClass="Hashtable" resultClass="Hashtable">
+			select
+			op.type,
+			op.context,
+			op.status,
+			CONVERT(VARCHAR(20),op.opinionTime,120) as opinionTime,
+			op.handleResult,
+			op.Id,
+			op.uid as uid,
+			CONVERT(VARCHAR(20),op.createTime,120) as createTime,
+
+			t.tel,
+			t.nickName
+			
+			from Opinion op
+			left join TUser t on t.uid=op.uid
+			where
+			1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="Id">
+					op.Id  = #Id#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="tel">
+					t.tel  = #tel#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="status">
+					op.status  = #status#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="type">
+					op.type  = #type#
+				</isNotEmpty>
+			</dynamic>
+			order by op.createTime asc
+			<isParameterPresent>
+				<isNotEmpty property="start">
+					offset #start# rows fetch next #rows# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="getOpinionListSize" parameterClass="Hashtable" resultClass="int">
+			select count(*) from Opinion op
+			left join TUser t on t.uid=op.uid
+			where
+			1=1
+			<dynamic prepend="and">
+				<isNotEmpty property="Id">
+					op.Id  = #Id#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="tel">
+					t.tel  = #tel#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="status">
+					op.status  = #status#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="type">
+					op.type  = #type#
+				</isNotEmpty>
+			</dynamic>
+			
+		</select>
+		
+		<update id="opinionHandle" parameterClass="Hashtable">
+			update Opinion
+			set handleResult = #handleResult#
+			<isNotEmpty property="opinionTime">
+				,opinionTime=#opinionTime#
+			</isNotEmpty>
+			<isNotEmpty property="status">
+				,status=#status#
+			</isNotEmpty>
+			where Id=#Id#
+		</update>
+		
+	</statements>
+
+</sqlMap>

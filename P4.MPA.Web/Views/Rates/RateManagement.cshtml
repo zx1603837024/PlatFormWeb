@@ -1,0 +1,1237 @@
+﻿@using P4.Web.Models
+@model  RateSelectModel
+@{
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    ViewBag.Title = L("RatesManagement");
+    ViewBag.ActiveMenu = "RatesManagement";
+}
+@section styles
+{
+
+    <link href="~/assets/css/jquery.datetimepicker.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrapValidator.css" rel="stylesheet" />
+    <link href="~/assets/css/bootstrapValidator.min.css" rel="stylesheet" />
+}
+
+<style type="text/css">
+    table tr td {
+        height: 40px;
+    }
+
+    #myModal li {
+        list-style-type: none;
+        margin: 10px 0;
+    }
+
+    #BaseSetting input {
+        width: 80px;
+    }
+
+    #BigCarSetting1 input {
+        width: 80px;
+    }
+
+    #SmallCarSetting1 input {
+        width: 80px;
+    }
+
+    #MotorSetting1 input {
+        width: 80px;
+    }
+
+    #midCarSetting1 input {
+        width: 80px;
+    }
+
+    #datetimepicker1 {
+        width: 100px;
+    }
+
+    #datetimepicker2 {
+        width: 100px;
+    }
+</style>
+<script src="~/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="~/assets/js/date-time/daterangepicker.min.js"></script>
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+<script type="text/javascript">
+    function kk() {
+        $.ajax({
+            type: "POST",
+            url: "../Rates/RateCalculate/",
+            //data: { jsonstr: jsonstr },
+            data: {
+                berthsecID: $("#rateId").val(),
+                inCarTime: $("#operateDateBegin").val(),
+                outCarTime: $("#operateDateEnd").val(),
+                carType: $("#cartype").val(),
+                RateId: $("#rateId").val()
+
+            },
+            success: function (data) {
+
+                alert("收费金额：" + data.CalculateMoney);
+                //window.location.href = "../Platform/Login";
+            }, error: function () {
+
+            }
+        });
+    }
+    $(document).ready(function () {
+
+        $('.date-picker').datetimepicker({ autoclose: true }).next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+
+
+    });
+</script>
+
+<!--Tree Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content" style="width:800px">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">费率管理</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="content_wrap">
+                        <form class="form-horizontal" role="form" id="feeFrom">
+
+                            <div class="panel panel-default" style="margin-top:10px;">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                     href="#collapseOne">
+                                    <h4 class="panel-title">
+                                        <a>  基本设置  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in">
+                                    <div class="panel-body">
+                                        <table>
+                                            <tr style="display:none">
+                                                <td>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control required" placeholder="用户名" id="username" name="username" data-bv-notempty data-bv-notempty-message="请输入用户名" />
+                                                        <span class="input-group-addon">
+                                                            <span class="glyphicon glyphicon-user"></span>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">费率名称：&nbsp;&nbsp;</span>
+                                                    <input type="text" id="feeName" style="width:300px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                                    <label>
+                                                        <input name="switch-field-1" class="ace ace-switch ace-switch-4" type="checkbox" id="IsActive" />
+                                                        <span class="lbl">&nbsp;&nbsp;</span>
+                                                    </label>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span style="margin-left:25px">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：&nbsp;&nbsp;</span>
+                                                    <textarea style="width:570px;height:60px;" id="remark"></textarea>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <ul id="BaseSetting1">
+                                                        <li>
+                                                            <span>收费时间：&nbsp;&nbsp;</span>
+                                                            <input id="datetimepicker1" type="text" classname="feeSetting_begintime">
+                                                            <span>&nbsp;&nbsp;---&nbsp;&nbsp;</span>
+                                                            <input id="datetimepicker2" type="text" classname="feeSetting_endtime">
+                                                            <span style="margin-left:10px">收费方式：&nbsp;&nbsp;</span>
+                                                            <select classname="feeSetting_ratetype" id="baseselect">
+                                                                <option value="0" selected="selected">按时</option>
+                                                                <option value="1">按次</option>
+                                                            </select>
+                                                            <span style="margin-left:10px">多天计费：&nbsp;&nbsp;</span>
+                                                            <select classname="feeSetting_manydayselect" id="manydaySelect">
+                                                                <option value="0" selected="selected">按停车总和</option>
+                                                                <option value="1">分天计算</option>
+                                                            </select>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="carFeeSetting">
+
+                                <div class="panel panel-warning" style="margin-top:10px;">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                         href="#collapseTwo">
+                                        <h4 class="panel-title">
+                                            <a> 大型车  </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            @*<form id="BigCarSetting" action="#" method="post">*@
+
+                                            <table id="bigcar">
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:23px">免费时长：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="bigCarFreeTime" class="freetime">&nbsp;&nbsp;分钟&nbsp;&nbsp;
+
+                                                        <label>
+                                                            <input name="switch-field-1" class="ace ace-switch ace-switch-6 IsContentFreeTime" type="checkbox" id="bigIsContentFreeTime" />
+                                                            <span class="lbl">&nbsp;&nbsp;是否包含在计费时间段内&nbsp;&nbsp;&nbsp;</span>
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:10px">日最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="bigCarDayMaxMoney" class="daymaxmoney">&nbsp;&nbsp;元
+                                                        <span style="margin-left:25px">次最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="bigCarOnceMaxMoney" class="oncemaxmoney">&nbsp;&nbsp;元
+                                                        <strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(无最大收费为&nbsp;0&nbsp; 元)</strong>
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="timequantumSetting">
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时间段设置
+                                                        </strong>
+                                                        <ul id="BigCarSetting1" class="carfee1"></ul>
+                                                        <a href="#" style="margin-left:25px">+ 添加</a>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时长设置
+                                                        </strong>
+                                                        <ul id="BigCarSetting" class="carfee"></ul>
+                                                        <a href="#" style="margin-left:25px">@*+  添加（目前只支持1项）*@</a>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            @*</form>*@
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="panel panel-success" style="margin-top:10px;">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                         href="#collapseThree">
+                                        <h4 class="panel-title">
+                                            <a> 小型车 </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse  ">
+                                        <div class="panel-body">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:23px">免费时长：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="smallCarFreeTime" class="freetime">&nbsp;&nbsp;分钟&nbsp;&nbsp;
+                                                        <label>
+                                                            <input name="switch-field-1" class="ace ace-switch ace-switch-6 IsContentFreeTime" type="checkbox" id="smallIsContentFreeTime" />
+                                                            <span class="lbl">&nbsp;&nbsp;是否包含在计费时间段内&nbsp;&nbsp;&nbsp;</span>
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+
+                                                        <span style="margin-left:10px">日最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="smallCarDayMaxMoney" class="daymaxmoney">&nbsp;&nbsp;元
+                                                        <span style="margin-left:25px">次最高收费：&nbsp;</span>
+                                                        <input type="text" id="smallCarOnceMaxMoney" class="oncemaxmoney">&nbsp;&nbsp;元
+                                                        <strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(无最大收费为&nbsp;0&nbsp; 元)</strong>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td class="timequantumSetting">
+
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时间段设置
+                                                        </strong>
+                                                        <ul id="SmallCarSetting1" class="carfee1"></ul>
+                                                        <a href="#" style="margin-left:25px">+ 添加</a>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时长设置
+                                                        </strong>
+                                                        <ul id="SmallCarSetting" class="carfee"></ul>
+                                                        <a href="#" style="margin-left:25px">@*+  添加（目前只支持1项）*@</a>
+
+                                                    </td>
+                                                </tr>
+                                                @*<tr>*@
+                                                @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                @*<td>
+                                                        <ul id="SmallCarSetting" class="carfee"></ul>
+                                                        <a href="#" style="margin-left:25px">+ 添加</a>
+                                                    </td>*@
+                                                @*</tr>*@
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-info" style="margin-top:10px;">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                         href="#collapseFour">
+                                        <h4 class="panel-title">
+                                            <a>  摩托车 </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:23px">免费时长：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="motorFreeTime" class="freetime">&nbsp;&nbsp;分钟&nbsp;&nbsp;
+                                                        <label>
+                                                            <input name="switch-field-1" class="ace ace-switch ace-switch-6 IsContentFreeTime" type="checkbox" id="motorIsContentFreeTime" />
+                                                            <span class="lbl">&nbsp;&nbsp;是否包含在计费时间段内&nbsp;&nbsp;&nbsp;</span>
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:10px">日最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="motorDayMaxMoney" class="daymaxmoney">&nbsp;&nbsp;元
+                                                        <span style="margin-left:25px">次最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="motorOnceMaxMoney" class="oncemaxmoney">&nbsp;&nbsp;元
+                                                        <strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(无最大收费为&nbsp;0&nbsp; 元)</strong>
+                                                    </td>
+                                                </tr>
+                                                @*<tr>
+                                                        <td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>
+                                                        <td>
+                                                            <ul id="MotorSetting" class="carfee"></ul>
+                                                            <a href="#" style="margin-left:25px">+ 添加</a>
+                                                        </td>
+                                                    </tr>*@
+
+                                                <tr class="timequantumSetting">
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+
+                                                        <strong style="color:#ff7b0e;">
+                                                            时间段设置
+                                                        </strong>
+                                                        <ul id="MotorSetting1" class="carfee1"></ul>
+                                                        <a href="#" style="margin-left:25px">+ 添加</a>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时长设置
+                                                        </strong>
+                                                        <ul id="MotorSetting" class="carfee"></ul>
+                                                        <a href="#" style="margin-left:25px">@*+  添加（目前只支持1项）*@</a>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="panel panel-warning" style="margin-top:10px;">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion"
+                                         href="#collapseFive">
+                                        <h4 class="panel-title">
+                                            <a> 中型车  </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFive" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            @*<form id="BigCarSetting" action="#" method="post">*@
+
+                                            <table id="midcar">
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:23px">免费时长：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="midcarFreeTime" class="freetime">&nbsp;&nbsp;分钟&nbsp;&nbsp;
+
+                                                        <label>
+                                                            <input name="switch-field-1" class="ace ace-switch ace-switch-6 IsContentFreeTime" type="checkbox" id="midIsContentFreeTime" />
+                                                            <span class="lbl">&nbsp;&nbsp;是否包含在计费时间段内&nbsp;&nbsp;&nbsp;</span>
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <span style="margin-left:10px">日最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="midCarDayMaxMoney" class="daymaxmoney">&nbsp;&nbsp;元
+                                                        <span style="margin-left:25px">次最高收费：&nbsp;&nbsp;</span>
+                                                        <input type="text" id="midCarOnceMaxMoney" class="oncemaxmoney">&nbsp;&nbsp;元
+                                                        <strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(无最大收费为&nbsp;0&nbsp; 元)</strong>
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="timequantumSetting">
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时间段设置
+                                                        </strong>
+                                                        <ul id="midCarSetting1" class="carfee1"></ul>
+                                                        <a href="#" style="margin-left:25px">+ 添加</a>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @*<td align="right"><strong></strong> <sup style="color:#F00;"></sup></td>*@
+                                                    <td>
+                                                        @*<strong style="color:#ff7b0e;"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>*@
+                                                        <strong style="color:#ff7b0e;">
+                                                            时长设置
+                                                        </strong>
+                                                        <ul id="midCarSetting" class="carfee"></ul>
+                                                        <a href="#" style="margin-left:25px">@*+  添加（目前只支持1项）*@</a>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            @*</form>*@
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-primary" onclick="getCheckedNodes()">查看权限信息</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="Save()">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scriptsgrid
+{
+
+    //主表
+    jQuery(grid_selector).jqGrid({
+    url: '../Rates/GetAllRateList',
+    datatype: "json",
+    mtype: "post",
+    ajaxSelectOptions: { type: "GET" },
+    height: 'auto',
+    autowidth: true,
+    colNames: ['ID', '商户','分公司', '费率名称','是否启用','描述','创建时间', '创建用户', '最后修改时间', '最后修改用户'],
+    colModel: [
+
+    { name: 'Id', index: 'Id',search:false, sorttype: "int", hidden: false, key: true},
+    @*{ name: 'TenantId', index: 'TenantId', sorttype: "int", editable: true, edittype: "select", editoptions: { value: "1:Default;3:Bouwa" } },*@
+    { name: 'TenantName', index: 'TenantId',search:false, sorttype: "int", editable: true, edittype: "select", editoptions: { dataUrl: '../System/GetTenantsSelect', defaultValue: '1' } },
+    { name: 'CompanyName', index: 'CompanyName',search:false, editable: true, edittype: "select", editoptions: { dataUrl: '../Company/GetCompanysSelect', defaultValue: '1' }},
+    @*{ name: 'CompanyId', index: 'CompanyId', editable: true },*@
+    { name: 'RateName', index: 'RateName', editable: true },
+
+    { name: 'IsActive', index: 'IsActive', search:true, editable: true ,formatter:YesAndNo, stype:'select', searchoptions: { dataUrl:'../Dictionarys/GetYesOrNoSelect/'+(new Date()).getMilliseconds(), sopt:['eq', 'ne']}},
+    { name: 'Remark', index: 'Remark', editable: true },
+    { name: 'CreationTime', index: 'CreationTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+
+    { name: 'CreatorUserName', index: 'CreatorUserName',search:false },
+    { name: 'LastModificationTime', index: 'LastModificationTime',search:false, sorttype: "date", formatter: 'date', formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' } },
+    //{ name: 'LastModifierUserId', index: 'LastModifierUserId',search:false }
+    { name: 'LastModifierUserName', index: 'LastModifierUserName',search:false }
+
+    ],
+    viewrecords: true,
+    rowNum: 10,
+    rowList: [10, 20, 30],
+    pager: pager_selector,
+    altRows: true,
+    sortname: 'Id',
+    sortorder: 'desc',
+    toppager: false,
+    editurl: "../Rates/ProcessRate",
+    multiselect: true,
+    //multikey: "ctrlKey",
+    multiboxonly: true,
+    @*subGrid : true,
+        subGridUrl : "../WorkGroups/SubGrid",
+        subGridModel : [
+                { name : [ 'No', '用户', '泊位段' ], width : [ 55, 300, 300 ]}
+            ],*@
+    loadComplete: function () {
+    var table = this;
+    setTimeout(function () {
+    styleCheckbox(table);
+    updateActionIcons(table);
+    updatePagerIcons(table);
+    enableTooltips(table);
+    }, 0);
+    }
+    });
+}
+@section scriptsbuttonbyself{
+    if(window.field1){
+
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "icon-plus-sign purple",
+    title: "添加",
+    caption: "添加",
+    position: "last",
+    onClickButton: function()
+    {
+
+    if("@Model.HasCompany"=="False")
+    {
+    swal("", "商户账号不能添加费率，只有修改权限", "error");
+    }
+    else
+    {
+    selectedId=0;
+    Saveoper="add";
+    $("#myModal").modal('show');
+    }
+    }
+    });
+    }
+
+    if(window.field2){
+    /// add second custom button
+    jQuery(grid_selector).navButtonAdd(pager_selector,
+    {
+    buttonicon: "ui-icon-pencil",
+    title: "修改",
+    caption: "修改",
+    position: "last",
+    onClickButton: function(){
+    var ids = jQuery(grid_selector).jqGrid('getGridParam','selarrrow');
+    if (ids.length==1)
+    {
+    Saveoper="edit";
+    selectedId=ids[0];
+
+    $.ajax({
+    type: "Post",
+    url: "../Rates/GetRateById/",
+    data:{
+    id:selectedId
+    },
+    success: function (data) {
+    var obj = eval('(' + data.RateJson + ')');
+
+    $("#feeName").val(obj.RateName);
+    $("#remark").val(obj.Remark);
+    $("#IsActive").prop("checked", obj.IsActive);
+
+    //根据后台获取数据，动态填充基本设置里收费时间段
+    $.each(obj.TimeSettingList,function(i,itme){
+    @*if(i>0)    //如果数据多于一条，调用a标签click事件，增加li标签
+        $("#BaseSetting").nextAll("a").eq(0).click();*@
+
+    //将TimeSettingList[i]中数据填充到 第i个li标签下元素中
+    $.each($($("#BaseSetting1 li")[i]).children(), function (i, n) {
+
+    if ($(this).attr("classname") == "feeSetting_ratetype") {
+
+    $(this).val(itme.RateMethod);
+
+    } else if ($(this).attr("classname") == "feeSetting_begintime") {
+    $(this).val(itme.beginTime);
+
+    } else if ($(this).attr("classname") == "feeSetting_endtime") {
+    $(this).val(itme.endTime);
+
+    } else if($(this).attr("classname") == "feeSetting_manydayselect") {
+    $(this).val(itme.ManyDayMethod);
+
+    }
+
+    });
+    });
+    $.each($("#carFeeSetting table "), function (i, n) {//获取大型车、中型车、小型车、摩托车 4张表
+    var carRate = obj.CarRateList[i];  //车辆费率列表
+    var tab=$(this);
+    $.each($(this).children(), function (i, n) {
+    $(".freetime", $(this)).val(carRate.FreeTime); //$(this) tbody
+    $(".daymaxmoney", $(this)).val(carRate.DayMaxMoney);
+    $(".oncemaxmoney", $(this)).val(carRate.OnceMaxMoney);
+    $(".IsContentFreeTime", $(this)).prop("checked", carRate.ContentFreeTimeFlag);
+
+    $.each(carRate.CarTimeQuantumList,function(i,item){
+    if(i>0)
+    $(".carfee1", tab).nextAll("a").eq(0).click();
+    if(item.RateMethod=="1")
+    {
+    item.endTime = (Number(item.endTime) / 60).toString();
+    item.beginTime = (Number(item.beginTime) / 60).toString();
+    }
+    $.each($($(".carfee1 li", tab)[i]).children(), function (i, n) {
+    if ($(this).attr("classname") == "feeSetting_select") {
+    $($("option", $(this))).remove();
+    if($("#baseselect").val()==0)
+    {
+    $(this).append("<option value='0'>分钟</option>");
+    $(this).append("<option value='1'>小时</option>");
+    }
+    else
+    {
+    $(this).append("<option value='2'>按次</option>");
+    }
+    $(this).val(item.RateMethod);
+    } else if ($(this).attr("classname") == "feeSetting_time") {
+
+    $(this).val(item.endTime);
+
+    } else if ($(this).attr("classname") == "feeSetting_money") {
+    $(this).val(item.TimeQuantumMoney);
+    } else if ($(this).attr("classname") == "feeSetting_begin") {
+    $(this).val(item.beginTime);
+    }
+
+    });
+
+    });
+    $.each(carRate.CarFeeScaleList,function(i,item){
+    if(i>0)
+    $(".carfee", tab).nextAll("a").eq(0).click();
+    @*if($(this).RateMethod=="1
+        {
+           $(this).RateTime = (Number($(this).RateTime) / 60).toString();
+        }*@
+    $.each($($(".carfee li", tab)[i]).children(), function (i, n) {
+    if ($(this).attr("classname") == "feeSetting_select") {
+    $($("option", $(this))).remove();
+    if($("#baseselect").val()==0)
+    {
+    $(this).append("<option value='0'>分钟</option>");
+    $(this).append("<option value='1'>小时</option>");
+    }
+    else
+    {
+    $(this).append("<option value='2'>按次</option>");
+    }
+    $(this).val(item.RateMethod);
+    } else if ($(this).attr("classname") == "feeSetting_time") {
+    if(item.RateMethod=="1")
+    {
+    $(this).val(Number(item.RateTime/ 60));
+    }else
+    {
+    $(this).val(item.RateTime);
+    }
+    } else if ($(this).attr("classname") == "feeSetting_money") {
+    $(this).val(item.RateMoney);
+    }
+
+    });
+
+    });
+    });
+    });
+
+    $("#myModal").modal('show');
+
+    }, error: function (data) {
+
+    swal("", "获取费率数据失败，请稍后重试...", "error");
+    }
+    });
+    }
+    else
+    {
+    swal("", "请选择费率...", "info");
+    }
+    }
+    });
+    }
+}
+
+<script src="~/assets/js/jquery.datetimepicker.js"></script>
+<script src="~/assets/js/bootstrapValidator.min.js"></script>
+
+<script type="text/javascript">
+
+        $("#myModal").on("show.bs.modal", function () {
+
+            changeType($("#baseselect").val());
+            $("#collapseOne").attr("class", "panel-collapse in");
+        })
+
+    $("#myModal").on("hidden.bs.modal", function () {
+        $("#myModal input").each(function () {
+            if (this.type == "text") {
+                $(this).val("");
+            } else if (this.type == "checkbox") {
+                $(this).attr("checked", false);
+            }
+
+
+        });
+        $("#myModal select").each(function () {
+            $(this).val(0);
+        });
+
+        $("#myModal textarea").each(function () {
+            $(this).val("");
+        });
+
+
+        $.each($(".carfee1"), function (i, n) {
+            var lilength = $(this).children().length;
+            if (lilength > 1) {
+                for (var j = lilength-1; j >0;j--) {
+                    //$(this).children()[j].remove();
+                    $(this.childNodes[j]).remove();
+                }
+                $(this.childNodes[0]).find(".remove").remove();
+            }
+        });
+
+        $("#collapseOne").attr("class", "panel-collapse collapse");
+        $("#collapseTwo").attr("class", "panel-collapse collapse");
+        $("#collapseThree").attr("class", "panel-collapse collapse");
+        $("#collapseFour").attr("class", "panel-collapse collapse");
+        $("#collapseFive").attr("class", "panel-collapse collapse");
+    });
+
+    $('#datetimepicker1').datetimepicker({
+
+        datepicker: false,
+
+        format: 'H:i',
+
+        step: 5
+
+    });
+    $('#datetimepicker2').datetimepicker({
+
+        datepicker: false,
+
+        format: 'H:i',
+
+        step: 5
+
+    });
+
+    $(function () {
+        $('#baseselect').change(function () {
+            //Saveoper = "";
+            changeType($('#baseselect').val());
+        });
+    })
+    function changeType(baseselectValue) {
+        if (baseselectValue == 1) {//0 按时 1 按次
+            $("#myModal select").each(function () {
+                if ($(this).attr("classname") == "feeSetting_select") {
+                    //if (Saveoper != "edit")
+                    if (Saveoper != "edit") {
+                        $("input", $($(this).parent())).prop("value", "");
+                        $($("option", $(this))).remove();
+                        $(this).append("<option value='2'>按次</option>");
+                    } else {
+                        $($("option", $(this))).remove();
+                        $(this).append("<option value='2'>按次</option>");
+                    }
+                    $($("input", $($(this).parent())).get(0)).prop("value", "1");
+                    $($("input", $($(this).parent())).get(0)).attr("readonly", "readonly");
+                    $(".timequantumSetting").hide();
+                }
+            });
+        }
+        else if (baseselectValue == 0) {//0 按时 1 按次
+            $("#myModal select").each(function () {
+                if ($(this).attr("classname") == "feeSetting_select") {
+                    $(".timequantumSetting").show();
+                    if (Saveoper != "edit") {
+                        $($("option", $(this))).remove();
+                        $(this).append("<option value='0'>分钟</option>");
+                        $(this).append("<option value='1'>小时</option>");
+                        $("input", $($(this).parent())).prop("value", "");
+                    } else {
+                        $($("option", $(this))).remove();
+                        $(this).append("<option value='0'>分钟</option><option value='1'>小时</option>");
+                    }
+                    //if (Saveoper != "edit")
+
+                    $($("input", $($(this).parent())).get(0)).removeAttr("readonly");
+
+                }
+            });
+
+        }
+    }
+
+    window.flag = 1;
+    $(function () {
+        $("#demo5").easyinsert({
+            name: ["demo", "demo", "demo", "demo", "demo"],
+            type: ["custom", "select", "text", "text", "custom"],
+            value: ["<strong style=\"color:#ff7b0e;\">方式</strong>",{ '分钟': '0', '小时': '1', '车次': '2' }, "", "", "<strong style=\"color:#ff7b0e;\">元</strong>"],
+            className: ["demo5_custom", "demo5_select", "demo5_text", "demo5_text1", "demo5_custom"]
+
+        });
+
+        $("#BaseSetting").easyinsert({
+
+            name: ["BaseSetting_tip", "BaseSetting_Feetype", "BaseSetting_tip", "BaseSetting_Cartype", "BaseSetting_tip", "BaseSetting_beginHour", "BaseSetting_tip", "BaseSetting_beginMin", "BaseSetting_tip", "BaseSetting_endHour", "BaseSetting_tip", "BaseSetting_endMin", "BaseSetting_tip"],
+            type: ["custom", "select", "custom", "select", "custom", "text", "custom", "text", "custom", "text", "custom", "text", "custom"],
+            value: ["车辆类型：&nbsp;&nbsp;", @Model.cartype, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;收费方式：&nbsp;&nbsp;",  @Model.ratefee, "<br /><br />时&nbsp;&nbsp;间&nbsp;&nbsp;段：&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;<strong>:</strong>&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;<strong>:</strong>&nbsp;&nbsp;&nbsp;", "", "<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：8：00-16:00)</strong>"],
+
+            className: ["feeSetting_custom", "feeSetting_cartype", "feeSetting_custom", "feeSetting_ratetype", "feeSetting_custom", "feeSetting_beginhour", "feeSetting_custom", "feeSetting_beginmin", "feeSetting_custom", "feeSetting_endhour", "feeSetting_custom", "feeSetting_endmin", "feeSetting_custom"]
+
+
+        });
+        $("#BigCarSetting").easyinsert({
+            toplimit: 1,
+            name: ["BigCarSetting_tip", "BigCarSetting_time", "BigCarSetting_tip", "BigCarSetting_type", "BigCarSetting_tip", "BigCarSetting_money", "BigCarSetting_tip"],
+            type: ["custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["收费方式：&nbsp;&nbsp;",  "", "&nbsp;&nbsp;&nbsp;",@Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom",  "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+        });
+
+
+        $("#midCarSetting").easyinsert({
+            toplimit: 1,
+            name: ["midCarSetting_tip", "midCarSetting_time", "midCarSetting_tip", "midCarSetting_type", "midCarSetting_tip", "midCarSetting_money", "midCarSetting_tip"],
+            type: ["custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["收费方式：&nbsp;&nbsp;",  "", "&nbsp;&nbsp;&nbsp;",@Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom",  "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+        });
+
+
+        $("#SmallCarSetting").easyinsert({
+            toplimit: 1,
+            name: ["SmallCarSetting_tip", "SmallCarSetting_time", "SmallCarSetting_tip", "SmallCarSetting_type", "SmallCarSetting_tip", "SmallCarSetting_money", "SmallCarSetting_tip"],
+            type: ["custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["收费方式：&nbsp;&nbsp;",  "", "&nbsp;&nbsp;&nbsp;", @Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom","feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+
+            //initValue: [
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}],
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3' }], ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}]
+            //]
+        });
+        $("#MotorSetting").easyinsert({
+            toplimit: 1,
+            name: ["MotorSetting_tip",  "MotorSetting_time", "MotorSetting_tip", "MotorSetting_type", "MotorSetting_tip", "MotorSetting_money", "MotorSetting_tip"],
+            type: ["custom",  "text", "custom", "select", "custom", "text", "custom"],
+            value: ["收费方式：&nbsp;&nbsp;",   "", "&nbsp;&nbsp;&nbsp;", @Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom", "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+            //initValue: [
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}],
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3' }], ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}]
+            //]
+        });
+        $("#BigCarSetting1").easyinsert({
+            name: ["BigCarSetting_tip", "BigCarSetting_timetype", "BigCarSetting_tip", "BigCarSetting_time", "BigCarSetting_tip", "BigCarSetting_type", "BigCarSetting_tip", "BigCarSetting_money", "BigCarSetting_tip"],
+            type: ["custom", "text", "custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["时&nbsp;&nbsp;间&nbsp;&nbsp;段：&nbsp;&nbsp;", "", "&nbsp;&nbsp;--&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;",@Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;0-30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom", "feeSetting_begin", "feeSetting_custom", "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+        });
+
+        $("#midCarSetting1").easyinsert({
+            name: ["midCarSetting_tip", "midCarSetting_timetype", "midCarSetting_tip", "midCarSetting_time", "midCarSetting_tip", "midCarSetting_type", "midCarSetting_tip", "midCarSetting_money", "midCarSetting_tip"],
+            type: ["custom", "text", "custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["时&nbsp;&nbsp;间&nbsp;&nbsp;段：&nbsp;&nbsp;", "", "&nbsp;&nbsp;--&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;",@Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;0-30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom", "feeSetting_begin", "feeSetting_custom", "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+        });
+
+        $("#SmallCarSetting1").easyinsert({
+
+            name: ["SmallCarSetting_tip", "BigCarSetting_timetype", "BigCarSetting_tip", "SmallCarSetting_time", "SmallCarSetting_tip", "SmallCarSetting_type", "SmallCarSetting_tip", "SmallCarSetting_money", "SmallCarSetting_tip"],
+            type: ["custom", "text", "custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["时&nbsp;&nbsp;间&nbsp;&nbsp;段：&nbsp;&nbsp;", "", "&nbsp;&nbsp;--&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;", @Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom", "feeSetting_begin", "feeSetting_custom", "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+
+            //initValue: [
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}],
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3' }], ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}]
+            //]
+        });
+        $("#MotorSetting1").easyinsert({
+
+            name: ["MotorSetting_tip", "BigCarSetting_timetype", "BigCarSetting_tip", "MotorSetting_time", "MotorSetting_tip", "MotorSetting_type", "MotorSetting_tip", "MotorSetting_money", "MotorSetting_tip"],
+            type: ["custom", "text", "custom", "text", "custom", "select", "custom", "text", "custom"],
+            value: ["时&nbsp;&nbsp;间&nbsp;&nbsp;段：&nbsp;&nbsp;", "", "&nbsp;&nbsp;--&nbsp;&nbsp;", "", "&nbsp;&nbsp;&nbsp;", @Model.carfee, "&nbsp;&nbsp;&nbsp;", "", "&nbsp;&nbsp;元<strong style=\"color:#ff7b0e;\"> &nbsp;&nbsp;&nbsp;&nbsp;(例：&nbsp;30&nbsp;分钟&nbsp;2&nbsp;元)</strong>"],
+            className: ["feeSetting_custom", "feeSetting_begin", "feeSetting_custom", "feeSetting_time", "feeSetting_custom", "feeSetting_select", "feeSetting_custom", "feeSetting_money", "feeSetting_custom"]
+
+            //initValue: [
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}],
+            // ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3' }], ["<strong style=\"color:#ff7b0e;\">时间点</strong>", "5-1", "<strong style=\"color:#ff7b0e;\">时间点</strong>", { '收费1': '1', '收费2': '2', '收费3': '3'}]
+            //]
+        });
+    });
+
+
+    function Save() {
+        var Rate = new Object();
+        //基本数据
+        Rate.RateName = $("#feeName").val();
+
+        Rate.IsActive = $('#IsActive').is(':checked');
+        Rate.Remark = $("#remark").val();
+
+
+
+        //大型车、小型车、摩托车数据
+        var CarRateList1 = new Array();
+        var arrayindex = 0;
+
+        $.each($("#carFeeSetting table"), function (i, n) {
+
+            var CarRate = new Object();
+
+            CarRate.FreeTime = $(".freetime", $(this))[0].value;
+            CarRate.ContentFreeTimeFlag = $(".IsContentFreeTime", $(this)).is(':checked');
+            CarRate.DayMaxMoney = $(".daymaxmoney", $(this))[0].value;
+            CarRate.OnceMaxMoney = $(".oncemaxmoney", $(this))[0].value;
+            CarRate.CarFeeList = new Array();
+
+            CarRate.CarTimeQuantumList= new Array();
+            var carfee1Index = 0;
+            $.each($(".carfee1", $(this)).children(), function (i, n) {
+                 var CarTimeQuantum = new Object();
+                $.each($(this).children(), function (i, n) {
+                    if ($(this).attr("classname") == "feeSetting_select") {
+                        CarTimeQuantum.RateMethod = this.options[this.options.selectedIndex].value;
+
+                    } else if ($(this).attr("classname") == "feeSetting_time") {
+                        CarTimeQuantum.endTime = this.value;
+
+                    } else if ($(this).attr("classname") == "feeSetting_money") {
+
+                        CarTimeQuantum.TimeQuantumMoney = this.value;
+                    }
+                    else if ($(this).attr("classname") == "feeSetting_begin") {
+
+                        CarTimeQuantum.beginTime = this.value;
+                    }
+
+                });
+                if (CarTimeQuantum.RateMethod == "1")
+                {
+                    CarTimeQuantum.endTime = (Number(CarTimeQuantum.endTime) * 60).toString();
+                    CarTimeQuantum.beginTime = (Number(CarTimeQuantum.beginTime) * 60).toString();
+                }
+                CarRate.CarTimeQuantumList[carfee1Index++] = CarTimeQuantum;
+            });
+
+            CarRate.CarFeeScaleList = new Array();
+            var carfeeIndex = 0;
+            $.each($(".carfee", $(this)).children(), function (i, n) {
+                if (($(this).parent())[0].id == "BigCarSetting") {
+                    CarRate.CarType = "1";
+
+                }
+                else if (($(this).parent())[0].id == "MotorSetting") {
+                    CarRate.CarType = "3";
+
+                }
+                else if (($(this).parent())[0].id == "midCarSetting") {
+                    CarRate.CarType = "4";
+                }
+                else {
+                    CarRate.CarType = "2";
+
+                }
+                var CarFeeScale = new Object();
+                $.each($(this).children(), function (i, n) {
+                    if ($(this).attr("classname") == "feeSetting_select") {
+                        CarFeeScale.RateMethod = this.options[this.options.selectedIndex].value;
+
+                    } else if ($(this).attr("classname") == "feeSetting_time") {
+
+
+                        CarFeeScale.RateTime = this.value;
+
+                    } else if ($(this).attr("classname") == "feeSetting_money") {
+
+                        CarFeeScale.RateMoney = this.value;
+                    }
+
+                });
+               //小时转分钟
+                if (CarFeeScale.RateMethod == "1") {
+                    CarFeeScale.RateTime = (Number(CarFeeScale.RateTime) * 60).toString();
+                }
+                CarRate.CarFeeScaleList[carfeeIndex++] = CarFeeScale;
+            });
+
+            CarRateList1[arrayindex++] = CarRate;
+        });
+
+        //收费时间段设置
+        var TimeSettingList1 = new Array();
+        var timesettingindex = 0;
+
+        $.each($("#BaseSetting1").children(), function (i, n) {
+            var TimeSetting = new Object();
+            $.each($(this).children(), function (i, n) {
+                if ($(this).attr("classname") == "feeSetting_ratetype") {
+
+                    TimeSetting.RateMethod = this.options[this.options.selectedIndex].value;
+
+                } else if ($(this).attr("classname") == "feeSetting_begintime") {
+
+                    TimeSetting.beginTime = this.value;
+
+                } else if ($(this).attr("classname") == "feeSetting_endtime") {
+
+                    TimeSetting.endTime =this.value;
+                } else if ($(this).attr("classname") == "feeSetting_manydayselect") {
+                    TimeSetting.ManyDayMethod = this.options[this.options.selectedIndex].value;
+                }
+            });
+            TimeSettingList1[timesettingindex++] = TimeSetting;
+        });
+
+        Rate.CarRateList = CarRateList1;
+        Rate.TimeSettingList = TimeSettingList1;
+
+        $.ajax({
+            type: "POST",
+            url: '../Rates/ProcessRate/',
+            //data: { jsonstr: jsonstr },
+            data: {
+                oper: Saveoper,
+                Id:selectedId,
+                RateName: Rate.RateName,
+                IsActive: Rate.IsActive,
+                Remark: Rate.Remark,
+                //rateModel:Rate
+                CarRateList: Rate.CarRateList,
+                TimeSettingList: Rate.TimeSettingList
+
+            },
+            success: function (data) {
+
+                if (data.Success == false) {
+                    swal("", data.Error.Message, "error");
+                } else {
+                    $('#myModal').modal('hide');
+                    $("#grid-table").trigger("reloadGrid");
+                    Saveoper = "";
+                }
+                //window.location.href = "../Platform/Login";
+            }, error: function () {
+
+            }
+        });
+
+    }
+    (function ($) {
+
+        $.fn.extend({
+
+            "easyinsert": function (o) {
+                o = $.extend({
+                    clicker: null,
+                    wrap: "li",
+                    name: "i-text",
+                    type: "text",
+                    value: "",
+                    maxlength: 20,
+                    className: "i-text",
+                    toplimit: 0,
+                    initValue: null
+                }, o || {});
+                var oo = {
+                    remove: "<a href=\"#nogo\" class=\"remove\">移除</a>",
+                    error1: "参数配置错误，数组的长度不一致，请检查。",
+                    error2: "参数配置错误，每组初始化值都必须是数组，请检查。"
+                }
+
+
+                var $container = $(this);
+                var allowed = true;
+
+
+                var arrCfg = new Array(o.name, o.type, o.value, o.maxlength, o.className);
+                var arr = new Array();
+
+                $.each(arrCfg, function (i, n) {
+                    if ($.isArray(n)) {
+                        arr[i] = n;
+                    } else {
+                        arr[i] = new Array();
+                        if (i === 0) {
+                            arr[0].push(n);
+                        } else {
+
+                            $.each(arr[0], function () {
+                                arr[i].push(n);
+                            });
+                        }
+                    }
+
+                    if (arr[i].length !== arr[0].length) {
+                        allowed = false;
+                        $container.text(oo.error1);
+                    }
+
+                });
+                if (allowed) {
+                    var $Clicker = !o.clicker ? $container.next() : $(o.clicker);
+                    $Clicker.bind("click", function () {
+                        window.flag = window.flag + 1;
+                        var len = $container.children(o.wrap).length;
+
+                        var isMax = o.toplimit === 0 ? false : (len < o.toplimit ? false : true);
+                        if (!isMax) {
+                            var $Item = $("<" + o.wrap + ">").appendTo($container);
+                            $.each(arr[0], function (i) {
+                                switch (arr[1][i]) {
+                                    case "select":
+                                        var option = "";
+                                        $.each(arr[2][i], function (i, n) {
+
+
+                                            option += "<option value='" + n + "'>" + i + "</option>";
+                                        });
+                                        $("<select>", {
+                                            name: arr[0][i] + window.flag,
+                                            className: arr[4][i]
+                                        }).append(option).appendTo($Item);
+                                        break;
+                                    case "custom":
+                                        $Item.append(arr[2][i]);
+                                        break;
+                                    default:
+                                        $("<input>", {
+                                            name: arr[0][i] + window.flag,
+                                            type: arr[1][i],
+                                            value: arr[2][i],
+                                            maxlength: arr[3][i],
+                                            className: arr[4][i]
+                                        }).appendTo($Item);
+                                }
+                            });
+                            $Item = $container.children(o.wrap);
+
+                            len = $Item.length;
+                            if (len > 1) {
+                                $Item.last().append(oo.remove);
+                                if (len === 2) {
+                                    $Item.first().append(oo.remove);
+                                }
+                            }
+                            $Item.find(".remove").click(function () {
+
+                                $(this).parent().remove();
+
+                                len = $container.children(o.wrap).length;
+                                if (len === 1) {
+                                    $container.find(".remove").remove();
+                                }
+                                return false;
+                            });
+                        }
+                        return false;
+
+
+
+
+                    });
+                    if ($.isArray(o.initValue)) {
+                        $.each(o.initValue, function (i, n) {
+                            if (!$.isArray(n)) {
+                                $container.empty().text(oo.error2);
+                                return false;
+                            } else {
+                                if (n.length !== arr[0].length) {
+                                    $container.empty().text(oo.error1);
+                                    return false;
+                                }
+                            }
+                            var arrValue = new Array();
+
+                            $.each(n, function (j, m) {
+                                arrValue[j] = arr[2][j]
+                                arr[2][j] = m;
+                            });
+                            $Clicker.click();
+                            $.each(arrValue, function (j, m) {
+                                arr[2][j] = m;
+                            });
+                        });
+                    } else {
+                        $Clicker.click();
+
+                    }
+                }
+            }
+        });
+    })(jQuery);
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

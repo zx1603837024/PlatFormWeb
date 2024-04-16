@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="Ibatis" xmlns="http://ibatis.apache.org/mapping" xmlns:xls="http://www.w3.org/2001/XMLSchema-instance">
+	<alias>
+		
+	</alias>
+	<statements>
+
+		<select id="getCouponsPlanList" parameterClass="Hashtable" resultClass="Hashtable">
+			select
+			GetNumber,
+			Status,
+			Id as PlanId,
+			Type,
+			CouponNumber,
+			CONVERT(VARCHAR(20),EndTime,120) as EndTime,
+			CONVERT(VARCHAR(20),StartTime,120) as StartTime,
+			CouponsType,
+			TermMoney,
+			CONVERT(VARCHAR(20),CreatTime,120) as CreatTime,
+			Mark,
+			CouponsMoney
+			from CouponsPlan
+			where
+			IsDelete=2
+			<dynamic prepend="and">
+				<isNotEmpty property="Id">
+					Id  = #Id#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="CouponsType">
+					CouponsType  = #CouponsType#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="Status">
+					Status  = #Status#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="Type">
+					Type  = #Type#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					StartTime  >= #StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					EndTime <![CDATA[ <=]]> #EndTime#
+				</isNotEmpty>
+			</dynamic>
+			order by CreatTime asc
+			<isParameterPresent>
+				<isNotEmpty property="start">
+					offset #start# rows fetch next #rows# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="getCouponsPlanListSize" parameterClass="Hashtable" resultClass="int">
+			select count(*) from CouponsPlan
+			where
+			IsDelete=2
+			<dynamic prepend="and">
+				<isNotEmpty property="Id">
+					Id  = #Id#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="CouponsType">
+					CouponsType  = #CouponsType#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="Status">
+					Status  = #Status#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="Type">
+					Type  = #Type#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="StartTime">
+					StartTime  >= #StartTime#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="EndTime">
+					EndTime <![CDATA[ <=]]> #EndTime#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		
+		
+		<insert id="insertCouponsPlan" parameterClass="Hashtable">
+			insert into CouponsPlan
+			(CouponsMoney,StartTime,EndTime,Mark,CreatTime,Type,TermMoney,Status,CouponNumber,GetNumber,CouponsType,IsDelete)
+			values
+			(#CouponsMoney#,#StartTime#,#EndTime#,#Mark#,#CreatTime#,#Type#,#TermMoney#,#Status#,#CouponNumber#,#GetNumber#,#CouponsType#,#IsDelete#)
+		</insert>
+
+		<update id="updatePlane" parameterClass="Hashtable">
+			update CouponsPlan
+			set IsDelete = 2
+			<isNotEmpty property="CouponsMoney">
+				,CouponsMoney=#CouponsMoney#
+			</isNotEmpty>
+			<isNotEmpty property="StartTime">
+				,StartTime=#StartTime#
+			</isNotEmpty>
+			<isNotEmpty property="EndTime">
+				,EndTime=#EndTime#
+			</isNotEmpty>
+			<isNotEmpty property="Mark">
+				,Mark=#Mark#
+			</isNotEmpty>
+			<isNotEmpty property="Type">
+				,Type=#Type#
+			</isNotEmpty>
+			<isNotEmpty property="CouponNumber">
+				,CouponNumber=#CouponNumber#
+			</isNotEmpty>
+			<isNotEmpty property="GetNumber">
+				,GetNumber=#GetNumber#
+			</isNotEmpty>
+			<isNotEmpty property="CouponsType">
+				,CouponsType=#CouponsType#
+			</isNotEmpty>
+			<isNotEmpty property="Status">
+				,Status=#Status#
+			</isNotEmpty>
+			where Id=#id#
+		</update>
+
+		<update id="deletePlane" parameterClass="Hashtable">
+			update CouponsPlan
+			set IsDelete = 1
+			where Id=#id#
+		</update>
+
+		<select id="getCouponsDetail" parameterClass="Hashtable" resultClass="Hashtable">
+			select
+			cd.Id as DetailsId,
+			CONVERT(VARCHAR(20),cd.ProvideTime,120) as ProvideTime,
+			cd.Status as DetailsStatus,
+			CONVERT(VARCHAR(20),cd.UseTime,120) as UseTime,
+
+			cp.Id as PlanId,
+			cp.CouponsMoney,
+			CONVERT(VARCHAR(20),cp.StartTime,120) as StartTime,
+			CONVERT(VARCHAR(20),cp.EndTime,120) as EndTime,
+			cp.Mark as Mark,
+			CONVERT(VARCHAR(20),cp.CreatTime,120) as CreatTime,
+			cp.Type,
+			cp.TermMoney,
+			cp.Status as PlanStatus,
+			cp.CouponNumber,
+			cp.GetNumber,
+			cp.CouponsType,
+
+			t.nickName,
+			t.tel,
+			t.uid
+
+
+			from CouponsDetails cd
+			left join CouponsPlan cp on cd.PlanId=cp.Id
+			left join TUser t on t.uid=cd.uid
+			where
+			cp.IsDelete=2
+			<dynamic prepend="and">
+				<isNotEmpty property="uid">
+					t.uid  = #uid#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="tel">
+					t.tel  = #tel#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="PlanStatus">
+					cp.Status  = #PlanStatus#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="DetailsStatus">
+					cd.Status  = #DetailsStatus#
+				</isNotEmpty>
+			</dynamic>
+			order by cd.ProvideTime asc
+			<isParameterPresent>
+				<isNotEmpty property="start">
+					offset #start# rows fetch next #rows# rows only
+				</isNotEmpty>
+			</isParameterPresent>
+		</select>
+		<select id="getCouponsDetailSize" parameterClass="Hashtable" resultClass="int">
+			select count(*) from CouponsDetails cd
+			left join CouponsPlan cp on cd.PlanId=cp.Id
+			left join TUser t on t.uid=cd.uid
+			where
+			cp.IsDelete=2
+			<dynamic prepend="and">
+				<isNotEmpty property="uid">
+					t.uid  = #uid#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="tel">
+					t.tel  = #tel#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="PlanStatus">
+					cp.Status  = #PlanStatus#
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="and">
+				<isNotEmpty property="DetailsStatus">
+					cd.Status  = #DetailsStatus#
+				</isNotEmpty>
+			</dynamic>
+		</select>
+		
+		
+		<insert id="insertCouponsDetails" parameterClass="Hashtable">
+			insert into CouponsDetails
+			(Id,PlanId,ProvideTime,Status,uid)
+			values
+			$Value$
+		</insert>
+		
+	</statements>
+
+</sqlMap>
